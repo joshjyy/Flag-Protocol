@@ -76,7 +76,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	AEGfxMeshStart();
 
 	int segments = 30; 
-	//Create circle using triangle fan method ( like a pizza )
+	//Create circle using triangle fan method ( like a pizza ) 10 slices
 	for (int i = 0; i < segments; i++) {
 		float angle1 = (i * 360.0f / segments) * PI / 180.0f;
 		float angle2 = ((i + 1) * 360.0f / segments) * PI / 180.0f;
