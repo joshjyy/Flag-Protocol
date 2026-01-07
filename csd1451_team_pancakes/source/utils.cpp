@@ -27,21 +27,21 @@ int AreCirclesIntersecting(float circle_center1_x, float circle_center1_y, float
 }
 
 //Uncomment for box collision
-//int AreBoxesIntersecting(float box1_center_x, float box1_center_y, float box1_width, float box1_height,
-//    float box2_center_x, float box2_center_y, float box2_width, float box2_height) {
-//    float halfW1 = box1_width / 2.0f;
-//    float halfH1 = box1_height / 2.0f;
-//    float halfW2 = box2_width / 2.0f;
-//    float halfH2 = box2_height / 2.0f;
-//
-//    int overlapX = (box1_center_x - halfW1 < box2_center_x + halfW2) &&
-//        (box1_center_x + halfW1 > box2_center_x - halfW2);
-//
-//    int overlapY = (box1_center_y - halfH1 < box2_center_y + halfH2) &&
-//        (box1_center_y + halfH1 > box2_center_y - halfH2);
-//
-//    return (overlapX && overlapY) ? 1 : 0;
-//}
+int AreBoxesIntersecting(float box1_center_x, float box1_center_y, float box1_width, float box1_height,
+    float box2_center_x, float box2_center_y, float box2_width, float box2_height) {
+    float halfW1 = box1_width / 2.0f;
+    float halfH1 = box1_height / 2.0f;
+    float halfW2 = box2_width / 2.0f;
+    float halfH2 = box2_height / 2.0f;
+
+    int overlapX = (box1_center_x - halfW1 < box2_center_x + halfW2) &&
+        (box1_center_x + halfW1 > box2_center_x - halfW2);
+
+    int overlapY = (box1_center_y - halfH1 < box2_center_y + halfH2) &&
+        (box1_center_y + halfH1 > box2_center_y - halfH2);
+
+    return (overlapX && overlapY) ? 1 : 0;
+}
 
 void DrawSprite(AEGfxVertexList* mesh, float x, float y, float scaleX, float scaleY, float rotation) {
     AEMtx33 scale = { 0 };
