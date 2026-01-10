@@ -3,7 +3,7 @@
 #include "utils.hpp"
 #include <cmath>
 
-// Add this function to Bullet.cpp (put it before CreateBullet)
+// Add this function to Bullet.cpp 
 void NormalizeVector(float* x, float* y) {
     float length = sqrtf((*x) * (*x) + (*y) * (*y));
     if (length > 0.0f) {
