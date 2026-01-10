@@ -21,9 +21,15 @@
     <ClCompile Include="..\source\utils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\player.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\source\utils.h">
+    <ClInclude Include="..\source\utils.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\player.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
