@@ -3,6 +3,7 @@
 #include "utils.hpp"
 #include <cmath>
 
+// math (on god im not sure whats happening here)
 void NormalizeVector(float* x, float* y) {
     float length = sqrtf((*x) * (*x) + (*y) * (*y));
     if (length > 0.0f) {
