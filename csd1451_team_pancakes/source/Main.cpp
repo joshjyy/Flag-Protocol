@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------------
+﻿// ---------------------------------------------------------------------------
 // includes
 #include <crtdbg.h>
 #include "AEEngine.h"
@@ -8,16 +8,21 @@
 
 //Legend if needed later
 /*
-typedef int8_t    s8; signed 8 bit
-typedef uint8_t   u8; unsigned 8 but
-typedef int16_t   s16;
-typedef uint16_t  u16;
-typedef int32_t   s32;
-typedef uint32_t  u32;
-typedef int64_t   s64;
-typedef uint64_t  u64;
-typedef float     f32;
-typedef double    f64;
+SIGNED (can be negative)
+s8   = tiny whole number     (-128 to 127)
+s16  = small whole number    (-32,768 to 32,767)
+s32  = normal whole number   (-2 billion to 2 billion)
+s64  = huge whole number     (-9 quintillion to 9 quintillion)
+
+UNSIGNED (only positive)
+u8   = tiny positive number  (0 to 255)
+u16  = small positive number (0 to 65,535)
+u32  = normal positive number(0 to 4 billion)
+u64  = huge positive number  (0 to 18 quintillion)
+
+DECIMALS
+f32  = normal decimal        (float)
+f64  = precise decimal       (double)
 */
 
 //DONT IMPORT STD NAMESPACE
@@ -55,9 +60,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	// Bullet management
 	Bullet* bulletHead = nullptr;  // Head of bullet linked list
+
 	float shootCooldown = 0.0f;
-	const float SHOOT_DELAY = 0.1f;  // Time between shots (seconds)
-	const float BULLET_SPEED = 800.0f;
+	const float SHOOT_DELAY = 0.05f;  
+	const float BULLET_SPEED = 1000.0f;
 
 
 	// Initialize engine (1600x900 window, 60 FPS)
@@ -145,17 +151,24 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		if (shootCooldown > 0.0f) {
 			shootCooldown -= dt;
 		}
-		// Shooting (SPACE key)
-		if (AEInputCheckCurr(AEVK_SPACE) && shootCooldown <= 0.0f) {
-			// Get mouse position in world coordinates AT THIS INSTANT
+		// Shooting Check
+		if (AEInputCheckCurr(AEVK_LBUTTON) && shootCooldown <= 0.0f) {
+			// Get mouse position in world coordinates 
 			s32 mouseX, mouseY;
 			AEInputGetCursorPosition(&mouseX, &mouseY);
 
-			// Convert screen coordinates to world coordinates
-			float worldMouseX = (float)mouseX - 800.0f;  // 800 = half of 1600 (window width)
-			float worldMouseY = 450.0f - (float)mouseY;  // 450 = half of 900 (window height)
+			/*  
+				Screen(0, 0)      →  World(-800, +450)[top - left corner]
+				Screen(800, 450)  →  World(0, 0)[center of screen]
+				Screen(1600, 900) →  World(+800, -450)[bottom - right corner]
+				Screen(1600, 0)   →  World(+800, +450)[top - right corner]
+			*/
 
-			// Create bullet aimed at CURRENT mouse position
+			// Convert screen coordinates to world coordinates
+			float worldMouseX = (float)mouseX - 800.0f;  
+			float worldMouseY = 450.0f - (float)mouseY;  
+
+			// Create bullet at player aimed at mouse x and y
 			Bullet* newBullet = CreateBullet(playerX, playerY, worldMouseX, worldMouseY, BULLET_SPEED);
 
 			// Add to front of linked list
@@ -172,21 +185,15 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		UpdateBullets(&bulletHead, dt);
 
+		// ---------------------------------------------------------------------------
+		// Collision Checks
+		// ---------------------------------------------------------------------------
+		
 
-		//Circle collision
-		if (AreCirclesIntersecting(playerX, playerY, 50.0f, -400.0f, -100.0f, 150.0f)) {
-			// Lose health
-			if (healthbar > 0) {
-				healthbar -= 600.0f * dt;
-			}
-		}
 
-		if (AreCirclesIntersecting(playerX, playerY, 50.0f, 400.0f, -100.0f, 150.0f)) {
-			// Gain health
-			if (healthbar < 1000) {
-				healthbar += 600.0f * dt;
-			}
-		}
+
+
+
 
 		// ---------------------------------------------------------------------------
 		// RENDERING
@@ -195,42 +202,40 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		// Set background color (gray)
 		AEGfxSetBackgroundColor(0.5f, 0.5f, 0.5f);
 
-		// Set render mode for textured objects
+		// Set render mode for colored meshes
 		AEGfxSetRenderMode(AE_GFX_RM_COLOR);
 
 		// Enable transparency
 		AEGfxSetBlendMode(AE_GFX_BM_BLEND);
 		AEGfxSetTransparency(1.0f);
 
-		//Red
-		AEGfxSetColorToMultiply(0.8f, 0.0f, 0.0f, 1.0f);
-		DrawSprite(circleMesh, -400.0f, -100.0f, 400.0f, 400.0f, 0.0f);
 
-		//Green
-		AEGfxSetColorToMultiply(0.0f, 1.0f, 0.0f, 1.0f);
-		DrawSprite(circleMesh, 400.0f, -100.0f, 400.0f, 400.0f, 0.0f);
-
-
-		//Blue
+		//Player Circle
 		AEGfxSetColorToMultiply(0.0f, 0.0f, 1.0f, 1.0f);
 		DrawSprite(circleMesh, playerX, playerY, 100.0f, 100.0f, 0.0f);
 
-		// Render bullets using Bullet.cpp function
+		// Draw bullets
 		RenderBullets(bulletHead, circleMesh);
 
 		
-
+		//Draw Background Health Bar
 		AEGfxSetColorToMultiply(0.5f, 0.0f, 0.0f, 1.0f);
 		DrawSprite(squareMesh, 0.0f, 350.0f, 1000.0f, 50.0f, 0.0f);
-
-
+		//Draw Current Health
 		AEGfxSetColorToMultiply(1.0f, 0.0f, 0.0f, 1.0f);
 		float healthbarOffset = (1000.0f - healthbar) / 2.0f;
 		DrawSprite(squareMesh, 0.0f - healthbarOffset, 350.0f, healthbar, 50.0f, 0.0f);
 
-		// Update bullets again to ensure smooth movement
-		UpdateBullets(&bulletHead, dt);
 
+
+	
+
+
+
+
+		// ---------------------------------------------------------------------------
+		//DEBUGGING
+		// ---------------------------------------------------------------------------
 		int bulletCount = GetBulletCount(bulletHead);
 		printf("Active bullets: %d\n", bulletCount);
 	 

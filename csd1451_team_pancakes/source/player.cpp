@@ -27,10 +27,13 @@ Bullet* CreateBullet(float x, float y, float targetX, float targetY, float speed
     NormalizeVector(&dirX, &dirY);
 
 
-    // Set velocity
+    // Set velocity of bullet
     newBullet->velocityX = dirX * speed;
     newBullet->velocityY = dirY * speed;
+
+
     newBullet->active = true;
+	//Initialize next pointer to nullptr so it doesnt point to garbage value
     newBullet->next = nullptr;
 
     return newBullet;
@@ -39,6 +42,8 @@ Bullet* CreateBullet(float x, float y, float targetX, float targetY, float speed
 // Update all bullets and remove off-screen ones
 void UpdateBullets(Bullet** bulletHead, float dt) {
     Bullet* current = *bulletHead;
+
+	// Create a previous variable to store the previous bullet in the linked list
     Bullet* previous = nullptr;
 
     while (current != nullptr) {
@@ -50,22 +55,32 @@ void UpdateBullets(Bullet** bulletHead, float dt) {
         if (current->y > 500.0f || current->y < -500.0f ||
             current->x > 900.0f || current->x < -900.0f) {
 
-            // Remove bullet from list and free memory
+			// Prepare to remove bullet
             Bullet* toDelete = current;
 
+			// Update linked list pointers
             if (previous == nullptr) {
-                // Removing head of list
+				// Move bulletHead to next bullet
                 *bulletHead = current->next;
                 current = *bulletHead;
             }
             else {
-                // Removing middle/end of list
+				// Removing middle/end of list in case bullet collidies with something before going off screen
                 previous->next = current->next;
                 current = current->next;
             }
 
-            delete toDelete;  // Free the memory
+            // Free memory for bullet pointed to by this address
+            delete toDelete;  
         }
+
+
+
+
+
+
+
+
         else {
             // Move to next bullet
             previous = current;
@@ -80,8 +95,21 @@ void RenderBullets(Bullet* bulletHead, void* mesh) {
     AEGfxSetColorToMultiply(1.0f, 1.0f, 0.0f, 1.0f);
 
     Bullet* current = bulletHead;
+
+    //Draw bullet if current bullet is active
     while (current != nullptr) {
+        // Outer glow (bigger, more transparent)
+        AEGfxSetColorToMultiply(1.0f, 1.0f, 0.0f, 0.3f);  // Yellow, 30% opacity
+        DrawSprite((AEGfxVertexList*)mesh, current->x, current->y, 40.0f, 40.0f, 0.0f);
+
+        // Middle glow
+        AEGfxSetColorToMultiply(1.0f, 1.0f, 0.0f, 0.6f);  // Yellow, 60% opacity
+        DrawSprite((AEGfxVertexList*)mesh, current->x, current->y, 30.0f, 30.0f, 0.0f);
+
+        // Core (solid)
+        AEGfxSetColorToMultiply(1.0f, 1.0f, 1.0f, 1.0f);  // White center
         DrawSprite((AEGfxVertexList*)mesh, current->x, current->y, 20.0f, 20.0f, 0.0f);
+
         current = current->next;
     }
 }
