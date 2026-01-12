@@ -132,20 +132,35 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		// Movement
 			// Movement
 		if (AEInputCheckCurr(AEVK_W)) {
-			playerY += 1200.0f * dt;
+			playerY += 500.0f * dt;
+			if (AEInputCheckPrev(AEVK_LSHIFT)) {
+				playerY += 1500.0f * dt;
+			}
+
 		}
 
 		if (AEInputCheckCurr(AEVK_A)) {
-			playerX -= 1200.0f * dt;
+			playerX -= 500.0f * dt;
+			if (AEInputCheckPrev(AEVK_LSHIFT)) {
+				playerX -= 1500.0f * dt;
+			}
 		}
 
 		if (AEInputCheckCurr(AEVK_S)) {
-			playerY -= 1200.0f * dt;
+			playerY -= 500.0f * dt;
+			if (AEInputCheckPrev(AEVK_LSHIFT)) {
+				playerY -= 1500.0f * dt;
+			}
 		}
 
 		if (AEInputCheckCurr(AEVK_D)) {
-			playerX += 1200.0f * dt;
+			playerX += 500.0f * dt;
+			if (AEInputCheckPrev(AEVK_LSHIFT)) {
+				playerX += 1500.0f * dt;
+			}
 		}
+	
+		
 
 		// Bullet shooting cooldown
 		if (shootCooldown > 0.0f) {
