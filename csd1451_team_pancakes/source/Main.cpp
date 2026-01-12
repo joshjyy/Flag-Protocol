@@ -65,6 +65,18 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	const float SHOOT_DELAY = 0.05f;  
 	const float BULLET_SPEED = 1000.0f;
 
+	// At the top of your update function or as member variables
+	static float dashTimer = 0.0f;
+	static float dashCooldown = 0.0f;
+	static float dashDirX = 0.0f;
+	static float dashDirY = 0.0f;
+
+	const float DASH_SPEED = 3000.0f;
+	const float DASH_DURATION = 0.2f;  // Short and snappy
+	const float DASH_COOLDOWN = 0.05f;   // 1 second cooldown
+	const float WALK_SPEED = 500.0f;
+
+
 
 	// Initialize engine (1600x900 window, 60 FPS)
 	AESysInit(hInstance, nCmdShow, 1600, 900, 1, 60, false, NULL);
@@ -129,34 +141,53 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		if (AEInputCheckTriggered(AEVK_ESCAPE) || 0 == AESysDoesWindowExist())
 			gGameRunning = 0;
 		
-		// Movement
-			// Movement
-		if (AEInputCheckCurr(AEVK_W)) {
-			playerY += 500.0f * dt;
-			if (AEInputCheckPrev(AEVK_LSHIFT)) {
-				playerY += 1500.0f * dt;
-			}
+		//Update timers
+		if (dashTimer > 0.0f) dashTimer -= dt;
+		if (dashCooldown > 0.0f) dashCooldown -= dt;
 
+		
+		if (AEInputCheckTriggered(AEVK_SPACE) && dashCooldown <= 0.0f) {
+			// Get current movement direction from WASD
+			float inputX = 0.0f;
+			float inputY = 0.0f;
+
+			if (AEInputCheckCurr(AEVK_W)) inputY += 1.0f;
+			if (AEInputCheckCurr(AEVK_S)) inputY -= 1.0f;
+			if (AEInputCheckCurr(AEVK_D)) inputX += 1.0f;
+			if (AEInputCheckCurr(AEVK_A)) inputX -= 1.0f;
+
+			// Normalize direction
+			float length = sqrtf(inputX * inputX + inputY * inputY);
+			if (length > 0.0f) {
+				dashDirX = inputX / length;
+				dashDirY = inputY / length;
+
+				dashTimer = DASH_DURATION;
+				dashCooldown = DASH_COOLDOWN;
+			}
+			// If no direction held, dash in the direction you're facing
+			// (you'd need to track facing direction for this)
 		}
 
-		if (AEInputCheckCurr(AEVK_A)) {
-			playerX -= 500.0f * dt;
-			if (AEInputCheckPrev(AEVK_LSHIFT)) {
-				playerX -= 1500.0f * dt;
-			}
+		// Apply movement
+		if (dashTimer > 0.0f) {
+			// During dash - locked into dash direction
+			playerX += dashDirX * DASH_SPEED * dt;
+			playerY += dashDirY * DASH_SPEED * dt;
 		}
-
-		if (AEInputCheckCurr(AEVK_S)) {
-			playerY -= 500.0f * dt;
-			if (AEInputCheckPrev(AEVK_LSHIFT)) {
-				playerY -= 1500.0f * dt;
+		else {
+			// Normal WASD movement
+			if (AEInputCheckCurr(AEVK_W)) {
+				playerY += WALK_SPEED * dt;
 			}
-		}
-
-		if (AEInputCheckCurr(AEVK_D)) {
-			playerX += 500.0f * dt;
-			if (AEInputCheckPrev(AEVK_LSHIFT)) {
-				playerX += 1500.0f * dt;
+			if (AEInputCheckCurr(AEVK_A)) {
+				playerX -= WALK_SPEED * dt;
+			}
+			if (AEInputCheckCurr(AEVK_S)) {
+				playerY -= WALK_SPEED * dt;
+			}
+			if (AEInputCheckCurr(AEVK_D)) {
+				playerX += WALK_SPEED * dt;
 			}
 		}
 	
