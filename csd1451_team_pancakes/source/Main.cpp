@@ -202,7 +202,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		//Player Circle
 		AEGfxSetColorToMultiply(0.0f, 0.0f, 1.0f, 1.0f);
-		DrawSprite(meshes.circle, player.x, player.y, 100.0f, 100.0f, 0.0f);
+		DrawSprite(meshes.circle, player.x, player.y, 50.0f, 50.0f, 0.0f);
 
 		// Draw bullets
 		RenderBullets(bulletHead, meshes.circle);
@@ -237,9 +237,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	// CLEANUP
 	// ---------------------------------------------------------------------------
 	FreeBullets(&bulletHead);
-
-
 	FreeCommonMeshes();
+
 	AESysExit();
 
 	return 0;
