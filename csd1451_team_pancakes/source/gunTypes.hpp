@@ -7,6 +7,7 @@ struct Pistol {
 	float bulletSpeed;
 	float bulletDamage;
 	float fireRate;
+	float reloadSpeed;
 
 	Pistol() {
 		currentAmmo = 12;
@@ -14,6 +15,8 @@ struct Pistol {
 		bulletSpeed = 800.f;
 		bulletDamage = 25.f;
 		fireRate = 1.0f;
+		fireRate = 0.36f;
+		reloadSpeed = 2.f;
 	}
 };
 
@@ -23,13 +26,15 @@ struct AssaultRifle {
 	float bulletSpeed;
 	float bulletDamage;
 	float fireRate;
+	float reloadSpeed;
 
 	AssaultRifle() {
 		currentAmmo = 30;
 		maxAmmo = 30;
 		bulletSpeed = 1100.f;
 		bulletDamage = 33.f;
-		fireRate = 0.5f;
+		fireRate = 0.1f;
+		reloadSpeed = 3.5f;
 	}
 };
 
@@ -39,6 +44,7 @@ struct WeaponStats {
 	float bulletSpeed;
 	float bulletDamage;
 	float fireRate;
+	float reloadSpeed;
 };
 
 #endif
