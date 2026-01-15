@@ -70,8 +70,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		0.0f,  // dashCooldownTimer
 		0.0f,  // dashDirX
 		0.0f,   // dashDirY
-		Pistol(), // pistol
-		AssaultRifle(), // rifle
+		Pistol(), // pistol constructor
+		AssaultRifle(), // rifle constructor
 		0,        // currentWeaponIndex (start with pistol)
 		0.0f      // shootCooldown
 	};

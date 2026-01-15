@@ -135,7 +135,7 @@ int GetBulletCount(Bullet* bulletHead) {
     }
     return count;
 }
-//using references because weapon ammo are stored in player struct
+//current ammo and max ammo are addressed bc they are being modified outside this function
 WeaponStats GetCurrentWeapon(Player& player) {
     if (player.currentWeaponIndex == 0) {
         // Pistol
@@ -159,6 +159,13 @@ WeaponStats GetCurrentWeapon(Player& player) {
         };
     }
     else {
-
+		// Default to pistol if index is invalid
+        return {
+            &player.pistol.currentAmmo,
+            &player.pistol.maxAmmo,
+            player.pistol.bulletSpeed,
+            player.pistol.bulletDamage,
+            player.pistol.fireRate
+        };
     }
 }
