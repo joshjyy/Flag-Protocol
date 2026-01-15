@@ -4,6 +4,23 @@
 #include "gunTypes.hpp"
 #include <cmath>
 
+Player InitPlayer(void) {
+    Player player = {
+        1000.0f,                  // health
+        0.0f,                     // x
+        0.0f,                     // y
+        0.0f,                     // dashTimer
+        0.0f,                     // dashCooldownTimer
+        0.0f,                     // dashDirX
+        0.0f,                     // dashDirY
+        Pistol(),                 // pistol constructor
+        AssaultRifle(),           // rifle constructor
+        0,                        // currentWeaponIndex (start with pistol)
+        0.0f                      // shootCooldown
+    };
+    return player;
+}
+
 
 // math (on god im not sure whats happening here)
 void NormalizeVector(float* x, float* y) {
@@ -167,5 +184,67 @@ WeaponStats GetCurrentWeapon(Player& player) {
             player.pistol.bulletDamage,
             player.pistol.fireRate
         };
+    }
+}
+
+
+//Movement
+// Define constants
+
+
+void UpdatePlayerTimers(Player* player, float dt) {
+    if (player->dashTimer > 0.0f) {
+        player->dashTimer -= dt;
+    }
+    if (player->dashCooldownTimer > 0.0f) {
+        player->dashCooldownTimer -= dt;
+    }
+    if (player->shootCooldown > 0.0f) {
+        player->shootCooldown -= dt;
+    }
+}
+
+void UpdatePlayerMovement(Player* player, float dt) {
+    // Check for dash input
+    if (AEInputCheckTriggered(AEVK_SPACE) && player->dashCooldownTimer <= 0.0f) {
+        // Get current movement direction from WASD
+        float inputX = 0.0f;
+        float inputY = 0.0f;
+
+        if (AEInputCheckCurr(AEVK_W)) inputY += 1.0f;
+        if (AEInputCheckCurr(AEVK_S)) inputY -= 1.0f;
+        if (AEInputCheckCurr(AEVK_D)) inputX += 1.0f;
+        if (AEInputCheckCurr(AEVK_A)) inputX -= 1.0f;
+
+        // Normalize direction
+        float length = sqrtf(inputX * inputX + inputY * inputY);
+        if (length > 0.0f) {
+            player->dashDirX = inputX / length;
+            player->dashDirY = inputY / length;
+            player->dashTimer = Player::dashDuration;
+            player->dashCooldownTimer = Player::dashCooldownMax;
+        }
+    }
+
+    // Apply movement
+    if (player->dashTimer > 0.0f) {
+        // During dash - locked into dash direction
+        player->x += player->dashDirX * Player::dashSpeed * dt;
+        player->y += player->dashDirY * Player::dashSpeed * dt;
+    }
+    else {
+        // Normal WASD movement
+        if (AEInputCheckCurr(AEVK_W)) {
+            player->y += Player::walkSpeed * dt;
+        }
+        if (AEInputCheckCurr(AEVK_A)) {
+            player->x -= Player::walkSpeed * dt;
+        }
+        if (AEInputCheckCurr(AEVK_S)) {
+            player->y -= Player::walkSpeed * dt;
+        }
+        if (AEInputCheckCurr(AEVK_D)) {
+            player->x += Player::walkSpeed * dt;
+        }
     }
 }

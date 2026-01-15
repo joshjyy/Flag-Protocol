@@ -40,11 +40,14 @@ struct Player {
 
 Bullet* CreateBullet(float x, float y, float targetX, float targetY, float speed, float damage);
 
+Player InitPlayer(void);
 void NormalizeVector(float* x, float* y);
 void UpdateBullets(Bullet** bulletHead, float dt);
 void RenderBullets(Bullet* bulletHead, void* mesh);
 void FreeBullets(Bullet** bulletHead);
 int GetBulletCount(Bullet* bulletHead);
 WeaponStats GetCurrentWeapon(Player& player);
+void UpdatePlayerMovement(Player* player, float dt); 
+void UpdatePlayerTimers(Player* player, float dt);
 
 #endif 

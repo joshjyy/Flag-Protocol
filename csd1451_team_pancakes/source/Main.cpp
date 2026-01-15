@@ -57,67 +57,19 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	// Bullet management
 	Bullet* bulletHead = nullptr;  // Head of bullet linked list
 
-	//float shootCooldown = 0.0f;
-	//const float SHOOT_DELAY = 0.05f;  
-	//const float BULLET_SPEED = 1000.0f;
-
-
-	Player player = {
-		1000.0f,  // health
-		0.0f,  // x
-		0.0f,  // y
-		0.0f,  // dashTimer
-		0.0f,  // dashCooldownTimer
-		0.0f,  // dashDirX
-		0.0f,   // dashDirY
-		Pistol(), // pistol constructor
-		AssaultRifle(), // rifle constructor
-		0,        // currentWeaponIndex (start with pistol)
-		0.0f      // shootCooldown
-	};
+	//Init Player
+	Player player = InitPlayer();
 
 
 
-	// Initialize engine (1600x900 window, 60 FPS)
+
+	// Initialize engine (1600x900 window, 60 FPS) 
 	AESysInit(hInstance, nCmdShow, 1600, 900, 1, 60, false, NULL);
 	AESysSetWindowTitle("Game Test!");
 	AESysReset();
 
-	// Create square mesh (a quad made of 2 triangles)
-	AEGfxMeshStart();
-
-	AEGfxTriAdd(
-		-0.5f, -0.5f, 0xFFFFFFFF, 0.0f, 1.0f,
-		0.5f, -0.5f, 0xFFFFFFFF, 1.0f, 1.0f,
-		-0.5f, 0.5f, 0xFFFFFFFF, 0.0f, 0.0f
-	);
-
-	AEGfxTriAdd(
-		0.5f, -0.5f, 0xFFFFFFFF, 1.0f, 1.0f,
-		0.5f, 0.5f, 0xFFFFFFFF, 1.0f, 0.0f,
-		-0.5f, 0.5f, 0xFFFFFFFF, 0.0f, 0.0f
-	);
-
-	AEGfxVertexList* squareMesh = AEGfxMeshEnd();
-
-	// Create circle mesh (a circle made of triangles, reckon around 30 segments)
-	AEGfxMeshStart();
-
-	int segments = 30; 
-	//Create circle using triangle fan method ( like a pizza ) 10 slices
-	for (int i = 0; i < segments; i++) {
-		float angle1 = (i * 360.0f / segments) * PI / 180.0f;
-		float angle2 = ((i + 1) * 360.0f / segments) * PI / 180.0f;
-
-		AEGfxTriAdd(
-			0.0f, 0.0f, 0xFFFFFFFF, 0.0f, 0.0f,           // Center point
-			cosf(angle1) * 0.5f, sinf(angle1) * 0.5f, 0xFFFFFFFF, 0.0f, 0.0f,  // Edge point 1
-			cosf(angle2) * 0.5f, sinf(angle2) * 0.5f, 0xFFFFFFFF, 0.0f, 0.0f   // Edge point 2
-		);
-	}
-
-	AEGfxVertexList* circleMesh = AEGfxMeshEnd();
-
+	//dont move this up
+	InitCommonMeshes();
 
 
 
@@ -141,50 +93,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		if (AEInputCheckTriggered(AEVK_ESCAPE) || 0 == AESysDoesWindowExist())
 			gGameRunning = 0;
 		
-		/// Update timers
-		if (player.dashTimer > 0.0f) player.dashTimer -= dt;
-		if (player.dashCooldownTimer > 0.0f) player.dashCooldownTimer -= dt;
-
-		if (AEInputCheckTriggered(AEVK_SPACE) && player.dashCooldownTimer <= 0.0f) {
-			// Get current movement direction from WASD
-			float inputX = 0.0f;
-			float inputY = 0.0f;
-			if (AEInputCheckCurr(AEVK_W)) inputY += 1.0f;
-			if (AEInputCheckCurr(AEVK_S)) inputY -= 1.0f;
-			if (AEInputCheckCurr(AEVK_D)) inputX += 1.0f;
-			if (AEInputCheckCurr(AEVK_A)) inputX -= 1.0f;
-
-			// Normalize direction
-			float length = sqrtf(inputX * inputX + inputY * inputY);
-			if (length > 0.0f) {
-				player.dashDirX = inputX / length;
-				player.dashDirY = inputY / length;
-				player.dashTimer = Player::dashDuration;
-				player.dashCooldownTimer = Player::dashCooldownMax;
-			}
-		}
-
-		// Apply movement
-		if (player.dashTimer > 0.0f) {
-			// During dash - locked into dash direction
-			player.x += player.dashDirX * Player::dashSpeed * dt;
-			player.y += player.dashDirY * Player::dashSpeed * dt;
-		}
-		else {
-			// Normal WASD movement
-			if (AEInputCheckCurr(AEVK_W)) {
-				player.y += Player::walkSpeed * dt;
-			}
-			if (AEInputCheckCurr(AEVK_A)) {
-				player.x -= Player::walkSpeed * dt;
-			}
-			if (AEInputCheckCurr(AEVK_S)) {
-				player.y -= Player::walkSpeed * dt;
-			}
-			if (AEInputCheckCurr(AEVK_D)) {
-				player.x += Player::walkSpeed * dt;
-			}
-		}
+		// Update Timers CD
+		UpdatePlayerTimers(&player, dt);
+		UpdatePlayerMovement(&player, dt);
 
 		//Weapon Switching ( 1 = Pistol, 2 = Assault Rifle)
 		// JUST FOR TESTING PURPOSES, WILL IMPLEMENT A BETTER SYSTEM LATER
@@ -230,6 +141,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				// Decrease ammo
 				(*weapon.currentAmmo)--;
 
+				// debug stuff
+				printf("Ammo: %d/%d\n", *weapon.currentAmmo, *weapon.maxAmmo);
+
 				// Reset cooldown with current weapon's fire rate
 				player.shootCooldown = weapon.fireRate;
 			}
@@ -239,6 +153,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		if (AEInputCheckTriggered(AEVK_R)) {
 			WeaponStats weapon = GetCurrentWeapon(player);
 			*weapon.currentAmmo = *weapon.maxAmmo;
+			printf("Reloaded! \n");
+
 		}
 
 		// ---------------------------------------------------------------------------
@@ -274,19 +190,19 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		//Player Circle
 		AEGfxSetColorToMultiply(0.0f, 0.0f, 1.0f, 1.0f);
-		DrawSprite(circleMesh, player.x, player.y, 100.0f, 100.0f, 0.0f);
+		DrawSprite(meshes.circle, player.x, player.y, 100.0f, 100.0f, 0.0f);
 
 		// Draw bullets
-		RenderBullets(bulletHead, circleMesh);
+		RenderBullets(bulletHead, meshes.circle);
 
 		
 		//Draw Background Health Bar
 		AEGfxSetColorToMultiply(0.5f, 0.0f, 0.0f, 1.0f);
-		DrawSprite(squareMesh, 0.0f, 350.0f, 1000.0f, 50.0f, 0.0f);
+		DrawSprite(meshes.square, 0.0f, 350.0f, 1000.0f, 50.0f, 0.0f);
 		//Draw Current Health
 		AEGfxSetColorToMultiply(1.0f, 0.0f, 0.0f, 1.0f);
 		float healthbarOffset = (1000.0f - player.health) / 2.0f;
-		DrawSprite(squareMesh, 0.0f - healthbarOffset, 350.0f, player.health, 50.0f, 0.0f);
+		DrawSprite(meshes.square, 0.0f - healthbarOffset, 350.0f, player.health, 50.0f, 0.0f);
 
 
 
@@ -311,8 +227,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	FreeBullets(&bulletHead);
 
 
-	AEGfxMeshFree(squareMesh);
-	AEGfxMeshFree(circleMesh);
+	FreeCommonMeshes();
 	AESysExit();
 
 	return 0;

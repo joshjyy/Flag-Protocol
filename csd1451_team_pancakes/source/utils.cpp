@@ -60,3 +60,46 @@ void DrawSprite(AEGfxVertexList* mesh, float x, float y, float scaleX, float sca
     AEGfxSetTransform(transform.m);
     AEGfxMeshDraw(mesh, AE_GFX_MDM_TRIANGLES);
 }
+
+//Mesh -----------
+CommonMeshes meshes = { NULL };
+void InitCommonMeshes(void) {
+    // Create square mesh
+    AEGfxMeshStart();
+    AEGfxTriAdd(
+        -0.5f, -0.5f, 0xFFFFFFFF, 0.0f, 1.0f,
+        0.5f, -0.5f, 0xFFFFFFFF, 1.0f, 1.0f,
+        -0.5f, 0.5f, 0xFFFFFFFF, 0.0f, 0.0f
+    );
+    AEGfxTriAdd(
+        0.5f, -0.5f, 0xFFFFFFFF, 1.0f, 1.0f,
+        0.5f, 0.5f, 0xFFFFFFFF, 1.0f, 0.0f,
+        -0.5f, 0.5f, 0xFFFFFFFF, 0.0f, 0.0f
+    );
+    meshes.square = AEGfxMeshEnd();
+
+    // Create circle mesh
+    AEGfxMeshStart();
+    int segments = 30;
+    for (int i = 0; i < segments; i++) {
+        float angle1 = (i * 360.0f / segments) * PI / 180.0f;
+        float angle2 = ((i + 1) * 360.0f / segments) * PI / 180.0f;
+        AEGfxTriAdd(
+            0.0f, 0.0f, 0xFFFFFFFF, 0.0f, 0.0f,
+            cosf(angle1) * 0.5f, sinf(angle1) * 0.5f, 0xFFFFFFFF, 0.0f, 0.0f,
+            cosf(angle2) * 0.5f, sinf(angle2) * 0.5f, 0xFFFFFFFF, 0.0f, 0.0f
+        );
+    }
+    meshes.circle = AEGfxMeshEnd();
+}
+
+void FreeCommonMeshes(void) {
+    if (meshes.square) {
+        AEGfxMeshFree(meshes.square);
+        meshes.square = NULL;
+    }
+    if (meshes.circle) {
+        AEGfxMeshFree(meshes.circle);
+        meshes.circle = NULL;
+    }
+}
