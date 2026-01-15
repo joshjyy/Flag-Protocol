@@ -1,6 +1,7 @@
 ﻿// ---------------------------------------------------------------------------
 // includes
 #include <crtdbg.h>
+#include <cstdio>
 #include "AEEngine.h"
 #include "utils.hpp"  
 #include "player.hpp"
@@ -161,8 +162,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			//Once the reload is completed, change current ammo count to max ammo count
 			if (reloadCD <= 0.f) {
 				*weapon.currentAmmo = *weapon.maxAmmo;
+				printf("Reloaded!\n");
 			}
-
 		}
 
 		if (AEInputCheckTriggered(AEVK_R) && reloadCD <= 0.f && *weapon.currentAmmo < *weapon.maxAmmo) {
