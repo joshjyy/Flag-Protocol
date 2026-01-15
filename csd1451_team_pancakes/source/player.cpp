@@ -6,7 +6,7 @@
 
 Player InitPlayer(void) {
     Player player = {
-        1000.0f,                  // health
+        500.0f,                  // health
         0.0f,                     // x
         0.0f,                     // y
         0.0f,                     // dashTimer
@@ -70,7 +70,7 @@ void UpdateBullets(Bullet** bulletHead, float dt) {
         current->x += current->velocityX * dt;
         current->y += current->velocityY * dt;
 
-        // Check if bullet is off screen 
+		// Check if bullet is off screen UPDATE THIS WHEN MAP IS BIGGER
         if (current->y > 500.0f || current->y < -500.0f ||
             current->x > 900.0f || current->x < -900.0f) {
 

@@ -13,7 +13,7 @@ struct Pistol {
 		maxAmmo = 12;
 		bulletSpeed = 800.f;
 		bulletDamage = 25.f;
-		fireRate = 0.36f;
+		fireRate = 1.0f;
 	}
 };
 
@@ -29,7 +29,7 @@ struct AssaultRifle {
 		maxAmmo = 30;
 		bulletSpeed = 1100.f;
 		bulletDamage = 33.f;
-		fireRate = 0.1f;
+		fireRate = 0.5f;
 	}
 };
 

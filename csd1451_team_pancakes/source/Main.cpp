@@ -196,13 +196,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		RenderBullets(bulletHead, meshes.circle);
 
 		
-		//Draw Background Health Bar
+		// Draw Background Health Bar (top left)
 		AEGfxSetColorToMultiply(0.5f, 0.0f, 0.0f, 1.0f);
-		DrawSprite(meshes.square, 0.0f, 350.0f, 1000.0f, 50.0f, 0.0f);
-		//Draw Current Health
+		DrawSprite(meshes.square, -250.0f, 400.0f, 500.0f, 50.0f, 0.0f);
+
+		// Draw Current Health (top left)
 		AEGfxSetColorToMultiply(1.0f, 0.0f, 0.0f, 1.0f);
 		float healthbarOffset = (1000.0f - player.health) / 2.0f;
-		DrawSprite(meshes.square, 0.0f - healthbarOffset, 350.0f, player.health, 50.0f, 0.0f);
+		DrawSprite(meshes.square, -250.0f - healthbarOffset, 400.0f, player.health, 50.0f, 0.0f);
 
 
 

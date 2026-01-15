@@ -26,7 +26,6 @@ int AreCirclesIntersecting(float circle_center1_x, float circle_center1_y, float
 
 }
 
-//Uncomment for box collision
 int AreBoxesIntersecting(float box1_center_x, float box1_center_y, float box1_width, float box1_height,
     float box2_center_x, float box2_center_y, float box2_width, float box2_height) {
     float halfW1 = box1_width / 2.0f;
