@@ -189,8 +189,12 @@ WeaponStats GetCurrentWeapon(Player& player) {
 
 
 //Movement
-// Define constants
 
+// Constants for player behavior
+const float dashSpeed = 2000.0f;
+const float dashDuration = 0.2f;
+const float dashCooldownMax = 0.5f;
+const float walkSpeed = 500.0f;
 
 void UpdatePlayerTimers(Player* player, float dt) {
     if (player->dashTimer > 0.0f) {
@@ -207,7 +211,6 @@ void UpdatePlayerTimers(Player* player, float dt) {
 void UpdatePlayerMovement(Player* player, float dt) {
     // Check for dash input
     if (AEInputCheckTriggered(AEVK_SPACE) && player->dashCooldownTimer <= 0.0f) {
-        // Get current movement direction from WASD
         float inputX = 0.0f;
         float inputY = 0.0f;
 
@@ -216,35 +219,33 @@ void UpdatePlayerMovement(Player* player, float dt) {
         if (AEInputCheckCurr(AEVK_D)) inputX += 1.0f;
         if (AEInputCheckCurr(AEVK_A)) inputX -= 1.0f;
 
-        // Normalize direction
         float length = sqrtf(inputX * inputX + inputY * inputY);
         if (length > 0.0f) {
             player->dashDirX = inputX / length;
             player->dashDirY = inputY / length;
-            player->dashTimer = Player::dashDuration;
-            player->dashCooldownTimer = Player::dashCooldownMax;
+            player->dashTimer = dashDuration;
+            player->dashCooldownTimer = dashCooldownMax;
         }
     }
 
     // Apply movement
     if (player->dashTimer > 0.0f) {
         // During dash - locked into dash direction
-        player->x += player->dashDirX * Player::dashSpeed * dt;
-        player->y += player->dashDirY * Player::dashSpeed * dt;
+        player->x += player->dashDirX * dashSpeed * dt;  
+        player->y += player->dashDirY * dashSpeed * dt;
     }
     else {
-        // Normal WASD movement
         if (AEInputCheckCurr(AEVK_W)) {
-            player->y += Player::walkSpeed * dt;
+            player->y += walkSpeed * dt;   
         }
         if (AEInputCheckCurr(AEVK_A)) {
-            player->x -= Player::walkSpeed * dt;
+            player->x -= walkSpeed * dt;  
         }
         if (AEInputCheckCurr(AEVK_S)) {
-            player->y -= Player::walkSpeed * dt;
+            player->y -= walkSpeed * dt;   
         }
         if (AEInputCheckCurr(AEVK_D)) {
-            player->x += Player::walkSpeed * dt;
+            player->x += walkSpeed * dt;   
         }
     }
 }

@@ -31,11 +31,7 @@ struct Player {
     int currentWeaponIndex;  // 0 = pistol, 1 = rifle
     float shootCooldown;
 
-    // Constants for player behavior
-    static constexpr float dashSpeed = 3000.0f;
-    static constexpr float dashDuration = 0.2f;
-    static constexpr float dashCooldownMax = 0.05f;
-    static constexpr float walkSpeed = 500.0f;
+
 };
 
 Bullet* CreateBullet(float x, float y, float targetX, float targetY, float speed, float damage);
