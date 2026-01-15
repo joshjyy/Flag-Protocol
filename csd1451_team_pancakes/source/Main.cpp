@@ -5,6 +5,7 @@
 #include "utils.hpp"  
 #include "player.hpp"
 #include <cstdint>
+#include "gunTypes.hpp"
 
 //Legend if needed later
 /*
@@ -61,9 +62,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	// Bullet management
 	Bullet* bulletHead = nullptr;  // Head of bullet linked list
 
+	//float shootCooldown = 0.0f;
+	//const float SHOOT_DELAY = 0.05f;  
+	//const float BULLET_SPEED = 1000.0f;
+
+	//Initialise player starting pistol
+	Pistol playerPistol;
 	float shootCooldown = 0.0f;
-	const float SHOOT_DELAY = 0.05f;  
-	const float BULLET_SPEED = 1000.0f;
 
 
 	// Initialize engine (1600x900 window, 60 FPS)
@@ -166,8 +171,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		if (shootCooldown > 0.0f) {
 			shootCooldown -= dt;
 		}
-		// Shooting Check
-		if (AEInputCheckCurr(AEVK_LBUTTON) && shootCooldown <= 0.0f) {
+		// Shooting Check + Ammo Check (Use a playerStruct later so the ammo check is not hardcoded to the starter pistol)
+		if (AEInputCheckCurr(AEVK_LBUTTON) && shootCooldown <= 0.0f && playerPistol.currentAmmo > 0) {
 			// Get mouse position in world coordinates 
 			s32 mouseX, mouseY;
 			AEInputGetCursorPosition(&mouseX, &mouseY);
@@ -184,14 +189,18 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			float worldMouseY = 450.0f - (float)mouseY;  
 
 			// Create bullet at player aimed at mouse x and y
-			Bullet* newBullet = CreateBullet(playerX, playerY, worldMouseX, worldMouseY, BULLET_SPEED);
+			Bullet* newBullet = CreateBullet(playerX, playerY, worldMouseX, worldMouseY,
+											 playerPistol.bulletSpeed, playerPistol.bulletDamage);
 
 			// Add to front of linked list
 			newBullet->next = bulletHead;
 			bulletHead = newBullet;
 
+			//Ammo of the gun decreases as the player shoots
+			playerPistol.currentAmmo--;
+
 			// Reset cooldown
-			shootCooldown = SHOOT_DELAY;
+			shootCooldown = playerPistol.fireRate;
 		}
 
 		// ---------------------------------------------------------------------------

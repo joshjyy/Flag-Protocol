@@ -6,11 +6,12 @@ struct Bullet {
     float y;
     float velocityX;
     float velocityY;
+    float damage;
     bool active; 
     Bullet* next;  // Pointer to next bullet in linked list
 };
 
-Bullet* CreateBullet(float x, float y, float targetX, float targetY, float speed);
+Bullet* CreateBullet(float x, float y, float targetX, float targetY, float speed, float damage);
 
 void NormalizeVector(float* x, float* y);
 void UpdateBullets(Bullet** bulletHead, float dt);

@@ -13,11 +13,11 @@ void NormalizeVector(float* x, float* y) {
 }
 //Create a new bullet and allocate memory
 //Parameters: starting position (x, y), target position (targetX, targetY), speed
-Bullet* CreateBullet(float x, float y, float targetX, float targetY, float speed) {
+Bullet* CreateBullet(float x, float y, float targetX, float targetY, float speed, float damage) {
     Bullet* newBullet = new Bullet;
     newBullet->x = x;
     newBullet->y = y;
-
+    newBullet->damage = damage;
 
     // Calculate direction vector
     float dirX = targetX - x;

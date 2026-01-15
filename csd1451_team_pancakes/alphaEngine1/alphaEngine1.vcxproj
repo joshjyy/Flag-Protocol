@@ -11,11 +11,14 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\source\enemies.cpp" />
     <ClCompile Include="..\source\Main.cpp" />
     <ClCompile Include="..\source\player.cpp" />
     <ClCompile Include="..\source\utils.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\source\enemies.hpp" />
+    <ClInclude Include="..\source\gunTypes.hpp" />
     <ClInclude Include="..\source\player.hpp" />
     <ClInclude Include="..\source\utils.hpp" />
   </ItemGroup>
