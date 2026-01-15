@@ -203,6 +203,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			shootCooldown = playerPistol.fireRate;
 		}
 
+		// Reload
+		if (AEInputCheckTriggered(AEVK_R)) {
+			playerPistol.currentAmmo = playerPistol.maxAmmo;
+		}
+
 		// ---------------------------------------------------------------------------
 		// UPDATE BULLETS
 		// ---------------------------------------------------------------------------
