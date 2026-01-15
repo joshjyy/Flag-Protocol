@@ -144,7 +144,9 @@ WeaponStats GetCurrentWeapon(Player& player) {
             &player.pistol.maxAmmo,
             player.pistol.bulletSpeed,
             player.pistol.bulletDamage,
-            player.pistol.fireRate
+            player.pistol.fireRate,
+            player.pistol.reloadSpeed
+
         };
     }
 
@@ -155,7 +157,8 @@ WeaponStats GetCurrentWeapon(Player& player) {
           &player.rifle.maxAmmo,
           player.rifle.bulletSpeed,
           player.rifle.bulletDamage,
-          player.rifle.fireRate
+          player.rifle.fireRate,
+          player.rifle.reloadSpeed
         };
     }
     else {
@@ -165,7 +168,8 @@ WeaponStats GetCurrentWeapon(Player& player) {
             &player.pistol.maxAmmo,
             player.pistol.bulletSpeed,
             player.pistol.bulletDamage,
-            player.pistol.fireRate
+            player.pistol.fireRate,
+            player.pistol.reloadSpeed
         };
     }
 }
