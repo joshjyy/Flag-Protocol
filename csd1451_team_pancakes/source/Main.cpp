@@ -53,11 +53,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	// Game variables
 	int gGameRunning = 1;
-	float playerX = 0.0f;
-	float playerY = 0.0f;
-
-	float healthbar = 1000.0f;
-
 
 	// Bullet management
 	Bullet* bulletHead = nullptr;  // Head of bullet linked list
@@ -66,20 +61,20 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	//const float SHOOT_DELAY = 0.05f;  
 	//const float BULLET_SPEED = 1000.0f;
 
-	//Initialise player starting pistol
-	Pistol playerPistol;
-	float shootCooldown = 0.0f;
 
-	// At the top of your update function or as member variables
-	static float dashTimer = 0.0f;
-	static float dashCooldown = 0.0f;
-	static float dashDirX = 0.0f;
-	static float dashDirY = 0.0f;
-
-	const float DASH_SPEED = 3000.0f;
-	const float DASH_DURATION = 0.2f;  // Short and snappy
-	const float DASH_COOLDOWN = 0.05f;   // 1 second cooldown
-	const float WALK_SPEED = 500.0f;
+	Player player = {
+		1000.0f,  // health
+		0.0f,  // x
+		0.0f,  // y
+		0.0f,  // dashTimer
+		0.0f,  // dashCooldownTimer
+		0.0f,  // dashDirX
+		0.0f,   // dashDirY
+		Pistol(), // pistol
+		AssaultRifle(), // rifle
+		0,        // currentWeaponIndex (start with pistol)
+		0.0f      // shootCooldown
+	};
 
 
 
@@ -146,16 +141,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		if (AEInputCheckTriggered(AEVK_ESCAPE) || 0 == AESysDoesWindowExist())
 			gGameRunning = 0;
 		
-		//Update timers
-		if (dashTimer > 0.0f) dashTimer -= dt;
-		if (dashCooldown > 0.0f) dashCooldown -= dt;
+		/// Update timers
+		if (player.dashTimer > 0.0f) player.dashTimer -= dt;
+		if (player.dashCooldownTimer > 0.0f) player.dashCooldownTimer -= dt;
 
-		
-		if (AEInputCheckTriggered(AEVK_SPACE) && dashCooldown <= 0.0f) {
+		if (AEInputCheckTriggered(AEVK_SPACE) && player.dashCooldownTimer <= 0.0f) {
 			// Get current movement direction from WASD
 			float inputX = 0.0f;
 			float inputY = 0.0f;
-
 			if (AEInputCheckCurr(AEVK_W)) inputY += 1.0f;
 			if (AEInputCheckCurr(AEVK_S)) inputY -= 1.0f;
 			if (AEInputCheckCurr(AEVK_D)) inputX += 1.0f;
@@ -164,79 +157,88 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			// Normalize direction
 			float length = sqrtf(inputX * inputX + inputY * inputY);
 			if (length > 0.0f) {
-				dashDirX = inputX / length;
-				dashDirY = inputY / length;
-
-				dashTimer = DASH_DURATION;
-				dashCooldown = DASH_COOLDOWN;
+				player.dashDirX = inputX / length;
+				player.dashDirY = inputY / length;
+				player.dashTimer = Player::dashDuration;
+				player.dashCooldownTimer = Player::dashCooldownMax;
 			}
-			// If no direction held, dash in the direction you're facing
-			// (you'd need to track facing direction for this)
 		}
 
 		// Apply movement
-		if (dashTimer > 0.0f) {
+		if (player.dashTimer > 0.0f) {
 			// During dash - locked into dash direction
-			playerX += dashDirX * DASH_SPEED * dt;
-			playerY += dashDirY * DASH_SPEED * dt;
+			player.x += player.dashDirX * Player::dashSpeed * dt;
+			player.y += player.dashDirY * Player::dashSpeed * dt;
 		}
 		else {
 			// Normal WASD movement
 			if (AEInputCheckCurr(AEVK_W)) {
-				playerY += WALK_SPEED * dt;
+				player.y += Player::walkSpeed * dt;
 			}
 			if (AEInputCheckCurr(AEVK_A)) {
-				playerX -= WALK_SPEED * dt;
+				player.x -= Player::walkSpeed * dt;
 			}
 			if (AEInputCheckCurr(AEVK_S)) {
-				playerY -= WALK_SPEED * dt;
+				player.y -= Player::walkSpeed * dt;
 			}
 			if (AEInputCheckCurr(AEVK_D)) {
-				playerX += WALK_SPEED * dt;
+				player.x += Player::walkSpeed * dt;
 			}
 		}
+
+		//Weapon Switching ( 1 = Pistol, 2 = Assault Rifle)
+		// JUST FOR TESTING PURPOSES, WILL IMPLEMENT A BETTER SYSTEM LATER
 	
-		
+		if (AEInputCheckTriggered(AEVK_1)) {
+			player.currentWeaponIndex = 0;  // Switch to Pistol
+			printf("Pistol Switched! %d\n", player.currentWeaponIndex);
 
-		// Bullet shooting cooldown
-		if (shootCooldown > 0.0f) {
-			shootCooldown -= dt;
 		}
-		// Shooting Check + Ammo Check (Use a playerStruct later so the ammo check is not hardcoded to the starter pistol)
-		if (AEInputCheckCurr(AEVK_LBUTTON) && shootCooldown <= 0.0f && playerPistol.currentAmmo > 0) {
-			// Get mouse position in world coordinates 
-			s32 mouseX, mouseY;
-			AEInputGetCursorPosition(&mouseX, &mouseY);
+		if (AEInputCheckTriggered(AEVK_2)) {
+			player.currentWeaponIndex = 1;  // Switch to Assault Rifle
+			printf("Rifle Switched! %d\n", player.currentWeaponIndex);
+		}
 
-			/*  
-				Screen(0, 0)      →  World(-800, +450)[top - left corner]
-				Screen(800, 450)  →  World(0, 0)[center of screen]
-				Screen(1600, 900) →  World(+800, -450)[bottom - right corner]
-				Screen(1600, 0)   →  World(+800, +450)[top - right corner]
-			*/
 
-			// Convert screen coordinates to world coordinates
-			float worldMouseX = (float)mouseX - 800.0f;  
-			float worldMouseY = 450.0f - (float)mouseY;  
 
-			// Create bullet at player aimed at mouse x and y
-			Bullet* newBullet = CreateBullet(playerX, playerY, worldMouseX, worldMouseY,
-											 playerPistol.bulletSpeed, playerPistol.bulletDamage);
+		// Update shoot cooldown
+		if (player.shootCooldown > 0.0f) {
+			player.shootCooldown -= dt;
+		}
 
-			// Add to front of linked list
-			newBullet->next = bulletHead;
-			bulletHead = newBullet;
+		// Shooting
+		if (AEInputCheckCurr(AEVK_LBUTTON) && player.shootCooldown <= 0.0f ) {
+			WeaponStats weapon = GetCurrentWeapon(player);
 
-			//Ammo of the gun decreases as the player shoots
-			playerPistol.currentAmmo--;
+			if (*weapon.currentAmmo > 0) {
 
-			// Reset cooldown
-			shootCooldown = playerPistol.fireRate;
+				// Get mouse position in world coordinates
+				s32 mouseX, mouseY;
+				AEInputGetCursorPosition(&mouseX, &mouseY);
+
+				float worldMouseX = (float)mouseX - 800.0f;
+				float worldMouseY = 450.0f - (float)mouseY;
+
+				// Create bullet with current weapon stats
+				Bullet* newBullet = CreateBullet(player.x, player.y, worldMouseX, worldMouseY,
+					weapon.bulletSpeed, weapon.bulletDamage);
+
+				// Add to linked list
+				newBullet->next = bulletHead;
+				bulletHead = newBullet;
+
+				// Decrease ammo
+				(*weapon.currentAmmo)--;
+
+				// Reset cooldown with current weapon's fire rate
+				player.shootCooldown = weapon.fireRate;
+			}
 		}
 
 		// Reload
 		if (AEInputCheckTriggered(AEVK_R)) {
-			playerPistol.currentAmmo = playerPistol.maxAmmo;
+			WeaponStats weapon = GetCurrentWeapon(player);
+			*weapon.currentAmmo = *weapon.maxAmmo;
 		}
 
 		// ---------------------------------------------------------------------------
@@ -272,7 +274,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		//Player Circle
 		AEGfxSetColorToMultiply(0.0f, 0.0f, 1.0f, 1.0f);
-		DrawSprite(circleMesh, playerX, playerY, 100.0f, 100.0f, 0.0f);
+		DrawSprite(circleMesh, player.x, player.y, 100.0f, 100.0f, 0.0f);
 
 		// Draw bullets
 		RenderBullets(bulletHead, circleMesh);
@@ -283,8 +285,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		DrawSprite(squareMesh, 0.0f, 350.0f, 1000.0f, 50.0f, 0.0f);
 		//Draw Current Health
 		AEGfxSetColorToMultiply(1.0f, 0.0f, 0.0f, 1.0f);
-		float healthbarOffset = (1000.0f - healthbar) / 2.0f;
-		DrawSprite(squareMesh, 0.0f - healthbarOffset, 350.0f, healthbar, 50.0f, 0.0f);
+		float healthbarOffset = (1000.0f - player.health) / 2.0f;
+		DrawSprite(squareMesh, 0.0f - healthbarOffset, 350.0f, player.health, 50.0f, 0.0f);
 
 
 
@@ -296,8 +298,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		// ---------------------------------------------------------------------------
 		//DEBUGGING
 		// ---------------------------------------------------------------------------
-		int bulletCount = GetBulletCount(bulletHead);
-		printf("Active bullets: %d\n", bulletCount);
+	/*	int bulletCount = GetBulletCount(bulletHead);
+		printf("Active bullets: %d\n", bulletCount);*/
 	 
 		// Frame end
 		AESysFrameEnd();

@@ -1,7 +1,9 @@
 #include "player.hpp"
 #include "AEEngine.h"
 #include "utils.hpp"
+#include "gunTypes.hpp"
 #include <cmath>
+
 
 // math (on god im not sure whats happening here)
 void NormalizeVector(float* x, float* y) {
@@ -133,4 +135,30 @@ int GetBulletCount(Bullet* bulletHead) {
     }
     return count;
 }
+//using references because weapon ammo are stored in player struct
+WeaponStats GetCurrentWeapon(Player& player) {
+    if (player.currentWeaponIndex == 0) {
+        // Pistol
+        return {
+            &player.pistol.currentAmmo,
+            &player.pistol.maxAmmo,
+            player.pistol.bulletSpeed,
+            player.pistol.bulletDamage,
+            player.pistol.fireRate
+        };
+    }
 
+    else if (player.currentWeaponIndex == 1) {
+		// Assault Rifle
+        return {
+          &player.rifle.currentAmmo,
+          &player.rifle.maxAmmo,
+          player.rifle.bulletSpeed,
+          player.rifle.bulletDamage,
+          player.rifle.fireRate
+        };
+    }
+    else {
+
+    }
+}
