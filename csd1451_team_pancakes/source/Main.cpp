@@ -65,8 +65,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 
 	//Reloading variables
-	//To add CD to reload so Spamming R does not feel like a cheat
-	float reloadCD = 0.f;
+	//To add CD to reload so reloading takes time
+	float reloadTime = 0.f;
 
 	// Initialize engine (1600x900 window, 60 FPS)
 	AESysInit(hInstance, nCmdShow, 1600, 900, 1, 60, false, NULL);
@@ -157,17 +157,17 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		}
 
 		// // Basically counts the CD down to 0 >> the time taken to reload
-		if (reloadCD > 0.f) {
-			reloadCD -= dt;
+		if (reloadTime > 0.f) {
+			reloadTime -= dt;
 			//Once the reload is completed, change current ammo count to max ammo count
-			if (reloadCD <= 0.f) {
+			if (reloadTime <= 0.f) {
 				*weapon.currentAmmo = *weapon.maxAmmo;
 				printf("Reloaded!\n");
 			}
 		}
 
-		if (AEInputCheckTriggered(AEVK_R) && reloadCD <= 0.f && *weapon.currentAmmo < *weapon.maxAmmo) {
-			reloadCD = weapon.reloadSpeed;
+		if (AEInputCheckTriggered(AEVK_R) && reloadTime <= 0.f && *weapon.currentAmmo < *weapon.maxAmmo) {
+			reloadTime = weapon.reloadSpeed;
 		}
 
 		// ---------------------------------------------------------------------------
