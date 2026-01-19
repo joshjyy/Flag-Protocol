@@ -48,16 +48,23 @@ int load_game_level(const char* filename, std::array<std::array<int, MAP_WIDTH>,
  * Coordinates are calculated to center the map in a 1600x900 window.
  * Empty tiles (0) are skipped and not rendered.
  */
+ /**
+  * Renders the game map by drawing colored squares for each tile.
+  * Different tile values are rendered with different colors:
+  * 0 = empty (not drawn)
+  * 1 = red (walls/obstacles)
+  * 2 = blue (water)
+  * 3 = green (grass)
+  * 4 = yellow (sand)
+  * 5 = purple (special tiles)
+  */
 void Load_map(std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& arr, AEGfxVertexList* mesh) {
 	// Set rendering mode to use vertex colors
 	AEGfxSetRenderMode(AE_GFX_RM_COLOR);
-
 	// Set transparency to fully opaque (1.0 = no transparency)
 	AEGfxSetTransparency(1.0f);
-
 	// Declare transformation matrices for scaling, translation, and final transform
 	AEMtx33 scale, translate, transform;
-
 	// Define the size of each tile in pixels
 	const int TILE_SIZE = 50;
 
@@ -65,53 +72,49 @@ void Load_map(std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& arr, AEGfxVert
 	for (int i = 0; i < MAP_HEIGHT; i++) {
 		// Loop through each column of the map
 		for (int j = 0; j < MAP_WIDTH; j++) {
-			// Only draw solid tiles (value of 1)
-			if (arr[i][j] == 1) {
+			// Skip empty tiles (value of 0)
+			if (arr[i][j] != 0) {
+				// Set color based on tile type using if-else statements
+				if (arr[i][j] == 1) {
+					// Red - walls/obstacles
+					AEGfxSetColorToMultiply(1.0f, 0.0f, 0.0f, 1.0f);
+				}
+				else if (arr[i][j] == 2) {
+					// Blue - water
+					AEGfxSetColorToMultiply(0.0f, 0.0f, 1.0f, 1.0f);
+				}
+				else if (arr[i][j] == 3) {
+					// Green - grass
+					AEGfxSetColorToMultiply(0.0f, 1.0f, 0.0f, 1.0f);
+				}
+				else if (arr[i][j] == 4) {
+					// Yellow - sand
+					AEGfxSetColorToMultiply(1.0f, 1.0f, 0.0f, 1.0f);
+				}
+				else if (arr[i][j] == 5) {
+					// Purple - special tiles
+					AEGfxSetColorToMultiply(0.5f, 0.0f, 0.5f, 1.0f);
+				}
+				else {
+					// White - unknown tile type
+					AEGfxSetColorToMultiply(1.0f, 1.0f, 1.0f, 1.0f);
+				}
+
 				// Calculate X position: column * tile size - half window width + half tile
 				float x = (j * TILE_SIZE) - 800.0f + 25.0f;
-
 				// Calculate Y position: half window height - row * tile size - half tile
 				float y = 450.0f - (i * TILE_SIZE) - 25.0f;
-
 				// Create scale matrix to resize mesh from 1x1 to TILE_SIZE x TILE_SIZE
 				AEMtx33Scale(&scale, (float)TILE_SIZE, (float)TILE_SIZE);
-
 				// Create translation matrix to move tile to calculated position
 				AEMtx33Trans(&translate, x, y);
-
 				// Combine transformations: translate * scale (scale first, then move)
 				AEMtx33Concat(&transform, &translate, &scale);
-
 				// Apply the transformation matrix to the rendering pipeline
 				AEGfxSetTransform(transform.m);
-
 				// Draw the mesh as triangles at the transformed position
 				AEGfxMeshDraw(mesh, AE_GFX_MDM_TRIANGLES);
 			}
 		}
 	}
-}/**
- * Creates and returns a square mesh for rendering map tiles.
- * Creates a 1x1 unit square centered at origin using two triangles.
- * Color parameter is in 0xAARRGGBB format (default: red 0xFFFF0000).
- * Returns pointer to the created mesh.
- */
-AEGfxVertexList* CreateMapMesh(unsigned int color) {
-	// Begin mesh creation
-	AEGfxMeshStart();
-
-	// Triangle 1 (bottom-left half of square)
-	AEGfxTriAdd(
-		-0.5f, -0.5f, color, 0.0f, 0.0f,
-		0.5f, -0.5f, color, 0.0f, 0.0f,
-		-0.5f, 0.5f, color, 0.0f, 0.0f);
-
-	// Triangle 2 (top-right half of square)
-	AEGfxTriAdd(
-		0.5f, -0.5f, color, 0.0f, 0.0f,
-		0.5f, 0.5f, color, 0.0f, 0.0f,
-		-0.5f, 0.5f, color, 0.0f, 0.0f);
-
-	// Finalize mesh creation and return pointer
-	return AEGfxMeshEnd();
 }
