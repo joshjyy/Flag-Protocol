@@ -15,13 +15,14 @@
     <ClCompile Include="..\source\Main.cpp" />
     <ClCompile Include="..\source\player.cpp" />
     <ClCompile Include="..\source\utils.cpp" />
+    <ClCompile Include="..\source\weapon.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\enemies.hpp" />
     <ClInclude Include="..\source\gunTypes.hpp" />
-    <ClInclude Include="..\source\pch.hpp" />
     <ClInclude Include="..\source\player.hpp" />
     <ClInclude Include="..\source\utils.hpp" />
+    <ClInclude Include="..\source\weapon.hpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
@@ -75,6 +76,8 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.hpp</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -98,6 +101,8 @@ xcopy "$(SolutionDir)Extern\AlphaEngine\lib\fmodL.dll" "$(OutDir)" /s /r /y /q</
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.hpp</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

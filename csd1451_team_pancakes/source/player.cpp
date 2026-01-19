@@ -1,4 +1,7 @@
-#include "pch.hpp"
+#include "player.hpp"
+#include "AEEngine.h"
+#include "utils.hpp"
+#include "gunTypes.hpp"
 
 
 Player InitPlayer(void) {

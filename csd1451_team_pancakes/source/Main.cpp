@@ -1,6 +1,11 @@
 ﻿// ---------------------------------------------------------------------------
 // includes
-#include "pch.hpp"
+
+#include "AEEngine.h"
+#include "utils.hpp"  
+#include "player.hpp"
+#include "gunTypes.hpp"
+#include "weapon.hpp"
 
 
 //Legend if needed later
@@ -93,8 +98,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		UpdatePlayerTimers(&player, dt);
 		UpdatePlayerMovement(&player, dt);
 
-		//Weapon Switching ( 1 = Pistol, 2 = Assault Rifle)
-		// JUST FOR TESTING PURPOSES, WILL IMPLEMENT A BETTER SYSTEM LATER
 	
 		if (AEInputCheckTriggered(AEVK_1)) {
 			player.currentWeaponIndex = 0;  // Switch to Pistol

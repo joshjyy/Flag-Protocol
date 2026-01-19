@@ -9,9 +9,10 @@
 
 // add headers that you want to pre-compile here
 #include "AEEngine.h"
-#include "utils.hpp"
+#include "utils.hpp"  
 #include "player.hpp"
 #include "gunTypes.hpp"
+#include "weapon.hpp"
 #include <crtdbg.h>
 #include <cstdio>
 #include <cmath>

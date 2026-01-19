@@ -27,6 +27,9 @@
     <ClCompile Include="..\source\enemies.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\weapon.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\utils.hpp">
@@ -41,7 +44,7 @@
     <ClInclude Include="..\source\gunTypes.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\pch.hpp">
+    <ClInclude Include="..\source\weapon.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
