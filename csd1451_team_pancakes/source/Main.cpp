@@ -1,6 +1,11 @@
 ﻿// ---------------------------------------------------------------------------
 // includes
-#include "pch.hpp"
+
+#include "AEEngine.h"
+#include "utils.hpp"  
+#include "player.hpp"
+#include "gunTypes.hpp"
+#include "weapon.hpp"
 
 
 //Legend if needed later

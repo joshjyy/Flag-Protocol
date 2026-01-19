@@ -1,4 +1,8 @@
-#include "pch.hpp"
+#include "AEEngine.h"
+#include "player.hpp"
+#include "gunTypes.hpp"
+#include "weapon.hpp"
+
 
 void WeaponSwitchCheck(Player &player) {
 	if (AEInputCheckTriggered(AEVK_1)) {
