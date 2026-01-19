@@ -6,7 +6,7 @@
 #include "player.hpp"
 #include "gunTypes.hpp"
 #include "weapon.hpp"
-
+#include "map.hpp"
 
 //Legend if needed later
 /*
@@ -76,8 +76,23 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	//dont move this up
 	InitCommonMeshes();
 
+	// ---------------------------------------------------------------------------
+	// MAP
+	// ---------------------------------------------------------------------------
+	// Load the map from file into the gameMap array
+	// 2D array to store the game map data (18 rows x 32 columns)
+	std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT> gameMap;
+	AEGfxVertexList* pMapMesh = CreateMapMesh();
+	AE_ASSERT_MESG(pMapMesh, "Failed to create map mesh!");
 
-
+	// Load the map from file into the gameMap array
+	if (!load_game_level("Assets/Level_1_Map.txt", gameMap)) {
+		printf("Failed to load map! Exiting...\n");
+		gGameRunning = 0;
+	}
+	else {
+		printf("Map loaded successfully!\n");
+	}
 
 	// ---------------------------------------------------------------------------
 	// GAME LOOP
@@ -96,7 +111,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		
 		//Check what weapon the player is using once per frame
 		WeaponStats weapon = GetCurrentWeapon(player);
+		Load_map(gameMap, pMapMesh);
 		// Exit game
+
 		if (AEInputCheckTriggered(AEVK_ESCAPE) || 0 == AESysDoesWindowExist())
 			gGameRunning = 0;
 		
