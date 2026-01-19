@@ -12,7 +12,6 @@
 #include "utils.hpp"
 #include "player.hpp"
 #include "gunTypes.hpp"
-#include "weapon.hpp"
 #include <crtdbg.h>
 #include <cstdio>
 #include <cmath>

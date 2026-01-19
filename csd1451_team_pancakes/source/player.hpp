@@ -1,5 +1,5 @@
-#include "pch.hpp"       
-
+#include "gunTypes.hpp"
+#include <vector>
 #ifndef BULLET_H
 #define BULLET_H
 // Bullet structure

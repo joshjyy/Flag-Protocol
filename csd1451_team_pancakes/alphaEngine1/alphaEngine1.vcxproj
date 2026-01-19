@@ -15,7 +15,6 @@
     <ClCompile Include="..\source\Main.cpp" />
     <ClCompile Include="..\source\player.cpp" />
     <ClCompile Include="..\source\utils.cpp" />
-    <ClCompile Include="..\source\weapon.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\enemies.hpp" />
@@ -23,7 +22,6 @@
     <ClInclude Include="..\source\pch.hpp" />
     <ClInclude Include="..\source\player.hpp" />
     <ClInclude Include="..\source\utils.hpp" />
-    <ClInclude Include="..\source\weapon.hpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
