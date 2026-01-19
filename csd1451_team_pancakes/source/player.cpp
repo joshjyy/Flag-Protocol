@@ -93,36 +93,44 @@ WeaponStats GetCurrentWeapon(Player& player) {
     if (player.currentWeaponIndex == 0) {
         // Pistol
         return {
+            player.pistol.weaponName,
             &player.pistol.currentAmmo,
             &player.pistol.maxAmmo,
             player.pistol.bulletSpeed,
             player.pistol.bulletDamage,
             player.pistol.fireRate,
-            player.pistol.reloadSpeed
-
+            player.pistol.reloadSpeed,
+            &player.pistol.reloadTimer,
+            &player.pistol.inReload
         };
     }
 
     else if (player.currentWeaponIndex == 1) {
 		// Assault Rifle
         return {
+          player.rifle.weaponName, 
           &player.rifle.currentAmmo,
           &player.rifle.maxAmmo,
           player.rifle.bulletSpeed,
           player.rifle.bulletDamage,
           player.rifle.fireRate,
-          player.rifle.reloadSpeed
+          player.rifle.reloadSpeed,
+          &player.rifle.reloadTimer,
+          &player.rifle.inReload
         };
     }
     else {
 		// Default to pistol if index is invalid
         return {
+            player.pistol.weaponName,
             &player.pistol.currentAmmo,
             &player.pistol.maxAmmo,
             player.pistol.bulletSpeed,
             player.pistol.bulletDamage,
             player.pistol.fireRate,
-            player.pistol.reloadSpeed
+            player.pistol.reloadSpeed,
+            &player.pistol.reloadTimer,
+            &player.pistol.inReload
         };
     }
 }

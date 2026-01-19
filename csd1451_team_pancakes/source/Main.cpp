@@ -105,11 +105,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		if (AEInputCheckTriggered(AEVK_1)) {
 			player.currentWeaponIndex = 0;  // Switch to Pistol
 			printf("Pistol Switched! %d\n", player.currentWeaponIndex);
+			WeaponStats newWeapon = GetCurrentWeapon(player);
+			printf("%s Switched! %d\n", newWeapon.weaponName, player.currentWeaponIndex);
 
 		}
 		if (AEInputCheckTriggered(AEVK_2)) {
 			player.currentWeaponIndex = 1;  // Switch to Assault Rifle
-			printf("Rifle Switched! %d\n", player.currentWeaponIndex);
+			WeaponStats newWeapon = GetCurrentWeapon(player);
+			printf("%s Switched! %d\n", newWeapon.weaponName, player.currentWeaponIndex);
 		}
 
 
@@ -120,7 +123,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		}
 
 		// Shooting
-		if (AEInputCheckCurr(AEVK_LBUTTON) && player.shootCooldown <= 0.0f ) {
+		if (AEInputCheckCurr(AEVK_LBUTTON) && player.shootCooldown <= 0.0f && !(*weapon.inReload)) {
 			
 
 			if (*weapon.currentAmmo > 0) {
@@ -147,17 +150,20 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		}
 
 		// // Basically counts the CD down to 0 >> the time taken to reload
-		if (reloadTime > 0.f) {
-			reloadTime -= dt;
+		if (*weapon.reloadTimer > 0.f) {
+			*weapon.reloadTimer -= dt;
 			//Once the reload is completed, change current ammo count to max ammo count
-			if (reloadTime <= 0.f) {
+			if (*weapon.reloadTimer <= 0.f) {
 				*weapon.currentAmmo = *weapon.maxAmmo;
-				printf("Reloaded!\n");
+				*weapon.inReload = false;
+				printf("%s Reloaded!\n", weapon.weaponName);
 			}
 		}
 
-		if (AEInputCheckTriggered(AEVK_R) && reloadTime <= 0.f && *weapon.currentAmmo < *weapon.maxAmmo) {
-			reloadTime = weapon.reloadSpeed;
+		if (AEInputCheckTriggered(AEVK_R) && *weapon.reloadTimer <= 0.f && *weapon.currentAmmo < *weapon.maxAmmo) {
+			printf("%s Reloading!\n", weapon.weaponName);
+			*weapon.reloadTimer = weapon.reloadSpeed;
+			*weapon.inReload = true;
 		}
 
 		// ---------------------------------------------------------------------------
