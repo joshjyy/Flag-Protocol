@@ -98,14 +98,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	
 		if (AEInputCheckTriggered(AEVK_1)) {
 			player.currentWeaponIndex = 0;  // Switch to Pistol
-			WeaponStats newWeapon = GetCurrentWeapon(player);
-			printf("%s Switched! %d\n", newWeapon.weaponName, player.currentWeaponIndex);
+			WeaponStats newWeapon = GetCurrentWeapon(player); //To make sure the right weapon is printed
+			printf("%s Switched! %d\n", newWeapon.weaponName, player.currentWeaponIndex); // Made the printf dynamic so its not dependent of if
 
 		}
 		if (AEInputCheckTriggered(AEVK_2)) {
 			player.currentWeaponIndex = 1;  // Switch to Assault Rifle
-			WeaponStats newWeapon = GetCurrentWeapon(player);
-			printf("%s Switched! %d\n", newWeapon.weaponName, player.currentWeaponIndex);
+			WeaponStats newWeapon = GetCurrentWeapon(player); //Same as above
+			printf("%s Switched! %d\n", newWeapon.weaponName, player.currentWeaponIndex); //Same as above
 		}
 
 
@@ -116,7 +116,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		}
 
 		// Shooting
-		if (AEInputCheckCurr(AEVK_LBUTTON) && player.shootCooldown <= 0.0f && !(*weapon.inReload)) {
+		if (AEInputCheckCurr(AEVK_LBUTTON) && player.shootCooldown <= 0.0f && !(*weapon.inReload)) { //Left click, ShootCD between each bullet, Not Reloading
 			
 
 			if (*weapon.currentAmmo > 0) {
@@ -148,7 +148,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			//Once the reload is completed, change current ammo count to max ammo count
 			if (*weapon.reloadTimer <= 0.f) {
 				*weapon.currentAmmo = *weapon.maxAmmo;
-				*weapon.inReload = false;
+				*weapon.inReload = false; // NOT Reloading anymore
 				printf("%s Reloaded!\n", weapon.weaponName);
 			}
 		}
@@ -156,7 +156,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		if (AEInputCheckTriggered(AEVK_R) && *weapon.reloadTimer <= 0.f && *weapon.currentAmmo < *weapon.maxAmmo) {
 			printf("%s Reloading!\n", weapon.weaponName);
 			*weapon.reloadTimer = weapon.reloadSpeed;
-			*weapon.inReload = true;
+			*weapon.inReload = true; //Reloading so dont allow the player to shoot
 		}
 
 		// ---------------------------------------------------------------------------
