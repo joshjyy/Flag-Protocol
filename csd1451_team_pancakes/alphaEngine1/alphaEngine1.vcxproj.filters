@@ -24,12 +24,24 @@
     <ClCompile Include="..\source\player.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\enemies.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\utils.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\source\player.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\enemies.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\gunTypes.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\pch.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

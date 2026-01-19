@@ -1,16 +1,13 @@
 #include "gunTypes.hpp"
-
+#include <vector>
 #ifndef BULLET_H
 #define BULLET_H
 // Bullet structure
 struct Bullet {
-    float x;
-    float y;
-    float velocityX;
-    float velocityY;
+    float x, y;
+    float velocityX, velocityY;
     float damage;
-    bool active; 
-    Bullet* next;  // Pointer to next bullet in linked list
+    bool active;
 };
 
 struct Player {
@@ -34,14 +31,13 @@ struct Player {
 
 };
 
-Bullet* CreateBullet(float x, float y, float targetX, float targetY, float speed, float damage);
-
+Bullet CreateBullet(float x, float y, float targetX, float targetY, float speed, float damage);
 Player InitPlayer(void);
 void NormalizeVector(float* x, float* y);
-void UpdateBullets(Bullet** bulletHead, float dt);
-void RenderBullets(Bullet* bulletHead, void* mesh);
-void FreeBullets(Bullet** bulletHead);
-int GetBulletCount(Bullet* bulletHead);
+void UpdateBullets(std::vector<Bullet>& bullets, float dt);
+void RenderBullets(const std::vector<Bullet>& bullets, void* mesh);
+void ClearBullets(std::vector<Bullet>& bullets);  // Optional - replaces FreeBullets
+int GetBulletCount(const std::vector<Bullet>& bullets);
 WeaponStats GetCurrentWeapon(Player& player);
 void UpdatePlayerMovement(Player* player, float dt); 
 void UpdatePlayerTimers(Player* player, float dt);

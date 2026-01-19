@@ -1,8 +1,5 @@
-#include "player.hpp"
-#include "AEEngine.h"
-#include "utils.hpp"
-#include "gunTypes.hpp"
-#include <cmath>
+#include "pch.hpp"
+
 
 Player InitPlayer(void) {
     Player player = {
@@ -30,127 +27,66 @@ void NormalizeVector(float* x, float* y) {
         *y /= length;
     }
 }
-//Create a new bullet and allocate memory
-//Parameters: starting position (x, y), target position (targetX, targetY), speed
-Bullet* CreateBullet(float x, float y, float targetX, float targetY, float speed, float damage) {
-    Bullet* newBullet = new Bullet;
-    newBullet->x = x;
-    newBullet->y = y;
-    newBullet->damage = damage;
 
-    // Calculate direction vector
+
+//Parameters: starting position (x, y), target position (targetX, targetY), speed
+Bullet CreateBullet(float x, float y, float targetX, float targetY, float speed, float damage) {
+    Bullet newBullet{};
+    newBullet.x = x;
+    newBullet.y = y;
+    newBullet.damage = damage;
+
     float dirX = targetX - x;
     float dirY = targetY - y;
-
-    // Normalize the direction
     NormalizeVector(&dirX, &dirY);
 
-
-    // Set velocity of bullet
-    newBullet->velocityX = dirX * speed;
-    newBullet->velocityY = dirY * speed;
-
-
-    newBullet->active = true;
-	//Initialize next pointer to nullptr so it doesnt point to garbage value
-    newBullet->next = nullptr;
+    newBullet.velocityX = dirX * speed;
+    newBullet.velocityY = dirY * speed;
+    newBullet.active = true;
 
     return newBullet;
 }
 
-// Update all bullets and remove off-screen ones
-void UpdateBullets(Bullet** bulletHead, float dt) {
-    Bullet* current = *bulletHead;
+void UpdateBullets(std::vector<Bullet>& bullets, float dt) {
+	// Backward loop to safely remove bullets
+    for (int i = (int)bullets.size() - 1; i >= 0; i--) {
+        // Update position
+        bullets[i].x += bullets[i].velocityX * dt;
+        bullets[i].y += bullets[i].velocityY * dt;
 
-	// Create a previous variable to store the previous bullet in the linked list
-    Bullet* previous = nullptr;
+        // Check if off screen
+        if (bullets[i].y > 500.0f || bullets[i].y < -500.0f ||
+            bullets[i].x > 900.0f || bullets[i].x < -900.0f) {
 
-    while (current != nullptr) {
-        // Update bullet position
-        current->x += current->velocityX * dt;
-        current->y += current->velocityY * dt;
-
-		// Check if bullet is off screen UPDATE THIS WHEN MAP IS BIGGER
-        if (current->y > 500.0f || current->y < -500.0f ||
-            current->x > 900.0f || current->x < -900.0f) {
-
-			// Prepare to remove bullet
-            Bullet* toDelete = current;
-
-			// Update linked list pointers
-            if (previous == nullptr) {
-				// Move bulletHead to next bullet
-                *bulletHead = current->next;
-                current = *bulletHead;
-            }
-            else {
-				// Removing middle/end of list in case bullet collidies with something before going off screen
-                previous->next = current->next;
-                current = current->next;
-            }
-
-            // Free memory for bullet pointed to by this address
-            delete toDelete;  
-        }
-
-
-
-
-
-
-
-
-        else {
-            // Move to next bullet
-            previous = current;
-            current = current->next;
+            bullets.erase(bullets.begin() + i);  // Remove bullet
         }
     }
 }
 
-// Render all bullets
-void RenderBullets(Bullet* bulletHead, void* mesh) {
-    // Set bullet color (Yellow)
-    AEGfxSetColorToMultiply(1.0f, 1.0f, 0.0f, 1.0f);
-
-    Bullet* current = bulletHead;
-
-    //Draw bullet if current bullet is active
-    while (current != nullptr) {
-        // Outer glow (bigger, more transparent)
-        AEGfxSetColorToMultiply(1.0f, 1.0f, 0.0f, 0.3f);  // Yellow, 30% opacity
-        DrawSprite((AEGfxVertexList*)mesh, current->x, current->y, 40.0f, 40.0f, 0.0f);
+void RenderBullets(const std::vector<Bullet>& bullets, void* mesh) {
+    // Loop through each bullet
+    for (const Bullet& bullet : bullets) {  
+        // Outer glow
+        AEGfxSetColorToMultiply(1.0f, 1.0f, 0.0f, 0.3f);
+        DrawSprite((AEGfxVertexList*)mesh, bullet.x, bullet.y, 40.0f, 40.0f, 0.0f);
 
         // Middle glow
-        AEGfxSetColorToMultiply(1.0f, 1.0f, 0.0f, 0.6f);  // Yellow, 60% opacity
-        DrawSprite((AEGfxVertexList*)mesh, current->x, current->y, 30.0f, 30.0f, 0.0f);
+        AEGfxSetColorToMultiply(1.0f, 1.0f, 0.0f, 0.6f);
+        DrawSprite((AEGfxVertexList*)mesh, bullet.x, bullet.y, 30.0f, 30.0f, 0.0f);
 
-        // Core (solid)
-        AEGfxSetColorToMultiply(1.0f, 1.0f, 1.0f, 1.0f);  // White center
-        DrawSprite((AEGfxVertexList*)mesh, current->x, current->y, 20.0f, 20.0f, 0.0f);
-
-        current = current->next;
+        // Core
+        AEGfxSetColorToMultiply(1.0f, 1.0f, 1.0f, 1.0f);
+        DrawSprite((AEGfxVertexList*)mesh, bullet.x, bullet.y, 20.0f, 20.0f, 0.0f);
     }
 }
 
-// Free all bullets in the list and clear the list
-void FreeBullets(Bullet** bulletHead) {
-    while (*bulletHead != nullptr) {
-        Bullet* toDelete = *bulletHead;
-        *bulletHead = (*bulletHead)->next;
-        delete toDelete;
-    }
+//Manual Clear All Bullets at End Of Level
+void ClearBullets(std::vector<Bullet>& bullets) {
+    bullets.clear(); 
 }
-
-// Count how many bullets exist (for debugging)
-int GetBulletCount(Bullet* bulletHead) {
-    int count = 0;
-    Bullet* current = bulletHead;
-    while (current != nullptr) {
-        count++;
-        current = current->next;
-    }
-    return count;
+//Fetch Bullet Count
+int GetBulletCount(const std::vector<Bullet>& bullets) {
+    return (int)bullets.size();
 }
 //current ammo and max ammo are addressed bc they are being modified outside this function
 WeaponStats GetCurrentWeapon(Player& player) {

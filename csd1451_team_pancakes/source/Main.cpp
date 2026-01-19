@@ -1,12 +1,7 @@
 ﻿// ---------------------------------------------------------------------------
 // includes
-#include <crtdbg.h>
-#include <cstdio>
-#include "AEEngine.h"
-#include "utils.hpp"  
-#include "player.hpp"
-#include <cstdint>
-#include "gunTypes.hpp"
+#include "pch.hpp"
+
 
 //Legend if needed later
 /*
@@ -56,7 +51,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	int gGameRunning = 1;
 
 	// Bullet management
-	Bullet* bulletHead = nullptr;  // Head of bullet linked list
+	std::vector<Bullet> playerBullets;
 
 	//Init Player
 	Player player = InitPlayer();
@@ -136,15 +131,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 				float worldMouseX = (float)mouseX - 800.0f;
 				float worldMouseY = 450.0f - (float)mouseY;
-
 				// Create bullet with current weapon stats
-				Bullet* newBullet = CreateBullet(player.x, player.y, worldMouseX, worldMouseY,
-					weapon.bulletSpeed, weapon.bulletDamage);
+				Bullet newBullet = CreateBullet(player.x, player.y, worldMouseX, worldMouseY, weapon.bulletSpeed, weapon.bulletDamage);
 
-				// Add to linked list
-				newBullet->next = bulletHead;
-				bulletHead = newBullet;
-
+				playerBullets.push_back(newBullet);
 				// Decrease ammo
 				(*weapon.currentAmmo)--;
 
@@ -174,7 +164,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		// UPDATE BULLETS
 		// ---------------------------------------------------------------------------
 
-		UpdateBullets(&bulletHead, dt);
+		UpdateBullets(playerBullets, dt);
 
 		// ---------------------------------------------------------------------------
 		// Collision Checks
@@ -206,7 +196,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		DrawSprite(meshes.circle, player.x, player.y, 50.0f, 50.0f, 0.0f);
 
 		// Draw bullets
-		RenderBullets(bulletHead, meshes.circle);
+		RenderBullets(playerBullets, meshes.circle);
 
 		
 		// Draw Background Health Bar (top left)
@@ -238,7 +228,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	// ---------------------------------------------------------------------------
 	// CLEANUP
 	// ---------------------------------------------------------------------------
-	FreeBullets(&bulletHead);
+
+	ClearBullets(playerBullets);
 	FreeCommonMeshes();
 
 	AESysExit();
