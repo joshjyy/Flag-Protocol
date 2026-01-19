@@ -57,12 +57,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	Player player = InitPlayer();
 
 
-
-
-	//Reloading variables
-	//To add CD to reload so reloading takes time
-	float reloadTime = 0.f;
-
 	// Initialize engine (1600x900 window, 60 FPS)
 	AESysInit(hInstance, nCmdShow, 1600, 900, 1, 60, false, NULL);
 	AESysSetWindowTitle("Game Test!");
@@ -104,7 +98,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	
 		if (AEInputCheckTriggered(AEVK_1)) {
 			player.currentWeaponIndex = 0;  // Switch to Pistol
-			printf("Pistol Switched! %d\n", player.currentWeaponIndex);
 			WeaponStats newWeapon = GetCurrentWeapon(player);
 			printf("%s Switched! %d\n", newWeapon.weaponName, player.currentWeaponIndex);
 
