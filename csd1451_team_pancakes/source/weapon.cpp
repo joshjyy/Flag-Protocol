@@ -24,7 +24,7 @@ void ResetShootCooldown(Player &player, float dt) {
 
 void ShootingCheck(Player& player, std::vector<Bullet>& type, WeaponStats weapon,
 	float cameraX, float cameraY) {  // ADD THESE
-	if (AEInputCheckCurr(AEVK_LBUTTON) && player.shootCooldown <= 0.0f) {
+	if (AEInputCheckCurr(AEVK_LBUTTON) && player.shootCooldown <= 0.0f && player.inDash == false) {
 		if (*weapon.currentAmmo > 0) {
 			// Get mouse position in SCREEN coordinates
 			s32 mouseX, mouseY;

@@ -28,6 +28,8 @@ struct Player {
     int currentWeaponIndex;  // 0 = pistol, 1 = rifle
     float shootCooldown;
 
+    bool inDash;
+
 
 };
 
@@ -37,8 +39,7 @@ void DrawPlayer(Player& player, void* mesh, float cameraX, float cameraY);
 void DrawPlayerHealth(Player& player, void* mesh);
 void NormalizeVector(float* x, float* y);
 void UpdateBullets(std::vector<Bullet>& bullets, float dt);
-void RenderBullets(const std::vector<Bullet>& bullets, void* mesh,
-    float cameraX, float cameraY);
+void RenderBullets(const std::vector<Bullet>& bullets, void* mesh, float cameraX, float cameraY);
 void ClearBullets(std::vector<Bullet>& bullets);  // Optional - replaces FreeBullets
 int GetBulletCount(const std::vector<Bullet>& bullets);
 WeaponStats GetCurrentWeapon(Player& player);

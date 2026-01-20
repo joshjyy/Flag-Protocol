@@ -101,7 +101,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	// ---------------------------------------------------------------------------
 	// GAME LOOP
 	// ---------------------------------------------------------------------------
-
+	// Set background color (gray)
+	AEGfxSetBackgroundColor(0.5f, 0.5f, 0.5f);
+	// Set render mode for colored meshes
+	AEGfxSetRenderMode(AE_GFX_RM_COLOR);
+	// Enable transparency
+	AEGfxSetBlendMode(AE_GFX_BM_BLEND);
+	AEGfxSetTransparency(1.0f);
 	while (gGameRunning)
 	{
 
@@ -156,13 +162,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		// ---------------------------------------------------------------------------
 		// RENDERING
 		// ---------------------------------------------------------------------------
-		// Set background color (gray)
-		AEGfxSetBackgroundColor(0.5f, 0.5f, 0.5f);
-		// Set render mode for colored meshes
-		AEGfxSetRenderMode(AE_GFX_RM_COLOR);
-		// Enable transparency
-		AEGfxSetBlendMode(AE_GFX_BM_BLEND);
-		AEGfxSetTransparency(1.0f);
+
 
 
 
