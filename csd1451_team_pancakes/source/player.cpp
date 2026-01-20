@@ -180,12 +180,16 @@ void UpdatePlayerTimers(Player* player, float dt) {
     }
 }
 
-void UpdatePlayerMovement(Player* player, float dt) {
+void UpdatePlayerMovement(Player* player, float dt,
+    std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap) {
+
+    float radius = 25.0f;  // Player radius
+
     // Check for dash input
     if (AEInputCheckTriggered(AEVK_SPACE) && player->dashCooldownTimer <= 0.0f) {
         float inputX = 0.0f;
         float inputY = 0.0f;
-		player->inDash = true;
+        player->inDash = true;
 
         if (AEInputCheckCurr(AEVK_W)) inputY += 1.0f;
         if (AEInputCheckCurr(AEVK_S)) inputY -= 1.0f;
@@ -203,23 +207,80 @@ void UpdatePlayerMovement(Player* player, float dt) {
 
     // Apply movement
     if (player->dashTimer > 0.0f) {
-        // During dash - locked into dash direction
-        player->x += player->dashDirX * dashSpeed * dt;  
+        // During dash
+        float oldX = player->x;
+        float oldY = player->y;
+
+        player->x += player->dashDirX * dashSpeed * dt;
         player->y += player->dashDirY * dashSpeed * dt;
+
+        // Check collision after dash movement
+        if (checkCollision(player->x, player->y, 30.0f, gameMap)) {
+            player->x = oldX;
+            player->y = oldY;
+            player->dashTimer = 0.0f;
+            player->inDash = false;
+        }
     }
     else {
         player->inDash = false;
+
+        // *** SIMPLE COLLISION CHECKS FOR EACH DIRECTION ***
+
+        // Check W (UP) - check TOP edge
         if (AEInputCheckCurr(AEVK_W)) {
-            player->y += walkSpeed * dt;   
+            float topEdge = player->y + radius;
+            int i = (int)((450.0f - topEdge - 25.0f) / 50.0f);
+            int j = (int)((player->x + 800.0f - 25.0f) / 50.0f);
+
+            // Check if tile at top edge is a wall
+            if (i >= 0 && i < MAP_HEIGHT && j >= 0 && j < MAP_WIDTH) {
+                if (gameMap[i][j] != 1 && gameMap[i][j] != 2) {
+                    player->y += walkSpeed * dt;  // Safe to move up
+                }
+            }
         }
+
+        // Check A (LEFT) - check LEFT edge
         if (AEInputCheckCurr(AEVK_A)) {
-            player->x -= walkSpeed * dt;  
+            float leftEdge = player->x - radius;
+            int i = (int)((450.0f - player->y - 25.0f) / 50.0f);
+            int j = (int)((leftEdge + 800.0f - 25.0f) / 50.0f);
+
+            // Check if tile at left edge is a wall
+            if (i >= 0 && i < MAP_HEIGHT && j >= 0 && j < MAP_WIDTH) {
+                if (gameMap[i][j] != 1 && gameMap[i][j] != 2) {
+                    player->x -= walkSpeed * dt;  // Safe to move left
+                }
+            }
         }
+
+        // Check S (DOWN) - check BOTTOM edge
         if (AEInputCheckCurr(AEVK_S)) {
-            player->y -= walkSpeed * dt;   
+            float bottomEdge = player->y - radius;
+            int i = (int)((450.0f - bottomEdge - 25.0f) / 50.0f);
+            int j = (int)((player->x + 800.0f - 25.0f) / 50.0f);
+
+            // Check if tile at bottom edge is a wall
+            if (i >= 0 && i < MAP_HEIGHT && j >= 0 && j < MAP_WIDTH) {
+                if (gameMap[i][j] != 1 && gameMap[i][j] != 2) {
+                    player->y -= walkSpeed * dt;  // Safe to move down
+                }
+            }
         }
+
+        // Check D (RIGHT) - check RIGHT edge
         if (AEInputCheckCurr(AEVK_D)) {
-            player->x += walkSpeed * dt;   
+            float rightEdge = player->x + radius;
+            int i = (int)((450.0f - player->y - 25.0f) / 50.0f);
+            int j = (int)((rightEdge + 800.0f - 25.0f) / 50.0f);
+
+            // Check if tile at right edge is a wall
+            if (i >= 0 && i < MAP_HEIGHT && j >= 0 && j < MAP_WIDTH) {
+                if (gameMap[i][j] != 1 && gameMap[i][j] != 2) {
+                    player->x += walkSpeed * dt;  // Safe to move right
+                }
+            }
         }
     }
 }

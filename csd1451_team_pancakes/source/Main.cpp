@@ -138,7 +138,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		// Update Timers CD
 		UpdatePlayerTimers(&player, dt);
-		UpdatePlayerMovement(&player, dt);
+		UpdatePlayerMovement(&player, dt, gameMap);
 
 	
 

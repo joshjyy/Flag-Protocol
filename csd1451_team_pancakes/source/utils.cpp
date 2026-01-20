@@ -1,5 +1,7 @@
 #include "utils.hpp"
 #include "AEEngine.h"
+#include <array>
+#include "map.hpp"
 
 int AreCirclesIntersecting(float circle_center1_x, float circle_center1_y, float radius_1, float circle_center2_x, float circle_center2_y, float radius_2) {
 
@@ -100,4 +102,50 @@ void FreeCommonMeshes(void) {
         AEGfxMeshFree(meshes.circle);
         meshes.circle = NULL;
     }
+}
+
+int checkCollision(float playerX, float playerY, float radius,
+    std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap) {
+
+    // Step 1: Calculate edge points
+    float leftEdge = playerX - radius;
+    float rightEdge = playerX + radius;
+    float topEdge = playerY + radius;
+    float bottomEdge = playerY - radius;
+
+    // Step 2: Convert to grid coordinates
+    int leftCol = (int)((leftEdge + 800.0f - 25.0f) / 50.0f);
+    int rightCol = (int)((rightEdge + 800.0f - 25.0f) / 50.0f);
+    int topRow = (int)((450.0f - topEdge - 25.0f) / 50.0f);
+    int bottomRow = (int)((450.0f - bottomEdge - 25.0f) / 50.0f);
+
+    // Step 3: Check boundaries (make sure we're not outside the map)
+    if (leftCol < 0 || rightCol >= MAP_WIDTH ||
+        topRow < 0 || bottomRow >= MAP_HEIGHT) {
+        return 1; // Out of bounds = collision
+    }
+
+    // Step 4: Check all 4 corners of the player's bounding box
+    // Check top-left corner
+    if (gameMap[topRow ][leftCol] == 1 || gameMap[topRow][leftCol] == 2) {
+        return 1; // Hit a wall!
+    }
+
+    // Check top-right corner
+    if (gameMap[topRow][leftCol] == 1 || gameMap[topRow][leftCol] == 2) {
+        return 1; // Hit a wall!
+    }
+
+    // Check bottom-left corner
+    if (gameMap[topRow][leftCol] == 1 || gameMap[topRow][leftCol] == 2) {
+        return 1; // Hit a wall!
+    }
+
+    // Check bottom-right corner
+    if (gameMap[topRow][leftCol] == 1 || gameMap[topRow][leftCol] == 2  ) {
+        return 1; // Hit a wall!
+    }
+
+    // No collision detected!
+    return 0;
 }
