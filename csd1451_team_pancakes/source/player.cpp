@@ -32,9 +32,16 @@ void NormalizeVector(float* x, float* y) {
 }
 
 
-void DrawPlayer(Player& player, void* mesh) {
+void DrawPlayer(Player& player, void* mesh, float cameraX, float cameraY) {
+    float screenX = player.x - cameraX;
+    float screenY = player.y - cameraY;
     AEGfxSetColorToMultiply(0.0f, 0.0f, 1.0f, 1.0f);
-    DrawSprite((AEGfxVertexList*)mesh, player.x, player.y, 50.0f, 50.0f, 0.0f);
+
+    // WRONG - still using player.x, player.y:
+    // DrawSprite((AEGfxVertexList*)mesh, player.x, player.y, 50.0f, 50.0f, 0.0f);
+
+    // CORRECT - use screenX, screenY:
+    DrawSprite((AEGfxVertexList*)mesh, screenX, screenY, 50.0f, 50.0f, 0.0f);
 }
 
 void DrawPlayerHealth(Player& player, void* mesh) {
@@ -74,28 +81,35 @@ void UpdateBullets(std::vector<Bullet>& bullets, float dt) {
         bullets[i].y += bullets[i].velocityY * dt;
 
         // Check if off screen
-        if (bullets[i].y > 500.0f || bullets[i].y < -500.0f ||
+        /*if (bullets[i].y > 500.0f || bullets[i].y < -500.0f ||
             bullets[i].x > 900.0f || bullets[i].x < -900.0f) {
 
             bullets.erase(bullets.begin() + i);  // Remove bullet
-        }
+        } 
+        Not needed beacuse the map is open map
+        */ 
     }
 }
-
-void RenderBullets(const std::vector<Bullet>& bullets, void* mesh) {
+void RenderBullets(const std::vector<Bullet>& bullets, void* mesh,
+    float cameraX, float cameraY) {  // ADD camera parameters
     // Loop through each bullet
-    for (const Bullet& bullet : bullets) {  
-        // Outer glow
+
+    for (const Bullet& bullet : bullets) {
+        // *** ADD THIS - Convert world position to screen position ***
+        float screenX = bullet.x - cameraX;
+        float screenY = bullet.y - cameraY;
+
+        // Outer glow - USE screenX, screenY
         AEGfxSetColorToMultiply(1.0f, 1.0f, 0.0f, 0.3f);
-        DrawSprite((AEGfxVertexList*)mesh, bullet.x, bullet.y, 40.0f, 40.0f, 0.0f);
+        DrawSprite((AEGfxVertexList*)mesh, screenX, screenY, 40.0f, 40.0f, 0.0f);
 
-        // Middle glow
+        // Middle glow - USE screenX, screenY
         AEGfxSetColorToMultiply(1.0f, 1.0f, 0.0f, 0.6f);
-        DrawSprite((AEGfxVertexList*)mesh, bullet.x, bullet.y, 30.0f, 30.0f, 0.0f);
+        DrawSprite((AEGfxVertexList*)mesh, screenX, screenY, 30.0f, 30.0f, 0.0f);
 
-        // Core
+        // Core - USE screenX, screenY
         AEGfxSetColorToMultiply(1.0f, 1.0f, 1.0f, 1.0f);
-        DrawSprite((AEGfxVertexList*)mesh, bullet.x, bullet.y, 20.0f, 20.0f, 0.0f);
+        DrawSprite((AEGfxVertexList*)mesh, screenX, screenY, 20.0f, 20.0f, 0.0f);
     }
 }
 

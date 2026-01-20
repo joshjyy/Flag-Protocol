@@ -82,7 +82,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	// 2D array to store the game map data (18 rows x 32 columns)
 	std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT> gameMap;
+	//Camera variables(in main, with other game variables)
+	float cameraX = 0.0f;
+	float cameraY = 0.0f;
 
+	// In game loop - UPDATE section:
+	// Update camera to follow player
+	
 	// Load the map from file into the gameMap array
 	if (!load_game_level("Assets/Level_1_Map.txt", gameMap)) {
 		printf("Failed to load map! Exiting...\n");
@@ -110,7 +116,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//Check what weapon the player is using once per frame
 		WeaponStats weapon = GetCurrentWeapon(player);
 		//loading map
-		Load_map(gameMap, meshes.square);
+		cameraX = player.x;
+		cameraY = player.y;
+		Load_map(gameMap, meshes.square, cameraX, cameraY);
+
 		// Exit game
 		if (AEInputCheckTriggered(AEVK_ESCAPE) || 0 == AESysDoesWindowExist())
 			gGameRunning = 0;
@@ -125,7 +134,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		ResetShootCooldown(player, dt);
 		WeaponSwitchCheck(player);
-		ShootingCheck(player, playerBullets, weapon);
+		ShootingCheck(player, playerBullets, weapon, cameraX, cameraY);
 		ReloadBullets(weapon, reloadTime, dt);
 
 		// ---------------------------------------------------------------------------
@@ -159,9 +168,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 
 		//Player Circle
-		DrawPlayer(player, meshes.circle);
+		DrawPlayer(player, meshes.circle, cameraX, cameraY);
 		// Draw bullets
-		RenderBullets(playerBullets, meshes.circle);
+		RenderBullets(playerBullets, meshes.circle, cameraX, cameraY);
 		//Draw Health Bar(Temp)
 		DrawPlayerHealth(player, meshes.square);
 

@@ -58,7 +58,9 @@ int load_game_level(const char* filename, std::array<std::array<int, MAP_WIDTH>,
   * 4 = yellow (sand)
   * 5 = purple (special tiles)
   */
-void Load_map(std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& arr, AEGfxVertexList* mesh) {
+void Load_map(std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& arr,
+	AEGfxVertexList* mesh,
+	float cameraX, float cameraY) {
 	// Set rendering mode to use vertex colors
 	AEGfxSetRenderMode(AE_GFX_RM_COLOR);
 	// Set transparency to fully opaque (1.0 = no transparency)
@@ -104,10 +106,15 @@ void Load_map(std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& arr, AEGfxVert
 				float x = (j * TILE_SIZE) - 800.0f + 25.0f;
 				// Calculate Y position: half window height - row * tile size - half tile
 				float y = 450.0f - (i * TILE_SIZE) - 25.0f;
+
+				//Convert world position to screen position
+				float screenX = x - cameraX;
+				float screenY = y - cameraY;
+
 				// Create scale matrix to resize mesh from 1x1 to TILE_SIZE x TILE_SIZE
 				AEMtx33Scale(&scale, (float)TILE_SIZE, (float)TILE_SIZE);
 				// Create translation matrix to move tile to calculated position
-				AEMtx33Trans(&translate, x, y);
+				AEMtx33Trans(&translate, screenX, screenY);
 				// Combine transformations: translate * scale (scale first, then move)
 				AEMtx33Concat(&transform, &translate, &scale);
 				// Apply the transformation matrix to the rendering pipeline
