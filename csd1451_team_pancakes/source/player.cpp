@@ -16,7 +16,8 @@ Player InitPlayer(void) {
         Pistol(),                 // pistol constructor
         AssaultRifle(),           // rifle constructor
         0,                        // currentWeaponIndex (start with pistol)
-        0.0f                      // shootCooldown
+        0.0f,                    // shootCooldown
+        false
     };
     return player;
 }
@@ -37,10 +38,7 @@ void DrawPlayer(Player& player, void* mesh, float cameraX, float cameraY) {
     float screenY = player.y - cameraY;
     AEGfxSetColorToMultiply(0.0f, 0.0f, 1.0f, 1.0f);
 
-    // WRONG - still using player.x, player.y:
-    // DrawSprite((AEGfxVertexList*)mesh, player.x, player.y, 50.0f, 50.0f, 0.0f);
 
-    // CORRECT - use screenX, screenY:
     DrawSprite((AEGfxVertexList*)mesh, screenX, screenY, 50.0f, 50.0f, 0.0f);
 }
 
@@ -80,14 +78,14 @@ void UpdateBullets(std::vector<Bullet>& bullets, float dt) {
         bullets[i].x += bullets[i].velocityX * dt;
         bullets[i].y += bullets[i].velocityY * dt;
 
-        // Check if off screen
+        // Collision Effects
         /*if (bullets[i].y > 500.0f || bullets[i].y < -500.0f ||
             bullets[i].x > 900.0f || bullets[i].x < -900.0f) {
 
             bullets.erase(bullets.begin() + i);  // Remove bullet
         } 
-        Not needed beacuse the map is open map
         */ 
+
 
     }
 }
@@ -119,7 +117,7 @@ void ClearBullets(std::vector<Bullet>& bullets) {
     bullets.clear(); 
 }
 //Fetch Bullet Count
-int GetBulletCount(const std::vector<Bullet>& bullets) { 
+int GetBulletCount(const std::vector<Bullet>& bullets) {
     return (int)bullets.size();
 }
 //current ammo and max ammo are addressed bc they are being modified outside this function
@@ -187,6 +185,7 @@ void UpdatePlayerMovement(Player* player, float dt) {
     if (AEInputCheckTriggered(AEVK_SPACE) && player->dashCooldownTimer <= 0.0f) {
         float inputX = 0.0f;
         float inputY = 0.0f;
+		player->inDash = true;
 
         if (AEInputCheckCurr(AEVK_W)) inputY += 1.0f;
         if (AEInputCheckCurr(AEVK_S)) inputY -= 1.0f;
@@ -209,6 +208,7 @@ void UpdatePlayerMovement(Player* player, float dt) {
         player->y += player->dashDirY * dashSpeed * dt;
     }
     else {
+        player->inDash = false;
         if (AEInputCheckCurr(AEVK_W)) {
             player->y += walkSpeed * dt;   
         }
