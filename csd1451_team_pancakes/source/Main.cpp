@@ -90,7 +90,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	// Update camera to follow player
 	
 	// Load the map from file into the gameMap array
-	if (!load_game_level("Assets/Level_1_Map.txt", gameMap)) {
+	if (!Load_Game_Level("Assets/Level_1_Map.txt", gameMap)) {
 		printf("Failed to load map! Exiting...\n");
 		gGameRunning = 0;
 	}
@@ -115,10 +115,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		
 		//Check what weapon the player is using once per frame
 		WeaponStats weapon = GetCurrentWeapon(player);
-		//loading map
+
+		// ---------------------------------------------------------------------------
+		// MAP AND CAMERA
+		// ---------------------------------------------------------------------------
+		//Camera follows the player
 		cameraX = player.x;
 		cameraY = player.y;
-		Load_map(gameMap, meshes.square, cameraX, cameraY);
+		Load_Map(gameMap, meshes.square, cameraX, cameraY);
 
 		// Exit game
 		if (AEInputCheckTriggered(AEVK_ESCAPE) || 0 == AESysDoesWindowExist())

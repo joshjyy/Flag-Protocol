@@ -88,6 +88,7 @@ void UpdateBullets(std::vector<Bullet>& bullets, float dt) {
         } 
         Not needed beacuse the map is open map
         */ 
+
     }
 }
 void RenderBullets(const std::vector<Bullet>& bullets, void* mesh,
@@ -118,7 +119,7 @@ void ClearBullets(std::vector<Bullet>& bullets) {
     bullets.clear(); 
 }
 //Fetch Bullet Count
-int GetBulletCount(const std::vector<Bullet>& bullets) {
+int GetBulletCount(const std::vector<Bullet>& bullets) { 
     return (int)bullets.size();
 }
 //current ammo and max ammo are addressed bc they are being modified outside this function

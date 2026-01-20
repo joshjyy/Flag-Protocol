@@ -39,7 +39,7 @@ void NormalizeVector(float* x, float* y);
 void UpdateBullets(std::vector<Bullet>& bullets, float dt);
 void RenderBullets(const std::vector<Bullet>& bullets, void* mesh,
     float cameraX, float cameraY);
-void ClearBullets(std::vector<Bullet>& bullets);  // Optional - replaces FreeBullets
+void ClearBullets(std::vector<Bullet>& bullets);  
 int GetBulletCount(const std::vector<Bullet>& bullets);
 WeaponStats GetCurrentWeapon(Player& player);
 void UpdatePlayerMovement(Player* player, float dt); 

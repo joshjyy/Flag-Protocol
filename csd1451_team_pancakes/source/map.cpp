@@ -11,7 +11,7 @@
  * Returns 1 on success, 0 on failure (file not found or invalid format).
  * Prints error messages if file cannot be opened or data is incomplete.
  */
-int load_game_level(const char* filename, std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& arr) {
+int Load_Game_Level(const char* filename, std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& arr) {
 	// Create input file stream and attempt to open the file
 	std::ifstream map_file(filename);
 
@@ -58,7 +58,7 @@ int load_game_level(const char* filename, std::array<std::array<int, MAP_WIDTH>,
   * 4 = yellow (sand)
   * 5 = purple (special tiles)
   */
-void Load_map(std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& arr,
+void Load_Map(std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& arr,
 	AEGfxVertexList* mesh,
 	float cameraX, float cameraY) {
 	// Set rendering mode to use vertex colors
