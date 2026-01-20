@@ -33,6 +33,8 @@ struct Player {
 
 Bullet CreateBullet(float x, float y, float targetX, float targetY, float speed, float damage);
 Player InitPlayer(void);
+void DrawPlayer(Player& player, void* mesh);
+void DrawPlayerHealth(Player& player, void* mesh);
 void NormalizeVector(float* x, float* y);
 void UpdateBullets(std::vector<Bullet>& bullets, float dt);
 void RenderBullets(const std::vector<Bullet>& bullets, void* mesh);

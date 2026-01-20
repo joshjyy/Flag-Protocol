@@ -32,6 +32,22 @@ void NormalizeVector(float* x, float* y) {
 }
 
 
+void DrawPlayer(Player& player, void* mesh) {
+    AEGfxSetColorToMultiply(0.0f, 0.0f, 1.0f, 1.0f);
+    DrawSprite((AEGfxVertexList*)mesh, player.x, player.y, 50.0f, 50.0f, 0.0f);
+}
+
+void DrawPlayerHealth(Player& player, void* mesh) {
+    // Draw Background Health Bar (top left)
+    AEGfxSetColorToMultiply(0.5f, 0.0f, 0.0f, 1.0f);
+    DrawSprite((AEGfxVertexList*)mesh, 150, 400.0f, 500.0f, 30.0f, 0.0f);
+
+    // Draw Current Health (top left)
+    AEGfxSetColorToMultiply(1.0f, 1.0f, 0.0f, 1.0f);
+    float healthbarOffset = (1000.0f - player.health) / 2.0f;
+    DrawSprite((AEGfxVertexList*)mesh, 150 - healthbarOffset, 400.0f, player.health, 30.0f, 0.0f);
+}
+
 //Parameters: starting position (x, y), target position (targetX, targetY), speed
 Bullet CreateBullet(float x, float y, float targetX, float targetY, float speed, float damage) {
     Bullet newBullet{};
@@ -137,7 +153,7 @@ WeaponStats GetCurrentWeapon(Player& player) {
 const float dashSpeed = 2000.0f;
 const float dashDuration = 0.2f;
 const float dashCooldownMax = 0.5f;
-const float walkSpeed = 500.0f;
+const float walkSpeed = 300.0f;
 
 void UpdatePlayerTimers(Player* player, float dt) {
     if (player->dashTimer > 0.0f) {

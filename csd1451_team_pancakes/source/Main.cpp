@@ -112,10 +112,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//loading map
 		Load_map(gameMap, meshes.square);
 		// Exit game
-
 		if (AEInputCheckTriggered(AEVK_ESCAPE) || 0 == AESysDoesWindowExist())
 			gGameRunning = 0;
 		
+
+
 		// Update Timers CD
 		UpdatePlayerTimers(&player, dt);
 		UpdatePlayerMovement(&player, dt);
@@ -146,34 +147,23 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		// ---------------------------------------------------------------------------
 		// RENDERING
 		// ---------------------------------------------------------------------------
-
 		// Set background color (gray)
 		AEGfxSetBackgroundColor(0.5f, 0.5f, 0.5f);
-
 		// Set render mode for colored meshes
 		AEGfxSetRenderMode(AE_GFX_RM_COLOR);
-
 		// Enable transparency
 		AEGfxSetBlendMode(AE_GFX_BM_BLEND);
 		AEGfxSetTransparency(1.0f);
 
 
-		//Player Circle
-		AEGfxSetColorToMultiply(0.0f, 0.0f, 1.0f, 1.0f);
-		DrawSprite(meshes.circle, player.x, player.y, 50.0f, 50.0f, 0.0f);
 
+
+		//Player Circle
+		DrawPlayer(player, meshes.circle);
 		// Draw bullets
 		RenderBullets(playerBullets, meshes.circle);
-
-		
-		// Draw Background Health Bar (top left)
-		AEGfxSetColorToMultiply(0.5f, 0.0f, 0.0f, 1.0f);
-		DrawSprite(meshes.square, -250.0f, 400.0f, 500.0f, 50.0f, 0.0f);
-
-		// Draw Current Health (top left)
-		AEGfxSetColorToMultiply(1.0f, 0.0f, 0.0f, 1.0f);
-		float healthbarOffset = (1000.0f - player.health) / 2.0f;
-		DrawSprite(meshes.square, -250.0f - healthbarOffset, 400.0f, player.health, 50.0f, 0.0f);
+		//Draw Health Bar(Temp)
+		DrawPlayerHealth(player, meshes.square);
 
 
 
