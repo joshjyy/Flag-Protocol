@@ -145,23 +145,28 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			}
 		}
 
-		// // Basically counts the CD down to 0 >> the time taken to reload
-		if (*weapon.reloadTimer > 0.f) {
-			*weapon.reloadTimer -= dt;
-			//Once the reload is completed, change current ammo count to max ammo count
-			if (*weapon.reloadTimer <= 0.f) {
-				*weapon.currentAmmo = *weapon.maxAmmo;
-				*weapon.inReload = false; // NOT Reloading anymore
-				printf("%s Reloaded!\n", weapon.weaponName);
-			}
-		}
+		// Basically counts the CD down to 0 >> the time taken to reload
+		//if (*weapon.reloadTimer > 0.f) {
+		//	*weapon.reloadTimer -= dt;
+		//	//Once the reload is completed, change current ammo count to max ammo count
+		//	if (*weapon.reloadTimer <= 0.f) {
+		//		*weapon.currentAmmo = *weapon.maxAmmo;
+		//		*weapon.inReload = false; // NOT Reloading anymore
+		//		printf("%s Reloaded!\n", weapon.weaponName);
+		//	}
+		//}
 
-		if (AEInputCheckTriggered(AEVK_R) && *weapon.reloadTimer <= 0.f && *weapon.currentAmmo < *weapon.maxAmmo) {
-			printf("%s Reloading!\n", weapon.weaponName);
-			*weapon.reloadTimer = weapon.reloadSpeed;
-			*weapon.inReload = true; //Reloading so dont allow the player to shoot
-		}
+		//if (AEInputCheckTriggered(AEVK_R) && *weapon.reloadTimer <= 0.f && *weapon.currentAmmo < *weapon.maxAmmo) {
+		//	printf("%s Reloading!\n", weapon.weaponName);
+		//	*weapon.reloadTimer = weapon.reloadSpeed;
+		//	*weapon.inReload = true; //Reloading so dont allow the player to shoot
+		//}
 
+
+		ResetShootCooldown(player, dt);
+		WeaponSwitchCheck(player);
+		ShootingCheck(player, playerBullets, weapon);
+		ReloadBullets(weapon, reloadTime, dt);
 		// ---------------------------------------------------------------------------
 		// UPDATE BULLETS
 		// ---------------------------------------------------------------------------
