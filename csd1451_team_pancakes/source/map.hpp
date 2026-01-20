@@ -9,12 +9,12 @@ const int MAP_WIDTH = 64;   // Was 32, now double
  * Loads a game level map from a text file into a 2D array.
  * Returns 1 on success, 0 on failure.
  */
-int load_game_level(const char* filename, std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& arr);
+int Load_Game_Level(const char* filename, std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& arr);
 
 /**
  * Renders the game map using the provided mesh.
  * Draws colored squares for each solid tile (value of 1) in the array.
  */
-void Load_map(std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& arr,
+void Load_Map(std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& arr,
     AEGfxVertexList* mesh,
     float cameraX, float cameraY);
