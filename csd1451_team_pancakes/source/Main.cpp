@@ -98,21 +98,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		UpdatePlayerTimers(&player, dt);
 		UpdatePlayerMovement(&player, dt);
 
-	
-		if (AEInputCheckTriggered(AEVK_1)) {
-			player.currentWeaponIndex = 0;  // Switch to Pistol
-			WeaponStats newWeapon = GetCurrentWeapon(player); //To make sure the right weapon is printed
-			printf("%s Switched! %d\n", newWeapon.weaponName, player.currentWeaponIndex); // Made the printf dynamic so its not dependent of if
-
-		}
-		if (AEInputCheckTriggered(AEVK_2)) {
-			player.currentWeaponIndex = 1;  // Switch to Assault Rifle
-			WeaponStats newWeapon = GetCurrentWeapon(player); //Same as above
-			printf("%s Switched! %d\n", newWeapon.weaponName, player.currentWeaponIndex); //Same as above
-		}
-
-
-
 		// Update shoot cooldown
 		if (player.shootCooldown > 0.0f) {
 			player.shootCooldown -= dt;
@@ -166,7 +151,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		ResetShootCooldown(player, dt);
 		WeaponSwitchCheck(player);
 		ShootingCheck(player, playerBullets, weapon);
-		ReloadBullets(weapon, reloadTime, dt);
+		ReloadBullets(weapon, dt);
 		// ---------------------------------------------------------------------------
 		// UPDATE BULLETS
 		// ---------------------------------------------------------------------------
