@@ -5,7 +5,9 @@
 #include "utils.hpp"  
 #include "player.hpp"
 #include "gunTypes.hpp"
+#include "enemies.hpp"
 #include "weapon.hpp"
+#include <vector>
 
 
 //Legend if needed later
@@ -58,6 +60,15 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	// Bullet management
 	std::vector<Bullet> playerBullets;
 
+	//Init Grunt Enemy type
+	std::vector<Grunt> grunts;
+	std::vector<Bullet> enemyBullets;
+
+	//Spawning of Grunts
+	grunts.push_back(SpawnGrunt(300.0f, 200.0f));
+	grunts.push_back(SpawnGrunt(-300.0f, -200.0f));
+	grunts.push_back(SpawnGrunt(0.0f, 300.0f));
+
 	//Init Player
 	Player player = InitPlayer();
 
@@ -70,7 +81,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	//dont move this up
 	InitCommonMeshes();
 
-
+	
 
 
 	// ---------------------------------------------------------------------------
@@ -130,33 +141,25 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			}
 		}
 
-		// Basically counts the CD down to 0 >> the time taken to reload
-		//if (*weapon.reloadTimer > 0.f) {
-		//	*weapon.reloadTimer -= dt;
-		//	//Once the reload is completed, change current ammo count to max ammo count
-		//	if (*weapon.reloadTimer <= 0.f) {
-		//		*weapon.currentAmmo = *weapon.maxAmmo;
-		//		*weapon.inReload = false; // NOT Reloading anymore
-		//		printf("%s Reloaded!\n", weapon.weaponName);
-		//	}
-		//}
-
-		//if (AEInputCheckTriggered(AEVK_R) && *weapon.reloadTimer <= 0.f && *weapon.currentAmmo < *weapon.maxAmmo) {
-		//	printf("%s Reloading!\n", weapon.weaponName);
-		//	*weapon.reloadTimer = weapon.reloadSpeed;
-		//	*weapon.inReload = true; //Reloading so dont allow the player to shoot
-		//}
-
-
 		ResetShootCooldown(player, dt);
 		WeaponSwitchCheck(player);
 		ShootingCheck(player, playerBullets, weapon);
 		ReloadBullets(weapon, dt);
+
+		// ---------------------------------------------------------------------------
+		// UPDATE ENEMIES
+		// ---------------------------------------------------------------------------
+		
+		//Update Grunt to aim at player
+		UpdateGrunts(grunts, player, enemyBullets, dt);
+
+
 		// ---------------------------------------------------------------------------
 		// UPDATE BULLETS
 		// ---------------------------------------------------------------------------
 
 		UpdateBullets(playerBullets, dt);
+		UpdateBullets(enemyBullets, dt);  // Update enemy bullets
 
 		// ---------------------------------------------------------------------------
 		// Collision Checks
@@ -182,6 +185,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		AEGfxSetBlendMode(AE_GFX_BM_BLEND);
 		AEGfxSetTransparency(1.0f);
 
+		//Enemy Circle
+		RenderGrunts(grunts, meshes.circle);
 
 		//Player Circle
 		AEGfxSetColorToMultiply(0.0f, 0.0f, 1.0f, 1.0f);
@@ -189,7 +194,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		// Draw bullets
 		RenderBullets(playerBullets, meshes.circle);
-
+		RenderBullets(enemyBullets, meshes.circle);  
 		
 		// Draw Background Health Bar (top left)
 		AEGfxSetColorToMultiply(0.5f, 0.0f, 0.0f, 1.0f);
@@ -228,18 +233,5 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	return 0;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 

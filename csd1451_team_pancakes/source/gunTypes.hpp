@@ -18,7 +18,6 @@ struct Pistol {
 		maxAmmo = 12;
 		bulletSpeed = 800.f;
 		bulletDamage = 25.f;
-		fireRate = 1.0f;
 		fireRate = 0.36f;
 		reloadSpeed = 2.f;
 		reloadTimer = 0.f;
