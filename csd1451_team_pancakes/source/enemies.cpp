@@ -17,7 +17,7 @@ void UpdateGrunts(std::vector<Grunt>& grunts, Player& player, std::vector<Bullet
 			grunt.shootCooldown -= dt;
 		}
 
-		// Shoot at player every 2 seconds
+		// Shoot at player when shooting goes off cooldown
 		if (grunt.shootCooldown <= 0.0f && grunt.pistol.currentAmmo > 0) {
 			// Create bullet aimed at player
 			Bullet newBullet = CreateBullet(
@@ -35,6 +35,7 @@ void UpdateGrunts(std::vector<Grunt>& grunts, Player& player, std::vector<Bullet
 			grunt.pistol.currentAmmo--;
 
 			// Reset cooldown to 2 seconds
+			//Change this if you want them to shoot faster or slower
 			grunt.shootCooldown = 2.0f;
 
 			printf("Grunt fired! Ammo: %d/%d\n", grunt.pistol.currentAmmo, grunt.pistol.maxAmmo);
@@ -47,6 +48,7 @@ void UpdateGrunts(std::vector<Grunt>& grunts, Player& player, std::vector<Bullet
 		}
 
 		// Handle reload countdown
+		// doesnt seem like it works, have to test more
 		if (grunt.pistol.reloadTimer > 0.0f) {
 			grunt.pistol.reloadTimer -= dt;
 			if (grunt.pistol.reloadTimer <= 0.0f) {
