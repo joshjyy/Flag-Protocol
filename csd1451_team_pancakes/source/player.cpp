@@ -182,8 +182,7 @@ void UpdatePlayerTimers(Player* player, float dt) {
 
 void UpdatePlayerMovement(Player* player, float dt,
     std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap) {
-
-    float radius = 25.0f;  // Player radius
+    float radius = 25.0f;  // Consistent radius
 
     // Check for dash input
     if (AEInputCheckTriggered(AEVK_SPACE) && player->dashCooldownTimer <= 0.0f) {
@@ -214,8 +213,8 @@ void UpdatePlayerMovement(Player* player, float dt,
         player->x += player->dashDirX * dashSpeed * dt;
         player->y += player->dashDirY * dashSpeed * dt;
 
-        // Check collision after dash movement
-        if (checkCollision(player->x, player->y, 30.0f, gameMap)) {
+        // Check collision with CONSISTENT radius
+        if (checkCollision(player->x, player->y, radius, gameMap)) {
             player->x = oldX;
             player->y = oldY;
             player->dashTimer = 0.0f;
@@ -225,61 +224,27 @@ void UpdatePlayerMovement(Player* player, float dt,
     else {
         player->inDash = false;
 
-        // *** SIMPLE COLLISION CHECKS FOR EACH DIRECTION ***
+        // Calculate movement direction
+        float moveX = 0.0f;
+        float moveY = 0.0f;
 
-        // Check W (UP) - check TOP edge
-        if (AEInputCheckCurr(AEVK_W)) {
-            float topEdge = player->y + radius;
-            int i = (int)((450.0f - topEdge - 25.0f) / 50.0f);
-            int j = (int)((player->x + 800.0f - 25.0f) / 50.0f);
+        if (AEInputCheckCurr(AEVK_W)) moveY += 1.0f;
+        if (AEInputCheckCurr(AEVK_S)) moveY -= 1.0f;
+        if (AEInputCheckCurr(AEVK_D)) moveX += 1.0f;
+        if (AEInputCheckCurr(AEVK_A)) moveX -= 1.0f;
 
-            // Check if tile at top edge is a wall
-            if (i >= 0 && i < MAP_HEIGHT && j >= 0 && j < MAP_WIDTH) {
-                if (gameMap[i][j] != 1 && gameMap[i][j] != 2) {
-                    player->y += walkSpeed * dt;  // Safe to move up
-                }
-            }
-        }
+        // Only move if there's input
+        if (moveX != 0.0f || moveY != 0.0f) {
+            float oldX = player->x;
+            float oldY = player->y;
 
-        // Check A (LEFT) - check LEFT edge
-        if (AEInputCheckCurr(AEVK_A)) {
-            float leftEdge = player->x - radius;
-            int i = (int)((450.0f - player->y - 25.0f) / 50.0f);
-            int j = (int)((leftEdge + 800.0f - 25.0f) / 50.0f);
+            player->x += moveX * walkSpeed * dt;
+            player->y += moveY * walkSpeed * dt;
 
-            // Check if tile at left edge is a wall
-            if (i >= 0 && i < MAP_HEIGHT && j >= 0 && j < MAP_WIDTH) {
-                if (gameMap[i][j] != 1 && gameMap[i][j] != 2) {
-                    player->x -= walkSpeed * dt;  // Safe to move left
-                }
-            }
-        }
-
-        // Check S (DOWN) - check BOTTOM edge
-        if (AEInputCheckCurr(AEVK_S)) {
-            float bottomEdge = player->y - radius;
-            int i = (int)((450.0f - bottomEdge - 25.0f) / 50.0f);
-            int j = (int)((player->x + 800.0f - 25.0f) / 50.0f);
-
-            // Check if tile at bottom edge is a wall
-            if (i >= 0 && i < MAP_HEIGHT && j >= 0 && j < MAP_WIDTH) {
-                if (gameMap[i][j] != 1 && gameMap[i][j] != 2) {
-                    player->y -= walkSpeed * dt;  // Safe to move down
-                }
-            }
-        }
-
-        // Check D (RIGHT) - check RIGHT edge
-        if (AEInputCheckCurr(AEVK_D)) {
-            float rightEdge = player->x + radius;
-            int i = (int)((450.0f - player->y - 25.0f) / 50.0f);
-            int j = (int)((rightEdge + 800.0f - 25.0f) / 50.0f);
-
-            // Check if tile at right edge is a wall
-            if (i >= 0 && i < MAP_HEIGHT && j >= 0 && j < MAP_WIDTH) {
-                if (gameMap[i][j] != 1 && gameMap[i][j] != 2) {
-                    player->x += walkSpeed * dt;  // Safe to move right
-                }
+            // Check collision after movement
+            if (checkCollision(player->x, player->y, radius, gameMap)) {
+                player->x = oldX;
+                player->y = oldY;
             }
         }
     }

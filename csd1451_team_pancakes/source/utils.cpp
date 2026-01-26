@@ -107,11 +107,14 @@ void FreeCommonMeshes(void) {
 int checkCollision(float playerX, float playerY, float radius,
     std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap) {
 
-    // Step 1: Calculate edge points
-    float leftEdge = playerX - radius;
-    float rightEdge = playerX + radius;
-    float topEdge = playerY + radius;
-    float bottomEdge = playerY - radius;
+    // Shrink the collision box slightly inward from all sides
+    float epsilon = 30.0f;  // Adjust this value as needed
+    float epslion_less = 20.0f;
+    // Step 1: Calculate edge points - subtract epsilon from radius
+    float leftEdge = playerX - (radius - epsilon);
+    float rightEdge = playerX + (radius + epslion_less);
+    float topEdge = playerY + (radius - epsilon);
+    float bottomEdge = playerY - (radius + epslion_less);
 
     // Step 2: Convert to grid coordinates
     int leftCol = (int)((leftEdge + 800.0f - 25.0f) / 50.0f);
@@ -119,33 +122,25 @@ int checkCollision(float playerX, float playerY, float radius,
     int topRow = (int)((450.0f - topEdge - 25.0f) / 50.0f);
     int bottomRow = (int)((450.0f - bottomEdge - 25.0f) / 50.0f);
 
-    // Step 3: Check boundaries (make sure we're not outside the map)
+    // Step 3: Check boundaries
     if (leftCol < 0 || rightCol >= MAP_WIDTH ||
         topRow < 0 || bottomRow >= MAP_HEIGHT) {
-        return 1; // Out of bounds = collision
+        return 1;
     }
 
-    // Step 4: Check all 4 corners of the player's bounding box
-    // Check top-left corner
-    if (gameMap[topRow][leftCol] == 1 || gameMap[topRow][leftCol] == 2) { 
-        return 1; // Hit a wall!
+    // Step 4: Check all 4 corners
+    if (gameMap[topRow][leftCol] == 1 || gameMap[topRow][leftCol] == 2) {
+        return 1;
     }
-
-    // Check top-right corner
     if (gameMap[topRow][rightCol] == 1 || gameMap[topRow][rightCol] == 2) {
-        return 1; // Hit a wall!
+        return 1;
     }
-
-    // Check bottom-left corner
-    if (gameMap[bottomRow][leftCol] == 1 || gameMap[bottomRow][leftCol] == 2) { 
-        return 1; // Hit a wall!
+    if (gameMap[bottomRow][leftCol] == 1 || gameMap[bottomRow][leftCol] == 2) {
+        return 1;
     }
-
-    // Check bottom-right corner
     if (gameMap[bottomRow][rightCol] == 1 || gameMap[bottomRow][rightCol] == 2) {
-        return 1; // Hit a wall!
+        return 1;
     }
 
-    // No collision detected!       
     return 0;
 }
