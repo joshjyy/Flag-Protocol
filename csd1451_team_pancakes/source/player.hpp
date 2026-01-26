@@ -39,7 +39,7 @@ Player InitPlayer(void);
 void DrawPlayer(Player& player, void* mesh, float cameraX, float cameraY);
 void DrawPlayerHealth(Player& player, void* mesh);
 void NormalizeVector(float* x, float* y);
-void UpdateBullets(std::vector<Bullet>& bullets, float dt);
+void UpdateBullets(std::vector<Bullet>& bullets, float dt, std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap);
 void RenderBullets(const std::vector<Bullet>& bullets, void* mesh, float cameraX, float cameraY);
 void ClearBullets(std::vector<Bullet>& bullets);  // Optional - replaces FreeBullets
 int GetBulletCount(const std::vector<Bullet>& bullets);

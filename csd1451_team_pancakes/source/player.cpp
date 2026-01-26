@@ -71,24 +71,24 @@ Bullet CreateBullet(float x, float y, float targetX, float targetY, float speed,
     return newBullet;
 }
 
-void UpdateBullets(std::vector<Bullet>& bullets, float dt) {
-	// Backward loop to safely remove bullets
+void UpdateBullets(std::vector<Bullet>& bullets, float dt,
+    std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap) {
+
+    const float BULLET_RADIUS = 5.0f;  // Define bullet size (adjust as needed)
+
+    // Backward loop to safely remove bullets
     for (int i = (int)bullets.size() - 1; i >= 0; i--) {
         // Update position
         bullets[i].x += bullets[i].velocityX * dt;
         bullets[i].y += bullets[i].velocityY * dt;
 
-        // Collision Effects
-        /*if (bullets[i].y > 500.0f || bullets[i].y < -500.0f ||
-            bullets[i].x > 900.0f || bullets[i].x < -900.0f) {
-
-            bullets.erase(bullets.begin() + i);  // Remove bullet
-        } 
-        */ 
-
-
+        // Check collision with walls
+        if (checkCollision(bullets[i].x, bullets[i].y, BULLET_RADIUS, gameMap)) {
+            bullets.erase(bullets.begin() + i);  // Remove bullet when it hits a wall
+        }
     }
 }
+
 void RenderBullets(const std::vector<Bullet>& bullets, void* mesh,
     float cameraX, float cameraY) {  // ADD camera parameters
     // Loop through each bullet
