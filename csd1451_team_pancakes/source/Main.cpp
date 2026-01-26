@@ -59,10 +59,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	// Bullet management
 	std::vector<Bullet> playerBullets;
+	std::vector<Bullet> enemyBullets;
 
 	//Init Grunt Enemy type
 	std::vector<Grunt> grunts;
-	std::vector<Bullet> enemyBullets;
 
 	//Spawning of Grunts
 	grunts.push_back(SpawnGrunt(300.0f, 200.0f));
