@@ -127,25 +127,25 @@ int checkCollision(float playerX, float playerY, float radius,
 
     // Step 4: Check all 4 corners of the player's bounding box
     // Check top-left corner
-    if (gameMap[topRow ][leftCol] == 1 || gameMap[topRow][leftCol] == 2) {
+    if (gameMap[topRow][leftCol] == 1 || gameMap[topRow][leftCol] == 2) { 
         return 1; // Hit a wall!
     }
 
     // Check top-right corner
-    if (gameMap[topRow][leftCol] == 1 || gameMap[topRow][leftCol] == 2) {
+    if (gameMap[topRow][rightCol] == 1 || gameMap[topRow][rightCol] == 2) {
         return 1; // Hit a wall!
     }
 
     // Check bottom-left corner
-    if (gameMap[topRow][leftCol] == 1 || gameMap[topRow][leftCol] == 2) {
+    if (gameMap[bottomRow][leftCol] == 1 || gameMap[bottomRow][leftCol] == 2) { 
         return 1; // Hit a wall!
     }
 
     // Check bottom-right corner
-    if (gameMap[topRow][leftCol] == 1 || gameMap[topRow][leftCol] == 2  ) {
+    if (gameMap[bottomRow][rightCol] == 1 || gameMap[bottomRow][rightCol] == 2) {
         return 1; // Hit a wall!
     }
 
-    // No collision detected!
+    // No collision detected!       
     return 0;
 }
