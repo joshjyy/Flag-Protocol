@@ -71,23 +71,24 @@ Bullet CreateBullet(float x, float y, float targetX, float targetY, float speed,
     return newBullet;
 }
 
-void UpdateBullets(std::vector<Bullet>& bullets, float dt) {
-	// Backward loop to safely remove bullets
+void UpdateBullets(std::vector<Bullet>& bullets, float dt,
+    std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap) {
+
+    const float BULLET_RADIUS = 5.0f;  // Define bullet size (adjust as needed)
+
+    // Backward loop to safely remove bullets
     for (int i = (int)bullets.size() - 1; i >= 0; i--) {
         // Update position
         bullets[i].x += bullets[i].velocityX * dt;
         bullets[i].y += bullets[i].velocityY * dt;
 
-        // Collision Effects
-        /*if (bullets[i].y > 500.0f || bullets[i].y < -500.0f ||
-            bullets[i].x > 900.0f || bullets[i].x < -900.0f) {
-
-            bullets.erase(bullets.begin() + i);  // Remove bullet
-        } 
-        */ 
-
+        // Check collision with walls
+        if (checkCollision(bullets[i].x, bullets[i].y, BULLET_RADIUS, gameMap)) {
+            bullets.erase(bullets.begin() + i);  // Remove bullet when it hits a wall
+        }
     }
 }
+
 void RenderBullets(const std::vector<Bullet>& bullets, void* mesh,
     float cameraX, float cameraY) {  // ADD camera parameters
     // Loop through each bullet
@@ -116,7 +117,7 @@ void ClearBullets(std::vector<Bullet>& bullets) {
     bullets.clear(); 
 }
 //Fetch Bullet Count
-int GetBulletCount(const std::vector<Bullet>& bullets) { 
+int GetBulletCount(const std::vector<Bullet>& bullets) {
     return (int)bullets.size();
 }
 //current ammo and max ammo are addressed bc they are being modified outside this function
@@ -179,12 +180,15 @@ void UpdatePlayerTimers(Player* player, float dt) {
     }
 }
 
-void UpdatePlayerMovement(Player* player, float dt) {
+void UpdatePlayerMovement(Player* player, float dt,
+    std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap) {
+    float radius = 25.0f;  // Consistent radius
+
     // Check for dash input
     if (AEInputCheckTriggered(AEVK_SPACE) && player->dashCooldownTimer <= 0.0f) {
         float inputX = 0.0f;
         float inputY = 0.0f;
-		player->inDash = true;
+        player->inDash = true;
 
         if (AEInputCheckCurr(AEVK_W)) inputY += 1.0f;
         if (AEInputCheckCurr(AEVK_S)) inputY -= 1.0f;
@@ -202,23 +206,46 @@ void UpdatePlayerMovement(Player* player, float dt) {
 
     // Apply movement
     if (player->dashTimer > 0.0f) {
-        // During dash - locked into dash direction
-        player->x += player->dashDirX * dashSpeed * dt;  
+        // During dash
+        float oldX = player->x;
+        float oldY = player->y;
+
+        player->x += player->dashDirX * dashSpeed * dt;
         player->y += player->dashDirY * dashSpeed * dt;
+
+        // Check collision with CONSISTENT radius
+        if (checkCollision(player->x, player->y, radius, gameMap)) {
+            player->x = oldX;
+            player->y = oldY;
+            player->dashTimer = 0.0f;
+            player->inDash = false;
+        }
     }
     else {
         player->inDash = false;
-        if (AEInputCheckCurr(AEVK_W)) {
-            player->y += walkSpeed * dt;   
-        }
-        if (AEInputCheckCurr(AEVK_A)) {
-            player->x -= walkSpeed * dt;  
-        }
-        if (AEInputCheckCurr(AEVK_S)) {
-            player->y -= walkSpeed * dt;   
-        }
-        if (AEInputCheckCurr(AEVK_D)) {
-            player->x += walkSpeed * dt;   
+
+        // Calculate movement direction
+        float moveX = 0.0f;
+        float moveY = 0.0f;
+
+        if (AEInputCheckCurr(AEVK_W)) moveY += 1.0f;
+        if (AEInputCheckCurr(AEVK_S)) moveY -= 1.0f;
+        if (AEInputCheckCurr(AEVK_D)) moveX += 1.0f;
+        if (AEInputCheckCurr(AEVK_A)) moveX -= 1.0f;
+
+        // Only move if there's input
+        if (moveX != 0.0f || moveY != 0.0f) {
+            float oldX = player->x;
+            float oldY = player->y;
+
+            player->x += moveX * walkSpeed * dt;
+            player->y += moveY * walkSpeed * dt;
+
+            // Check collision after movement
+            if (checkCollision(player->x, player->y, radius, gameMap)) {
+                player->x = oldX;
+                player->y = oldY;
+            }
         }
     }
 }

@@ -1,5 +1,6 @@
 #pragma once
 #include "AEEngine.h"
+#include "map.hpp"
 
 
 
@@ -12,7 +13,8 @@ int AreBoxesIntersecting(float box1_center_x, float box1_center_y, float box1_wi
 
 void DrawSprite(AEGfxVertexList* mesh, float x, float y, float scaleX, float scaleY, float rotation);
 
-
+int checkCollision(float playerX, float playerY, float radius,
+    std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap);
 
 // Common mesh management
 typedef struct {
@@ -24,3 +26,4 @@ extern CommonMeshes meshes;  // Global mesh storage
 
 void InitCommonMeshes(void);
 void FreeCommonMeshes(void);
+

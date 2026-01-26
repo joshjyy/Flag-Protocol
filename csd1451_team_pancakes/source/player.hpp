@@ -2,6 +2,7 @@
 #include <vector>
 #ifndef BULLET_H
 #define BULLET_H
+#include "map.hpp"
 // Bullet structure
 struct Bullet {
     float x, y;
@@ -43,7 +44,8 @@ void RenderBullets(const std::vector<Bullet>& bullets, void* mesh, float cameraX
 void ClearBullets(std::vector<Bullet>& bullets);  // Optional - replaces FreeBullets
 int GetBulletCount(const std::vector<Bullet>& bullets);
 WeaponStats GetCurrentWeapon(Player& player);
-void UpdatePlayerMovement(Player* player, float dt); 
+void UpdatePlayerMovement(Player* player, float dt,
+    std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap);
 void UpdatePlayerTimers(Player* player, float dt);
 
 #endif 
