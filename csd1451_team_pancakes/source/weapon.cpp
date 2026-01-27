@@ -68,3 +68,19 @@ void ReloadBullets(WeaponStats weapon, float &reloadTime, float dt) {
 		reloadTime = weapon.reloadSpeed;
 	}
 }
+
+
+void SetWeaponColor(int weaponIndex) {
+	if (weaponIndex == 0) {
+		AEGfxSetColorToMultiply(1.0f, 1.0f, 0.0f, 1.0f);  // Yellow - Pistol
+	}
+	else if (weaponIndex == 1) {
+		AEGfxSetColorToMultiply(1.0f, 0.0f, 1.0f, 1.0f);  // Purple - Rifle
+	}
+	//else if (weaponIndex == 2) {
+	//	AEGfxSetColorToMultiply(1.0f, 0.0f, 0.0f, 1.0f);  // Red - Shotgun
+	//}
+	else {
+		AEGfxSetColorToMultiply(0.0f, 1.0f, 1.0f, 1.0f);  // Cyan - Default
+	}
+}

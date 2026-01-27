@@ -2,6 +2,7 @@
 #include "AEEngine.h"
 #include "utils.hpp"
 #include "gunTypes.hpp"
+#include "weapon.hpp"
 
 
 Player InitPlayer(void) {
@@ -42,16 +43,41 @@ void DrawPlayer(Player& player, void* mesh, float cameraX, float cameraY) {
     DrawSprite((AEGfxVertexList*)mesh, screenX, screenY, 50.0f, 50.0f, 0.0f);
 }
 
-void DrawPlayerHealth(Player& player, void* mesh) {
-    // Draw Background Health Bar (top left)
-    AEGfxSetColorToMultiply(0.5f, 0.0f, 0.0f, 1.0f);
-    DrawSprite((AEGfxVertexList*)mesh, 150, 400.0f, 500.0f, 30.0f, 0.0f);
+void DrawPlayerUI(Player& player, WeaponStats& weapon, void* mesh, void* mesh2) {
+    float uiX = -600.0f;
+    float uiY = -380.0f;
+    float barWidth = 300.0f;
+    float barHeight = 30.0f;
 
-    // Draw Current Health (top left)
-    AEGfxSetColorToMultiply(1.0f, 1.0f, 0.0f, 1.0f);
-    float healthbarOffset = (1000.0f - player.health) / 2.0f;
-    DrawSprite((AEGfxVertexList*)mesh, 150 - healthbarOffset, 400.0f, player.health, 30.0f, 0.0f);
+    //health bar
+    AEGfxSetColorToMultiply(0.5f, 0.0f, 0.0f, 1.0f);
+    DrawSprite((AEGfxVertexList*)mesh, uiX, uiY,
+        barWidth, barHeight, 0.0f);
+    AEGfxSetColorToMultiply(1.0f, 0.0f, 0.0f, 1.0f);
+    float currentHealthWidth = (player.health / 1000.0f) * barWidth;
+    float healthOffset = (barWidth - currentHealthWidth) / 2.0f;
+    DrawSprite((AEGfxVertexList*)mesh, uiX - healthOffset, uiY, currentHealthWidth, barHeight, 0.0f);
+
+    //ammo Bar
+    float ammoY = uiY - 40.0f;
+    AEGfxSetColorToMultiply(0.2f, 0.2f, 0.2f, 1.0f);
+    DrawSprite((AEGfxVertexList*)mesh, uiX, ammoY,
+        barWidth, barHeight, 0.0f);
+
+    SetWeaponColor(player.currentWeaponIndex);
+
+
+    // Draw ammo bar with weapon color
+    float currentAmmoWidth = ((float)*weapon.currentAmmo / (float)*weapon.maxAmmo) * barWidth;
+    float ammoOffset = (barWidth - currentAmmoWidth) / 2.0f;
+    DrawSprite((AEGfxVertexList*)mesh, uiX - ammoOffset, ammoY, currentAmmoWidth, barHeight, 0.0f);
+
+    // Draw weapon indicator circle 
+    float circleX = uiX + barWidth / 2.0f + 30.0f;
+    float circleSize = 25.0f;
+    DrawSprite((AEGfxVertexList*)mesh2, circleX, ammoY, circleSize, circleSize, 0.0f);
 }
+
 
 //Parameters: starting position (x, y), target position (targetX, targetY), speed
 Bullet CreateBullet(float x, float y, float targetX, float targetY, float speed, float damage) {

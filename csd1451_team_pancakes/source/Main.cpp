@@ -176,7 +176,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		// Draw bullets
 		RenderBullets(playerBullets, meshes.circle, cameraX, cameraY);
 		//Draw Health Bar(Temp)
-		DrawPlayerHealth(player, meshes.square);
+		DrawPlayerUI(player, weapon, meshes.square, meshes.circle);
 
 
 
