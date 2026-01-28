@@ -37,7 +37,8 @@ struct Player {
 Bullet CreateBullet(float x, float y, float targetX, float targetY, float speed, float damage);
 Player InitPlayer(void);
 void DrawPlayer(Player& player, void* mesh, float cameraX, float cameraY);
-void DrawPlayerUI(Player& player, WeaponStats& weapon, void* mesh, void*mesh2);
+void DrawPlayerUI(Player& player, WeaponStats& weapon, void* mesh, void*mesh2, float cameraX, float cameraY, float& reloadTime);
+void PlayerDashStaminaBar(Player& player, void* mesh, float cameraX, float cameraY);
 void NormalizeVector(float* x, float* y);
 void UpdateBullets(std::vector<Bullet>& bullets, float dt, std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap);
 void RenderBullets(const std::vector<Bullet>& bullets, void* mesh, float cameraX, float cameraY);

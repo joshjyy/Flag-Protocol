@@ -61,6 +61,8 @@ void DrawSprite(AEGfxVertexList* mesh, float x, float y, float scaleX, float sca
     AEGfxMeshDraw(mesh, AE_GFX_MDM_TRIANGLES);
 }
 
+
+
 //Mesh -----------
 CommonMeshes meshes = { NULL };
 void InitCommonMeshes(void) {
@@ -143,4 +145,14 @@ int checkCollision(float playerX, float playerY, float radius,
     }
 
     return 0;
+}
+
+
+
+void GetNormalizedTextPosition(float pixelX, float pixelY, float* outNormalizedX, float* outNormalizedY) {
+    const float SCREEN_WIDTH = 1600.0f;
+    const float SCREEN_HEIGHT = 900.0f;
+
+    *outNormalizedX = pixelX / (SCREEN_WIDTH / 2.0f);
+    *outNormalizedY = pixelY / (SCREEN_HEIGHT / 2.0f);
 }

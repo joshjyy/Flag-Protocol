@@ -2,9 +2,8 @@
 #include "AEEngine.h"
 #include "map.hpp"
 
+extern s8 fontID;
 
-
-// Collision detection
 int AreCirclesIntersecting(float circle_center1_x, float circle_center1_y, float radius_1,
     float circle_center2_x, float circle_center2_y, float radius_2);
 
@@ -15,6 +14,8 @@ void DrawSprite(AEGfxVertexList* mesh, float x, float y, float scaleX, float sca
 
 int checkCollision(float playerX, float playerY, float radius,
     std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap);
+
+void GetNormalizedTextPosition(float pixelX, float pixelY, float* outNormalizedX, float* outNormalizedY);
 
 // Common mesh management
 typedef struct {

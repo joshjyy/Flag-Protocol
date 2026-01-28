@@ -33,6 +33,7 @@ f64  = precise decimal       (double)
 
 
 
+ s8 fontID;
 
 
 // ---------------------------------------------------------------------------
@@ -51,6 +52,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	// ---------------------------------------------------------------------------
 	// INITIALIZATION
 	// ---------------------------------------------------------------------------
+
 
 	// Game variables
 	int gGameRunning = 1;
@@ -73,7 +75,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	AESysSetWindowTitle("Game Test!");
 	AESysReset();
 
-	//dont move this up
+	//load font
+	fontID = AEGfxCreateFont("Assets/Fonts/Jersey10-Regular.ttf", 24); 
+
+	//load meshes
 	InitCommonMeshes();
 
 	// ---------------------------------------------------------------------------
@@ -176,7 +181,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		// Draw bullets
 		RenderBullets(playerBullets, meshes.circle, cameraX, cameraY);
 		//Draw Health Bar(Temp)
-		DrawPlayerUI(player, weapon, meshes.square, meshes.circle);
+		DrawPlayerUI(player, weapon, meshes.square, meshes.circle,  cameraX,  cameraY, reloadTime);
 
 
 
@@ -200,6 +205,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	// ---------------------------------------------------------------------------
 
 	ClearBullets(playerBullets);
+	AEGfxDestroyFont(fontID);
 	FreeCommonMeshes();
 
 	AESysExit();

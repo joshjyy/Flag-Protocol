@@ -5,6 +5,7 @@
 #include "weapon.hpp"
 
 
+
 Player InitPlayer(void) {
     Player player = {
         500.0f,                  // health
@@ -43,7 +44,7 @@ void DrawPlayer(Player& player, void* mesh, float cameraX, float cameraY) {
     DrawSprite((AEGfxVertexList*)mesh, screenX, screenY, 50.0f, 50.0f, 0.0f);
 }
 
-void DrawPlayerUI(Player& player, WeaponStats& weapon, void* mesh, void* mesh2) {
+void DrawPlayerUI(Player& player, WeaponStats& weapon, void* mesh, void* mesh2, float cameraX, float cameraY, float& reloadTime) {
     float uiX = -600.0f;
     float uiY = -380.0f;
     float barWidth = 300.0f;
@@ -72,12 +73,62 @@ void DrawPlayerUI(Player& player, WeaponStats& weapon, void* mesh, void* mesh2) 
     float ammoOffset = (barWidth - currentAmmoWidth) / 2.0f;
     DrawSprite((AEGfxVertexList*)mesh, uiX - ammoOffset, ammoY, currentAmmoWidth, barHeight, 0.0f);
 
+
+    // Draw ammo count text
+    char ammoText[32];
+    float textOffsetX = 0.0f;  
+
+    if (reloadTime > 0.0f) {
+        sprintf_s(ammoText, 32, "Reloading...");
+        textOffsetX = -30.0f;  
+    }
+    else {
+        sprintf_s(ammoText, 32, "%d / %d", *weapon.currentAmmo, *weapon.maxAmmo);
+    }
+
+    float textX, textY;
+    GetNormalizedTextPosition(uiX - 30.0f + textOffsetX, ammoY - 8.0f, &textX, &textY);
+    AEGfxPrint(fontID, ammoText, textX, textY, 1.5, 0.0, 0.0, 0.0, 1.0);
+
     // Draw weapon indicator circle 
     float circleX = uiX + barWidth / 2.0f + 30.0f;
     float circleSize = 25.0f;
     DrawSprite((AEGfxVertexList*)mesh2, circleX, ammoY, circleSize, circleSize, 0.0f);
+	PlayerDashStaminaBar(player, meshes.square, cameraX, cameraY);
+
 }
 
+void PlayerDashStaminaBar(Player& player, void* mesh, float cameraX, float cameraY) {
+    if (player.dashCooldownTimer > 0.0f) {
+        float dashBarOffsetX = 50.0f;
+        float dashBarOffsetY = 0.0f;
+
+        float dashX = player.x - cameraX + dashBarOffsetX;
+        float dashY = player.y - cameraY + dashBarOffsetY;
+
+        float dashBarWidth = 10.0f;
+        float dashBarHeight = 55.0f;
+
+        AEGfxSetColorToMultiply(0.2f, 0.2f, 0.2f, 1.0f);
+        DrawSprite((AEGfxVertexList*)mesh, dashX, dashY, dashBarWidth, dashBarHeight, 0.0f);
+
+        // Calculate dash cooldown fill
+        const float MAX_DASH_COOLDOWN = 0.5f;
+        float cooldownPercent = 1.0f - (player.dashCooldownTimer / MAX_DASH_COOLDOWN);
+        if (cooldownPercent < 0.0f) cooldownPercent = 0.0f;
+        if (cooldownPercent > 1.0f) cooldownPercent = 1.0f;
+
+        // Bar fills from bottom
+        float currentDashHeight = cooldownPercent * dashBarHeight;
+        float dashOffset = (dashBarHeight - currentDashHeight) / 2.0f;
+
+		// Color shifting from red to cyan
+        float cyan = cooldownPercent;
+        float red = 1.0f - cooldownPercent;
+        AEGfxSetColorToMultiply(red, cyan, cyan, 1.0f);
+        DrawSprite((AEGfxVertexList*)mesh, dashX, dashY - dashOffset, dashBarWidth, currentDashHeight, 0.0f);
+    }
+}
 
 //Parameters: starting position (x, y), target position (targetX, targetY), speed
 Bullet CreateBullet(float x, float y, float targetX, float targetY, float speed, float damage) {
