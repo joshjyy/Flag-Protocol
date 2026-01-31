@@ -8,6 +8,7 @@
 #include "enemies.hpp"
 #include "weapon.hpp"
 #include <vector>
+#include "map.hpp"
 
 //Legend if needed later
 /*
@@ -31,6 +32,12 @@ f64  = precise decimal       (double)
 //DONT IMPORT STD NAMESPACE
 // ---------------------------------------------------------------------------
 
+
+
+
+ s8 fontID;
+
+
 // ---------------------------------------------------------------------------
 // Main entry point
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
@@ -47,6 +54,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	// ---------------------------------------------------------------------------
 	// INITIALIZATION
 	// ---------------------------------------------------------------------------
+
 
 	// Game variables
 	int gGameRunning = 1;
@@ -71,13 +79,44 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	AESysSetWindowTitle("Game Test!");
 	AESysReset();
 
-	//dont move this up
+	//load font
+	fontID = AEGfxCreateFont("Assets/Fonts/Jersey10-Regular.ttf", 24); 
+
+	//load meshes
 	InitCommonMeshes();
+
+	// ---------------------------------------------------------------------------
+	// MAP
+	// ---------------------------------------------------------------------------
+
+	// 2D array to store the game map data (18 rows x 32 columns)
+	std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT> gameMap;
+	//Camera variables(in main, with other game variables)
+	float cameraX = 0.0f;
+	float cameraY = 0.0f;
+
+	// In game loop - UPDATE section:
+	// Update camera to follow player
+	
+	// Load the map from file into the gameMap array
+	if (!Load_Game_Level("Assets/Level_1_Map.txt", gameMap)) {
+		printf("Failed to load map! Exiting...\n");
+		gGameRunning = 0;
+	}
+	else {
+		printf("Map loaded successfully!\n");
+	}
 
 	// ---------------------------------------------------------------------------
 	// GAME LOOP
 	// ---------------------------------------------------------------------------
-
+	// Set background color (gray)
+	AEGfxSetBackgroundColor(0.5f, 0.5f, 0.5f);
+	// Set render mode for colored meshes
+	AEGfxSetRenderMode(AE_GFX_RM_COLOR);
+	// Enable transparency
+	AEGfxSetBlendMode(AE_GFX_BM_BLEND);
+	AEGfxSetTransparency(1.0f);
 	while (gGameRunning)
 	{
 		// Frame start
@@ -92,13 +131,23 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//Check what weapon the player is using once per frame
 		WeaponStats weapon = GetCurrentWeapon(player);
 
+		// ---------------------------------------------------------------------------
+		// MAP AND CAMERA
+		// ---------------------------------------------------------------------------
+		//Camera follows the player
+		cameraX = player.x;
+		cameraY = player.y;
+		Load_Map(gameMap, meshes.square, cameraX, cameraY);
+
 		// Exit game
 		if (AEInputCheckTriggered(AEVK_ESCAPE) || 0 == AESysDoesWindowExist())
 			gGameRunning = 0;
+		
+
 
 		// Update Timers CD
 		UpdatePlayerTimers(&player, dt);
-		UpdatePlayerMovement(&player, dt);
+		UpdatePlayerMovement(&player, dt, gameMap);
 
 		// Weapon controls
 		ResetShootCooldown(player, dt);
@@ -117,8 +166,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		// UPDATE BULLETS
 		// ---------------------------------------------------------------------------
 
-		UpdateBullets(playerBullets, dt);
-		UpdateBullets(enemyBullets, dt);  // Update enemy bullets
+		UpdateBullets(playerBullets, dt, gameMap);
 
 		// ---------------------------------------------------------------------------
 		// Collision Checks
@@ -128,15 +176,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		// RENDERING
 		// ---------------------------------------------------------------------------
 
-		// Set background color (gray)
-		AEGfxSetBackgroundColor(0.5f, 0.5f, 0.5f);
 
-		// Set render mode for colored meshes
-		AEGfxSetRenderMode(AE_GFX_RM_COLOR);
 
-		// Enable transparency
-		AEGfxSetBlendMode(AE_GFX_BM_BLEND);
-		AEGfxSetTransparency(1.0f);
 
 		//Enemy Circle (draw first - bottom layer)
 		RenderGrunts(grunts, meshes.circle);
@@ -145,18 +186,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		RenderBullets(playerBullets, meshes.circle);
 		RenderBullets(enemyBullets, meshes.circle);
 
-		//Player Circle (draw last - top layer)
-		AEGfxSetColorToMultiply(0.0f, 0.0f, 1.0f, 1.0f);
-		DrawSprite(meshes.circle, player.x, player.y, 50.0f, 50.0f, 0.0f);
-
-		// Draw Background Health Bar (top left)
-		AEGfxSetColorToMultiply(0.5f, 0.0f, 0.0f, 1.0f);
-		DrawSprite(meshes.square, -250.0f, 400.0f, 500.0f, 50.0f, 0.0f);
-
-		// Draw Current Health (top left)
-		AEGfxSetColorToMultiply(1.0f, 0.0f, 0.0f, 1.0f);
-		float healthbarOffset = (1000.0f - player.health) / 2.0f;
-		DrawSprite(meshes.square, -250.0f - healthbarOffset, 400.0f, player.health, 50.0f, 0.0f);
+		//Player Circle
+		DrawPlayer(player, meshes.circle, cameraX, cameraY);
+		// Draw bullets
+		RenderBullets(playerBullets, meshes.circle, cameraX, cameraY);
+		//Draw Health Bar(Temp)
+		DrawPlayerUI(player, weapon, meshes.square, meshes.circle,  cameraX,  cameraY, reloadTime);
 
 		// ---------------------------------------------------------------------------
 		//DEBUGGING
@@ -172,6 +207,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	ClearBullets(playerBullets);
 	ClearBullets(enemyBullets);
+	AEGfxDestroyFont(fontID);
 	FreeCommonMeshes();
 
 	AESysExit();

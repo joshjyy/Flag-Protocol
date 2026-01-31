@@ -13,6 +13,7 @@
   <ItemGroup>
     <ClCompile Include="..\source\enemies.cpp" />
     <ClCompile Include="..\source\Main.cpp" />
+    <ClCompile Include="..\source\map.cpp" />
     <ClCompile Include="..\source\player.cpp" />
     <ClCompile Include="..\source\utils.cpp" />
     <ClCompile Include="..\source\weapon.cpp" />
@@ -20,6 +21,7 @@
   <ItemGroup>
     <ClInclude Include="..\source\enemies.hpp" />
     <ClInclude Include="..\source\gunTypes.hpp" />
+    <ClInclude Include="..\source\map.hpp" />
     <ClInclude Include="..\source\player.hpp" />
     <ClInclude Include="..\source\utils.hpp" />
     <ClInclude Include="..\source\weapon.hpp" />

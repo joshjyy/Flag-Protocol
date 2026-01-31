@@ -21,20 +21,28 @@ void ResetShootCooldown(Player &player, float dt) {
 	}
 }
 
-void ShootingCheck(Player& player, std::vector<Bullet>& type, WeaponStats weapon) {
-	if (AEInputCheckCurr(AEVK_LBUTTON) && player.shootCooldown <= 0.0f && !(*weapon.inReload)) {  // reload check as well, cant shoot when reloading
+void ShootingCheck(Player& player, std::vector<Bullet>& type, WeaponStats weapon,
+	float cameraX, float cameraY) {  // ADD THESE
+	if (AEInputCheckCurr(AEVK_LBUTTON) && player.shootCooldown <= 0.0f && player.inDash == false) {
 		if (*weapon.currentAmmo > 0) {
-			// Get mouse position in world coordinates
+			// Get mouse position in SCREEN coordinates
 			s32 mouseX, mouseY;
 			AEInputGetCursorPosition(&mouseX, &mouseY);
-			float worldMouseX = (float)mouseX - 800.0f;
-			float worldMouseY = 450.0f - (float)mouseY;
+
+			// Convert screen to centered screen coords
+			float screenX = (float)mouseX - 800.0f;
+			float screenY = 450.0f - (float)mouseY;
+
+			// *** ADD THIS - Convert screen to world coordinates ***
+			float worldMouseX = screenX + cameraX;
+			float worldMouseY = screenY + cameraY;
+
 			// Create bullet with current weapon stats
 			Bullet newBullet = CreateBullet(player.x, player.y, worldMouseX, worldMouseY, weapon.bulletSpeed, weapon.bulletDamage);
 			type.push_back(newBullet);
+
 			// Decrease ammo
 			(*weapon.currentAmmo)--;
-			// debug stuff
 			printf("Ammo: %d/%d\n", *weapon.currentAmmo, *weapon.maxAmmo);
 			// Reset cooldown with current weapon's fire rate
 			player.shootCooldown = weapon.fireRate;
@@ -59,5 +67,21 @@ void ReloadBullets(WeaponStats weapon, float dt) {
 		printf("%s Reloading...\n", weapon.weaponName);
 		*weapon.reloadTimer = weapon.reloadSpeed;
 		*weapon.inReload = true; 
+	}
+}
+
+
+void SetWeaponColor(int weaponIndex) {
+	if (weaponIndex == 0) {
+		AEGfxSetColorToMultiply(1.0f, 1.0f, 0.0f, 1.0f);  // Yellow - Pistol
+	}
+	else if (weaponIndex == 1) {
+		AEGfxSetColorToMultiply(1.0f, 0.0f, 1.0f, 1.0f);  // Purple - Rifle
+	}
+	//else if (weaponIndex == 2) {
+	//	AEGfxSetColorToMultiply(1.0f, 0.0f, 0.0f, 1.0f);  // Red - Shotgun
+	//}
+	else {
+		AEGfxSetColorToMultiply(0.0f, 1.0f, 1.0f, 1.0f);  // Cyan - Default
 	}
 }

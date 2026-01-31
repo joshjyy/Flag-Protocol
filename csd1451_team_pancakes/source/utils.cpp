@@ -1,5 +1,7 @@
 #include "utils.hpp"
 #include "AEEngine.h"
+#include <array>
+#include "map.hpp"
 
 int AreCirclesIntersecting(float circle_center1_x, float circle_center1_y, float radius_1, float circle_center2_x, float circle_center2_y, float radius_2) {
 
@@ -59,6 +61,8 @@ void DrawSprite(AEGfxVertexList* mesh, float x, float y, float scaleX, float sca
     AEGfxMeshDraw(mesh, AE_GFX_MDM_TRIANGLES);
 }
 
+
+
 //Mesh -----------
 CommonMeshes meshes = { NULL };
 void InitCommonMeshes(void) {
@@ -100,4 +104,55 @@ void FreeCommonMeshes(void) {
         AEGfxMeshFree(meshes.circle);
         meshes.circle = NULL;
     }
+}
+
+int checkCollision(float playerX, float playerY, float radius,
+    std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap) {
+
+    // Shrink the collision box slightly inward from all sides
+    float epsilon = 30.0f;  // Adjust this value as needed
+    float epslion_less = 20.0f;
+    // Step 1: Calculate edge points - subtract epsilon from radius
+    float leftEdge = playerX - (radius - epsilon);
+    float rightEdge = playerX + (radius + epslion_less);
+    float topEdge = playerY + (radius - epsilon);
+    float bottomEdge = playerY - (radius + epslion_less);
+
+    // Step 2: Convert to grid coordinates
+    int leftCol = (int)((leftEdge + 800.0f - 25.0f) / 50.0f);
+    int rightCol = (int)((rightEdge + 800.0f - 25.0f) / 50.0f);
+    int topRow = (int)((450.0f - topEdge - 25.0f) / 50.0f);
+    int bottomRow = (int)((450.0f - bottomEdge - 25.0f) / 50.0f);
+
+    // Step 3: Check boundaries
+    if (leftCol < 0 || rightCol >= MAP_WIDTH ||
+        topRow < 0 || bottomRow >= MAP_HEIGHT) {
+        return 1;
+    }
+
+    // Step 4: Check all 4 corners
+    if (gameMap[topRow][leftCol] == 1 || gameMap[topRow][leftCol] == 2) {
+        return 1;
+    }
+    if (gameMap[topRow][rightCol] == 1 || gameMap[topRow][rightCol] == 2) {
+        return 1;
+    }
+    if (gameMap[bottomRow][leftCol] == 1 || gameMap[bottomRow][leftCol] == 2) {
+        return 1;
+    }
+    if (gameMap[bottomRow][rightCol] == 1 || gameMap[bottomRow][rightCol] == 2) {
+        return 1;
+    }
+
+    return 0;
+}
+
+
+
+void GetNormalizedTextPosition(float pixelX, float pixelY, float* outNormalizedX, float* outNormalizedY) {
+    const float SCREEN_WIDTH = 1600.0f;
+    const float SCREEN_HEIGHT = 900.0f;
+
+    *outNormalizedX = pixelX / (SCREEN_WIDTH / 2.0f);
+    *outNormalizedY = pixelY / (SCREEN_HEIGHT / 2.0f);
 }
