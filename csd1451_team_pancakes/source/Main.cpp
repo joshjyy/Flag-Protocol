@@ -9,7 +9,6 @@
 #include "weapon.hpp"
 #include <vector>
 
-
 //Legend if needed later
 /*
 SIGNED (can be negative)
@@ -31,11 +30,6 @@ f64  = precise decimal       (double)
 
 //DONT IMPORT STD NAMESPACE
 // ---------------------------------------------------------------------------
-
-
-
-
-
 
 // ---------------------------------------------------------------------------
 // Main entry point
@@ -72,7 +66,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	//Init Player
 	Player player = InitPlayer();
 
-
 	// Initialize engine (1600x900 window, 60 FPS)
 	AESysInit(hInstance, nCmdShow, 1600, 900, 1, 60, false, NULL);
 	AESysSetWindowTitle("Game Test!");
@@ -81,66 +74,33 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	//dont move this up
 	InitCommonMeshes();
 
-	
-
-
 	// ---------------------------------------------------------------------------
 	// GAME LOOP
 	// ---------------------------------------------------------------------------
 
 	while (gGameRunning)
 	{
-
 		// Frame start
 		AESysFrameStart();
 		// Get frame time
 		float dt = (float)AEFrameRateControllerGetFrameTime();
+
 		// ---------------------------------------------------------------------------
 		// INPUT HANDLING
 		// ---------------------------------------------------------------------------
-		
+
 		//Check what weapon the player is using once per frame
 		WeaponStats weapon = GetCurrentWeapon(player);
+
 		// Exit game
 		if (AEInputCheckTriggered(AEVK_ESCAPE) || 0 == AESysDoesWindowExist())
 			gGameRunning = 0;
-		
+
 		// Update Timers CD
 		UpdatePlayerTimers(&player, dt);
 		UpdatePlayerMovement(&player, dt);
 
-		// Update shoot cooldown
-		if (player.shootCooldown > 0.0f) {
-			player.shootCooldown -= dt;
-		}
-
-		// Shooting
-		if (AEInputCheckCurr(AEVK_LBUTTON) && player.shootCooldown <= 0.0f && !(*weapon.inReload)) { //Left click, ShootCD between each bullet, Not Reloading
-			
-
-			if (*weapon.currentAmmo > 0) {
-
-				// Get mouse position in world coordinates
-				s32 mouseX, mouseY;
-				AEInputGetCursorPosition(&mouseX, &mouseY);
-
-				float worldMouseX = (float)mouseX - 800.0f;
-				float worldMouseY = 450.0f - (float)mouseY;
-				// Create bullet with current weapon stats
-				Bullet newBullet = CreateBullet(player.x, player.y, worldMouseX, worldMouseY, weapon.bulletSpeed, weapon.bulletDamage);
-
-				playerBullets.push_back(newBullet);
-				// Decrease ammo
-				(*weapon.currentAmmo)--;
-
-				// debug stuff
-				printf("Ammo: %d/%d\n", *weapon.currentAmmo, *weapon.maxAmmo);
-
-				// Reset cooldown with current weapon's fire rate
-				player.shootCooldown = weapon.fireRate;
-			}
-		}
-
+		// Weapon controls
 		ResetShootCooldown(player, dt);
 		WeaponSwitchCheck(player);
 		ShootingCheck(player, playerBullets, weapon);
@@ -149,10 +109,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		// ---------------------------------------------------------------------------
 		// UPDATE ENEMIES
 		// ---------------------------------------------------------------------------
-		
+
 		//Update Grunt to aim at player
 		UpdateGrunts(grunts, player, enemyBullets, dt);
-
 
 		// ---------------------------------------------------------------------------
 		// UPDATE BULLETS
@@ -164,12 +123,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		// ---------------------------------------------------------------------------
 		// Collision Checks
 		// ---------------------------------------------------------------------------
-		
-
-
-
-
-
 
 		// ---------------------------------------------------------------------------
 		// RENDERING
@@ -185,17 +138,17 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		AEGfxSetBlendMode(AE_GFX_BM_BLEND);
 		AEGfxSetTransparency(1.0f);
 
-		//Enemy Circle
+		//Enemy Circle (draw first - bottom layer)
 		RenderGrunts(grunts, meshes.circle);
 
-		//Player Circle
+		// Draw bullets (middle layer)
+		RenderBullets(playerBullets, meshes.circle);
+		RenderBullets(enemyBullets, meshes.circle);
+
+		//Player Circle (draw last - top layer)
 		AEGfxSetColorToMultiply(0.0f, 0.0f, 1.0f, 1.0f);
 		DrawSprite(meshes.circle, player.x, player.y, 50.0f, 50.0f, 0.0f);
 
-		// Draw bullets
-		RenderBullets(playerBullets, meshes.circle);
-		RenderBullets(enemyBullets, meshes.circle);  
-		
 		// Draw Background Health Bar (top left)
 		AEGfxSetColorToMultiply(0.5f, 0.0f, 0.0f, 1.0f);
 		DrawSprite(meshes.square, -250.0f, 400.0f, 500.0f, 50.0f, 0.0f);
@@ -205,19 +158,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		float healthbarOffset = (1000.0f - player.health) / 2.0f;
 		DrawSprite(meshes.square, -250.0f - healthbarOffset, 400.0f, player.health, 50.0f, 0.0f);
 
-
-
-	
-
-
-
-
 		// ---------------------------------------------------------------------------
 		//DEBUGGING
 		// ---------------------------------------------------------------------------
-	/*	int bulletCount = GetBulletCount(bulletHead);
-		printf("Active bullets: %d\n", bulletCount);*/
-	 
+
 		// Frame end
 		AESysFrameEnd();
 	}
@@ -227,11 +171,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	// ---------------------------------------------------------------------------
 
 	ClearBullets(playerBullets);
+	ClearBullets(enemyBullets);
 	FreeCommonMeshes();
 
 	AESysExit();
 
 	return 0;
 }
-
-
