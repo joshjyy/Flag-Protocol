@@ -9,6 +9,8 @@
 #include "weapon.hpp"
 #include <vector>
 #include "map.hpp"
+#include "events.hpp"
+
 
 //Legend if needed later
 /*
@@ -36,6 +38,7 @@ f64  = precise decimal       (double)
 
 
  s8 fontID;
+ EventManager gameEvents;
 
 
 // ---------------------------------------------------------------------------
@@ -65,6 +68,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	//Init Grunt Enemy type
 	std::vector<Grunt> grunts;
+
+	//Init Event Manager
+	gameEvents = InitEventManager();
 
 	//Spawning of Grunts
 	grunts.push_back(SpawnGrunt(300.0f, 200.0f));
@@ -169,10 +175,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		UpdateBullets(playerBullets, dt, gameMap);
 		UpdateBullets(enemyBullets, dt, gameMap);
 
+
+	
 		// ---------------------------------------------------------------------------
 		// Collision Checks
 		// ---------------------------------------------------------------------------
-
+		// CHECK COLLISIONS 
+		CheckBulletGruntCollisions(playerBullets, grunts, player);
+		CheckEnemyBulletPlayerCollision(enemyBullets, player);
 		// ---------------------------------------------------------------------------
 		// RENDERING
 		// ---------------------------------------------------------------------------
@@ -189,7 +199,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		//Draw Health Bar UI
 		DrawPlayerUI(player, weapon, meshes.square, meshes.circle, cameraX, cameraY);
-
+		// *** CHECK WIN CONDITION ***
+		CheckWinCondition(gameEvents, player);
 		// ---------------------------------------------------------------------------
 		//DEBUGGING
 		// ---------------------------------------------------------------------------

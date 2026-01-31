@@ -12,6 +12,7 @@ struct Bullet {
 };
 
 struct Player {
+	int gruntsKilled;
     float health;
     // Position
     float x;
@@ -30,6 +31,7 @@ struct Player {
     float shootCooldown;
 
     bool inDash;
+	bool isDead;
 
 
 };
@@ -46,8 +48,9 @@ void RenderBullets(const std::vector<Bullet>& bullets, void* mesh, float cameraX
 void ClearBullets(std::vector<Bullet>& bullets);  // Optional - replaces FreeBullets
 int GetBulletCount(const std::vector<Bullet>& bullets);
 WeaponStats GetCurrentWeapon(Player& player);
-void UpdatePlayerMovement(Player* player, float dt,
-    std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap);
+void UpdatePlayerMovement(Player* player, float dt, std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap);
 void UpdatePlayerTimers(Player* player, float dt);
+
+void CheckEnemyBulletPlayerCollision(std::vector<Bullet>& enemyBullets, Player& player);
 
 #endif 

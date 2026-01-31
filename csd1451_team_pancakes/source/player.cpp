@@ -3,12 +3,14 @@
 #include "utils.hpp"
 #include "gunTypes.hpp"
 #include "weapon.hpp"
+#include "gameConstants.hpp"
 
 
 
 Player InitPlayer(void) {
     Player player = {
-        500.0f,                  // health
+        0,
+        1000.0f,                  // health
         0.0f,                     // x
         0.0f,                     // y
         0.0f,                     // dashTimer
@@ -19,7 +21,8 @@ Player InitPlayer(void) {
         AssaultRifle(),           // rifle constructor
         0,                        // currentWeaponIndex (start with pistol)
         0.0f,                    // shootCooldown
-        false
+		false,                     // inDash
+        false,                    // isDead
     };
     return player;
 }
@@ -41,7 +44,7 @@ void DrawPlayer(Player& player, void* mesh, float cameraX, float cameraY) {
     AEGfxSetColorToMultiply(0.0f, 0.0f, 1.0f, 1.0f);
 
 
-    DrawSprite((AEGfxVertexList*)mesh, screenX, screenY, 50.0f, 50.0f, 0.0f);
+    DrawSprite((AEGfxVertexList*)mesh, screenX, screenY, PLAYER_RADIUS, PLAYER_RADIUS, 0.0f);
 }
 
 void DrawPlayerUI(Player& player, WeaponStats& weapon, void* mesh, void* mesh2,
@@ -150,7 +153,6 @@ Bullet CreateBullet(float x, float y, float targetX, float targetY, float speed,
 void UpdateBullets(std::vector<Bullet>& bullets, float dt,
     std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap) {
 
-    const float BULLET_RADIUS = 5.0f;  // Define bullet size (adjust as needed)
 
     // Backward loop to safely remove bullets
     for (int i = (int)bullets.size() - 1; i >= 0; i--) {
@@ -182,25 +184,25 @@ void UpdateBullets(std::vector<Bullet>& bullets, float dt) {
 }
 
 void RenderBullets(const std::vector<Bullet>& bullets, void* mesh,
-    float cameraX, float cameraY) {  // ADD camera parameters
+    float cameraX, float cameraY) {  
     // Loop through each bullet
 
     for (const Bullet& bullet : bullets) {
-        // *** ADD THIS - Convert world position to screen position ***
+        //  Convert world position to screen position
         float screenX = bullet.x - cameraX;
         float screenY = bullet.y - cameraY;
 
         // Outer glow - USE screenX, screenY
         AEGfxSetColorToMultiply(1.0f, 1.0f, 0.0f, 0.3f);
-        DrawSprite((AEGfxVertexList*)mesh, screenX, screenY, 40.0f, 40.0f, 0.0f);
+        DrawSprite((AEGfxVertexList*)mesh, screenX, screenY, BULLET_RADIUS, BULLET_RADIUS, 0.0f);
 
         // Middle glow - USE screenX, screenY
         AEGfxSetColorToMultiply(1.0f, 1.0f, 0.0f, 0.6f);
-        DrawSprite((AEGfxVertexList*)mesh, screenX, screenY, 30.0f, 30.0f, 0.0f);
+        DrawSprite((AEGfxVertexList*)mesh, screenX, screenY, BULLET_RADIUS - 10.0f, BULLET_RADIUS - 10.0f, 0.0f);
 
         // Core - USE screenX, screenY
         AEGfxSetColorToMultiply(1.0f, 1.0f, 1.0f, 1.0f);
-        DrawSprite((AEGfxVertexList*)mesh, screenX, screenY, 20.0f, 20.0f, 0.0f);
+        DrawSprite((AEGfxVertexList*)mesh, screenX, screenY, BULLET_RADIUS -20.0f, BULLET_RADIUS -20.0f, 0.0f);
     }
 }
 
@@ -262,11 +264,6 @@ WeaponStats GetCurrentWeapon(Player& player) {
 
 //Movement
 
-// Constants for player behavior
-const float dashSpeed = 2000.0f;
-const float dashDuration = 0.2f;
-const float dashCooldownMax = 0.5f;
-const float walkSpeed = 300.0f;
 
 void UpdatePlayerTimers(Player* player, float dt) {
     if (player->dashTimer > 0.0f) {
@@ -299,8 +296,8 @@ void UpdatePlayerMovement(Player* player, float dt,
         if (length > 0.0f) {
             player->dashDirX = inputX / length;
             player->dashDirY = inputY / length;
-            player->dashTimer = dashDuration;
-            player->dashCooldownTimer = dashCooldownMax;
+            player->dashTimer = DASH_DURATION;
+            player->dashCooldownTimer = DASH_COOLDOWN;
         }
     }
 
@@ -310,8 +307,8 @@ void UpdatePlayerMovement(Player* player, float dt,
         float oldX = player->x;
         float oldY = player->y;
 
-        player->x += player->dashDirX * dashSpeed * dt;
-        player->y += player->dashDirY * dashSpeed * dt;
+        player->x += player->dashDirX * PLAYER_DASH_SPEED * dt;
+        player->y += player->dashDirY * PLAYER_DASH_SPEED * dt;
 
         // Check collision with CONSISTENT radius
         if (checkCollision(player->x, player->y, radius, gameMap)) {
@@ -338,14 +335,54 @@ void UpdatePlayerMovement(Player* player, float dt,
             float oldX = player->x;
             float oldY = player->y;
 
-            player->x += moveX * walkSpeed * dt;
-            player->y += moveY * walkSpeed * dt;
+            player->x += moveX * PLAYER_WALK_SPEED * dt;
+            player->y += moveY * PLAYER_WALK_SPEED * dt;
 
             // Check collision after movement
             if (checkCollision(player->x, player->y, radius, gameMap)) {
                 player->x = oldX;
                 player->y = oldY;
             }
+        }
+    }
+}
+
+
+void CheckEnemyBulletPlayerCollision(std::vector<Bullet>& enemyBullets,
+    Player& player) {
+
+
+    // Loop backwards so we can safely remove bullets
+    for (int i = static_cast<int>( enemyBullets.size()) - 1; i >= 0; i--) {
+        // Check if bullet hit player
+        int collision = AreCirclesIntersecting(
+            enemyBullets[i].x,        // bullet X
+            enemyBullets[i].y,        // bullet Y
+            BULLET_RADIUS,            // bullet radius
+            player.x,                 // player X
+            player.y,                 // player Y
+            PLAYER_RADIUS/2             // player radius
+        );
+
+        if (collision > 0 && (!player.isDead)) {
+            // Player got hit!
+            player.health -= enemyBullets[i].damage;
+
+            printf("Player hit by bullet! Health: %.0f\n", player.health);
+
+            // Check if player died
+            if (player.health <= 0.0f) {
+				player.health = 0.0f;
+				player.isDead = true;
+                printf("PLAYER DIED!\n");
+                // Handle death here
+            }
+
+            // Remove the bullet (it hit the player)
+            enemyBullets.erase(enemyBullets.begin() + i);
+
+            // Only take damage from ONE bullet per hit
+            break;
         }
     }
 }

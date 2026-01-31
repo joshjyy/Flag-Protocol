@@ -1,5 +1,6 @@
 #include "pch.hpp"
 #include "enemies.hpp"
+#include "gameConstants.hpp"
 #include "AEEngine.h"
 #include "utils.hpp"
 
@@ -63,9 +64,56 @@ void UpdateGrunts(std::vector<Grunt>& grunts, Player& player, std::vector<Bullet
 void RenderGrunts(std::vector<Grunt>& grunts, void* mesh, float cameraX, float cameraY) {
 	AEGfxSetColorToMultiply(1.0f, 0.0f, 0.0f, 1.0f);
 	for (const auto& grunt : grunts) {
+		// skip dead grunts in case still in list
+		if (grunt.isDead) continue;
 		// Convert world position to screen position
 		float screenX = grunt.movingX - cameraX;
 		float screenY = grunt.movingY - cameraY;
-		DrawSprite((AEGfxVertexList*)mesh, screenX, screenY, 50.0f, 50.0f, 0.0f);
+		DrawSprite((AEGfxVertexList*)mesh, screenX, screenY, GRUNT_RADIUS, GRUNT_RADIUS, 0.0f);
+	}
+}
+
+
+void CheckBulletGruntCollisions(std::vector<Bullet>& playerBullets,std::vector<Grunt>& grunts, Player& playerInfo) {
+	if (playerBullets.empty() || grunts.empty()) {
+		return;  // Nothing to check, exit early
+	}
+	//loop through bullets backwards to allow safe removal
+	for (int i = static_cast<int>(playerBullets.size()) - 1; i >= 0; i--) {
+		for (auto& grunt : grunts) {
+			// Skip dead grunts
+			if (grunt.isDead) continue;
+
+			int collision = AreCirclesIntersecting(
+				playerBullets[i].x,    // bullet center X
+				playerBullets[i].y,    // bullet center Y
+				5.0f,                 // bullet radius
+				grunt.movingX,         // grunt center X
+				grunt.movingY,         // grunt center Y
+				GRUNT_RADIUS/2          // grunt radius
+			);
+
+			if (collision > 0) {  // collision == 1 or 2 means hit
+				grunt.health -= playerBullets[i].damage;
+				if (grunt.health <= 0.0f) {
+					playerInfo.gruntsKilled++;
+					grunt.isDead = true;
+					printf("Grunt killed! Grunts KillCount: %d\n", playerInfo.gruntsKilled);
+
+
+				}
+
+				playerBullets.erase(playerBullets.begin() + i);
+				break;
+			}
+		}
+	}
+
+	//check thru grunts backwards to remove dead ones
+	for (int i = static_cast<int>( grunts.size() ) - 1; i >= 0; i--) {
+		if (grunts[i].isDead) {
+			printf("Removing dead grunt from list\n");
+			grunts.erase(grunts.begin() + i);
+		}
 	}
 }

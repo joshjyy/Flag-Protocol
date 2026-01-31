@@ -12,6 +12,8 @@ struct Grunt {
 	// Starting Position
 	float startX;
 	float startY;
+	bool isDead;   
+
 
 	// Real Time Position
 	float movingX;
@@ -25,6 +27,7 @@ struct Grunt {
 		armour = 0.0f;
 		startX = x;
 		startY = y;
+		isDead = false;
 		movingX = x;
 		movingY = y;
 		pistol = Pistol();
@@ -36,5 +39,5 @@ struct Grunt {
 Grunt SpawnGrunt(float startX, float startY);
 void UpdateGrunts(std::vector<Grunt>& grunts, Player& player, std::vector<Bullet>& enemyBullets, float dt);
 void RenderGrunts(std::vector<Grunt>& grunts, void* mesh, float cameraX, float cameraY);
-
+void CheckBulletGruntCollisions(std::vector<Bullet>& playerBullets, std::vector<Grunt>& grunts, Player& playerInfo);
 #endif

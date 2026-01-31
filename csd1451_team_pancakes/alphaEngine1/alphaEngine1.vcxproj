@@ -12,6 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\enemies.cpp" />
+    <ClCompile Include="..\source\events.cpp" />
     <ClCompile Include="..\source\Main.cpp" />
     <ClCompile Include="..\source\map.cpp" />
     <ClCompile Include="..\source\player.cpp" />
@@ -20,6 +21,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\enemies.hpp" />
+    <ClInclude Include="..\source\events.hpp" />
+    <ClInclude Include="..\source\gameConstants.hpp" />
     <ClInclude Include="..\source\gunTypes.hpp" />
     <ClInclude Include="..\source\map.hpp" />
     <ClInclude Include="..\source\player.hpp" />
