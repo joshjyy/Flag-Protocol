@@ -35,6 +35,6 @@ struct Grunt {
 // Function declarations
 Grunt SpawnGrunt(float startX, float startY);
 void UpdateGrunts(std::vector<Grunt>& grunts, Player& player, std::vector<Bullet>& enemyBullets, float dt);
-void RenderGrunts(std::vector<Grunt>& grunts, void* mesh);
+void RenderGrunts(std::vector<Grunt>& grunts, void* mesh, float cameraX, float cameraY);
 
 #endif

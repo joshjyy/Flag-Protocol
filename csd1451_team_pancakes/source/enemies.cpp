@@ -60,10 +60,12 @@ void UpdateGrunts(std::vector<Grunt>& grunts, Player& player, std::vector<Bullet
 }
 
 // Render all grunts
-void RenderGrunts(std::vector<Grunt>& grunts, void* mesh) {
-	AEGfxSetColorToMultiply(1.0f, 0.0f, 0.0f, 1.0f);  // Red color for enemies
-
+void RenderGrunts(std::vector<Grunt>& grunts, void* mesh, float cameraX, float cameraY) {
+	AEGfxSetColorToMultiply(1.0f, 0.0f, 0.0f, 1.0f);
 	for (const auto& grunt : grunts) {
-		DrawSprite((AEGfxVertexList*)mesh, grunt.movingX, grunt.movingY, 50.0f, 50.0f, 0.0f);
+		// Convert world position to screen position
+		float screenX = grunt.movingX - cameraX;
+		float screenY = grunt.movingY - cameraY;
+		DrawSprite((AEGfxVertexList*)mesh, screenX, screenY, 50.0f, 50.0f, 0.0f);
 	}
 }

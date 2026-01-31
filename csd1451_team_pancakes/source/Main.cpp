@@ -152,7 +152,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		// Weapon controls
 		ResetShootCooldown(player, dt);
 		WeaponSwitchCheck(player);
-		ShootingCheck(player, playerBullets, weapon);
+		ShootingCheck(player, playerBullets, weapon, cameraX, cameraY);
 		ReloadBullets(weapon, dt);
 
 		// ---------------------------------------------------------------------------
@@ -176,22 +176,18 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		// RENDERING
 		// ---------------------------------------------------------------------------
 
-
-
-
 		//Enemy Circle (draw first - bottom layer)
-		RenderGrunts(grunts, meshes.circle);
+		RenderGrunts(grunts, meshes.circle, cameraX, cameraY);
 
-		// Draw bullets (middle layer)
-		RenderBullets(playerBullets, meshes.circle);
-		RenderBullets(enemyBullets, meshes.circle);
-
-		//Player Circle
+		//Player Circle (draw on top)
 		DrawPlayer(player, meshes.circle, cameraX, cameraY);
-		// Draw bullets
+
+		// Draw bullets (use correct overload with camera)
 		RenderBullets(playerBullets, meshes.circle, cameraX, cameraY);
-		//Draw Health Bar(Temp)
-		DrawPlayerUI(player, weapon, meshes.square, meshes.circle,  cameraX,  cameraY, reloadTime);
+		RenderBullets(enemyBullets, meshes.circle, cameraX, cameraY);
+
+		//Draw Health Bar UI
+		DrawPlayerUI(player, weapon, meshes.square, meshes.circle, cameraX, cameraY);
 
 		// ---------------------------------------------------------------------------
 		//DEBUGGING

@@ -44,7 +44,8 @@ void DrawPlayer(Player& player, void* mesh, float cameraX, float cameraY) {
     DrawSprite((AEGfxVertexList*)mesh, screenX, screenY, 50.0f, 50.0f, 0.0f);
 }
 
-void DrawPlayerUI(Player& player, WeaponStats& weapon, void* mesh, void* mesh2, float cameraX, float cameraY, float& reloadTime) {
+void DrawPlayerUI(Player& player, WeaponStats& weapon, void* mesh, void* mesh2,
+    float cameraX, float cameraY) {
     float uiX = -600.0f;
     float uiY = -380.0f;
     float barWidth = 300.0f;
@@ -52,8 +53,8 @@ void DrawPlayerUI(Player& player, WeaponStats& weapon, void* mesh, void* mesh2, 
 
     //health bar
     AEGfxSetColorToMultiply(0.5f, 0.0f, 0.0f, 1.0f);
-    DrawSprite((AEGfxVertexList*)mesh, uiX, uiY,
-        barWidth, barHeight, 0.0f);
+    DrawSprite((AEGfxVertexList*)mesh, uiX, uiY, barWidth, barHeight, 0.0f);
+
     AEGfxSetColorToMultiply(1.0f, 0.0f, 0.0f, 1.0f);
     float currentHealthWidth = (player.health / 1000.0f) * barWidth;
     float healthOffset = (barWidth - currentHealthWidth) / 2.0f;
@@ -62,25 +63,23 @@ void DrawPlayerUI(Player& player, WeaponStats& weapon, void* mesh, void* mesh2, 
     //ammo Bar
     float ammoY = uiY - 40.0f;
     AEGfxSetColorToMultiply(0.2f, 0.2f, 0.2f, 1.0f);
-    DrawSprite((AEGfxVertexList*)mesh, uiX, ammoY,
-        barWidth, barHeight, 0.0f);
+    DrawSprite((AEGfxVertexList*)mesh, uiX, ammoY, barWidth, barHeight, 0.0f);
 
     SetWeaponColor(player.currentWeaponIndex);
-
 
     // Draw ammo bar with weapon color
     float currentAmmoWidth = ((float)*weapon.currentAmmo / (float)*weapon.maxAmmo) * barWidth;
     float ammoOffset = (barWidth - currentAmmoWidth) / 2.0f;
     DrawSprite((AEGfxVertexList*)mesh, uiX - ammoOffset, ammoY, currentAmmoWidth, barHeight, 0.0f);
 
-
     // Draw ammo count text
     char ammoText[32];
-    float textOffsetX = 0.0f;  
+    float textOffsetX = 0.0f;
 
-    if (reloadTime > 0.0f) {
+    // CHANGE: Use weapon.reloadTimer instead of reloadTime
+    if (*weapon.reloadTimer > 0.0f) {
         sprintf_s(ammoText, 32, "Reloading...");
-        textOffsetX = -30.0f;  
+        textOffsetX = -30.0f;
     }
     else {
         sprintf_s(ammoText, 32, "%d / %d", *weapon.currentAmmo, *weapon.maxAmmo);
@@ -94,8 +93,8 @@ void DrawPlayerUI(Player& player, WeaponStats& weapon, void* mesh, void* mesh2, 
     float circleX = uiX + barWidth / 2.0f + 30.0f;
     float circleSize = 25.0f;
     DrawSprite((AEGfxVertexList*)mesh2, circleX, ammoY, circleSize, circleSize, 0.0f);
-	PlayerDashStaminaBar(player, meshes.square, cameraX, cameraY);
 
+    PlayerDashStaminaBar(player, meshes.square, cameraX, cameraY);
 }
 
 void PlayerDashStaminaBar(Player& player, void* mesh, float cameraX, float cameraY) {
