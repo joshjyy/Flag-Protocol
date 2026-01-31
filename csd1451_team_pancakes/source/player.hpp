@@ -41,6 +41,7 @@ void DrawPlayerUI(Player& player, WeaponStats& weapon, void* mesh, void* mesh2, 
 void PlayerDashStaminaBar(Player& player, void* mesh, float cameraX, float cameraY);
 void NormalizeVector(float* x, float* y);
 void UpdateBullets(std::vector<Bullet>& bullets, float dt, std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap);
+void UpdateBullets(std::vector<Bullet>& bullets, float dt); // Overload for enemie bullets
 void RenderBullets(const std::vector<Bullet>& bullets, void* mesh, float cameraX, float cameraY);
 void ClearBullets(std::vector<Bullet>& bullets);  // Optional - replaces FreeBullets
 int GetBulletCount(const std::vector<Bullet>& bullets);

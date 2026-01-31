@@ -167,6 +167,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		// ---------------------------------------------------------------------------
 
 		UpdateBullets(playerBullets, dt, gameMap);
+		UpdateBullets(enemyBullets, dt, gameMap);
 
 		// ---------------------------------------------------------------------------
 		// Collision Checks

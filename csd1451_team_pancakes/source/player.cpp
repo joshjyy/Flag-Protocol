@@ -165,6 +165,22 @@ void UpdateBullets(std::vector<Bullet>& bullets, float dt,
     }
 }
 
+// Overload for bullets without map collision (for enemies)
+void UpdateBullets(std::vector<Bullet>& bullets, float dt) {
+    // Backward loop to safely remove bullets
+    for (int i = (int)bullets.size() - 1; i >= 0; i--) {
+        // Update position
+        bullets[i].x += bullets[i].velocityX * dt;
+        bullets[i].y += bullets[i].velocityY * dt;
+
+        // Check if off screen (no map collision)
+        if (bullets[i].y > 500.0f || bullets[i].y < -500.0f ||
+            bullets[i].x > 900.0f || bullets[i].x < -900.0f) {
+            bullets.erase(bullets.begin() + i);
+        }
+    }
+}
+
 void RenderBullets(const std::vector<Bullet>& bullets, void* mesh,
     float cameraX, float cameraY) {  // ADD camera parameters
     // Loop through each bullet
