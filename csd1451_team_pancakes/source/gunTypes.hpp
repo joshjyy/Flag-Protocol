@@ -4,6 +4,7 @@
 struct Pistol {
 	const char* weaponName;
 	int currentAmmo;
+	int maxMagazine;
 	int maxAmmo;
 	float bulletSpeed;
 	float bulletDamage;
@@ -15,6 +16,7 @@ struct Pistol {
 	Pistol() {
 		weaponName = "Pistol";
 		currentAmmo = 12;
+		maxMagazine = 120;
 		maxAmmo = 12;
 		bulletSpeed = 800.f;
 		bulletDamage = 25.f;
@@ -28,6 +30,7 @@ struct Pistol {
 struct AssaultRifle {
 	const char* weaponName;
 	int currentAmmo;
+	int maxMagazine;
 	int maxAmmo;
 	float bulletSpeed;
 	float bulletDamage;
@@ -39,6 +42,7 @@ struct AssaultRifle {
 	AssaultRifle() {
 		weaponName = "Rifle";
 		currentAmmo = 30;
+		maxMagazine = 300;
 		maxAmmo = 30;
 		bulletSpeed = 1100.f;
 		bulletDamage = 33.f;
@@ -52,6 +56,7 @@ struct AssaultRifle {
 struct WeaponStats {
 	const char* weaponName;
 	int* currentAmmo;
+	int* maxMagazine;
 	int* maxAmmo;
 	float bulletSpeed;
 	float bulletDamage;

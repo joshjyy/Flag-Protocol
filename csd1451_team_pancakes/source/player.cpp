@@ -221,6 +221,7 @@ WeaponStats GetCurrentWeapon(Player& player) {
         return {
             player.pistol.weaponName,
             &player.pistol.currentAmmo,
+            &player.pistol.maxMagazine,
             &player.pistol.maxAmmo,
             player.pistol.bulletSpeed,
             player.pistol.bulletDamage,
@@ -236,6 +237,7 @@ WeaponStats GetCurrentWeapon(Player& player) {
         return {
           player.rifle.weaponName, 
           &player.rifle.currentAmmo,
+          &player.rifle.maxMagazine,
           &player.rifle.maxAmmo,
           player.rifle.bulletSpeed,
           player.rifle.bulletDamage,
@@ -250,6 +252,7 @@ WeaponStats GetCurrentWeapon(Player& player) {
         return {
             player.pistol.weaponName,
             &player.pistol.currentAmmo,
+            &player.pistol.maxMagazine,
             &player.pistol.maxAmmo,
             player.pistol.bulletSpeed,
             player.pistol.bulletDamage,
