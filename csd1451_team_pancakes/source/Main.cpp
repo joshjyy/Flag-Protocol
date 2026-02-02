@@ -117,7 +117,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	// GAME LOOP
 	// ---------------------------------------------------------------------------
 	// Set background color (gray)
-	AEGfxSetBackgroundColor(0.5f, 0.5f, 0.5f);
+	AEGfxSetBackgroundColor(0.0f, 0.0f, 0.0f);
 	// Set render mode for colored meshes
 	AEGfxSetRenderMode(AE_GFX_RM_COLOR);
 	// Enable transparency
