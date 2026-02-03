@@ -131,16 +131,16 @@ int checkCollision(float playerX, float playerY, float radius,
     }
 
     // Step 4: Check all 4 corners
-    if (gameMap[topRow][leftCol] == 1 || gameMap[topRow][leftCol] == 2) {
+    if (gameMap[topRow][leftCol] >= 1 && gameMap[topRow][leftCol] <= 4) {
         return 1;
     }
-    if (gameMap[topRow][rightCol] == 1 || gameMap[topRow][rightCol] == 2) {
+    if (gameMap[topRow][rightCol] >= 1 && gameMap[topRow][rightCol] <= 4) {
         return 1;
     }
-    if (gameMap[bottomRow][leftCol] == 1 || gameMap[bottomRow][leftCol] == 2) {
+    if (gameMap[bottomRow][leftCol] >= 1 && gameMap[bottomRow][leftCol] <= 4) {
         return 1;
     }
-    if (gameMap[bottomRow][rightCol] == 1 || gameMap[bottomRow][rightCol] == 2) {
+    if (gameMap[bottomRow][rightCol] >= 1 && gameMap[bottomRow][rightCol] <= 4) {
         return 1;
     }
 

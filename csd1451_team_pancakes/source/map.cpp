@@ -80,7 +80,7 @@ void Load_Map(std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& arr,
 				
 				if (arr[i][j] == 1) {
 					
-					AEGfxSetColorToMultiply(1.0f, 0.2f, 0.2f, 1.0f);
+					AEGfxSetColorToMultiply(0.0f, 1.0f, 0.0f, 1.0f);
 				}
 				else if (arr[i][j] == 2) {
 					

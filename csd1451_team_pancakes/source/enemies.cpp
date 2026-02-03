@@ -22,7 +22,7 @@ void UpdateGrunts(std::vector<Grunt>& grunts, Player& player, std::vector<Bullet
 		if (grunt.shootCooldown <= 0.0f && grunt.pistol.currentAmmo > 0) {
 			// Create bullet aimed at player
 			Bullet newBullet = CreateBullet(
-				grunt.movingX,
+				grunt.movingX,	
 				grunt.movingY,
 				player.x,
 				player.y,
