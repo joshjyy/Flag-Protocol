@@ -7,32 +7,46 @@
 
 
 struct Grunt {
-	float health;
-	float armour;
-	// Starting Position
-	float startX;
-	float startY;
-	bool isDead;   
+    float health;
+    float maxHealth;  // For health bars
+    float armour;
+    float startX;
+    float startY;
+    float movingX;
+    float movingY;
+    bool isDead;
+    Pistol pistol;
+    float shootCooldown;
 
-
-	// Real Time Position
-	float movingX;
-	float movingY;
-
-	Pistol pistol;
-	float shootCooldown;
-
-	Grunt(float x, float y) {
-		health = 100.0f;
-		armour = 0.0f;
-		startX = x;
-		startY = y;
-		isDead = false;
-		movingX = x;
-		movingY = y;
-		pistol = Pistol();
-		shootCooldown = 0.0f;
-	}
+    // Default grunt
+    Grunt(float x, float y)
+        : health(100.0f),
+        maxHealth(100.0f),
+        armour(0.0f),
+        startX(x),
+        startY(y),
+        movingX(x),
+        movingY(y),
+        isDead(false),
+        pistol(),
+        shootCooldown(0.0f)
+    {
+    }
+    // Overload for elite enemies
+    // Custom stats (for elite grunts, bosses, etc.)
+    Grunt(float x, float y, float hp, float armor)
+        : health(hp),
+        maxHealth(hp),
+        armour(armor),
+        startX(x),
+        startY(y),
+        movingX(x),
+        movingY(y),
+        isDead(false),
+        pistol(),
+        shootCooldown(0.0f)
+    {
+    }
 };
 
 // Function declarations
