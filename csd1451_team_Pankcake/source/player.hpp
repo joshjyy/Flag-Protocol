@@ -3,6 +3,7 @@
 #ifndef BULLET_H
 #define BULLET_H
 #include "map.hpp"
+#include "particle.hpp"
 // Bullet structure
 struct Bullet {
     float x, y;
@@ -33,19 +34,28 @@ struct Player {
     bool inDash;
 	bool isDead;
 
+    float velocityX;
+    float velocityY;
+    float prevX;
+    float prevY;
+    AEGfxVertexList* particleMesh;
+    ParticleEmitter* trailEmitter;
+
 
 };
 
 Bullet CreateBullet(float x, float y, float targetX, float targetY, float speed, float damage);
 Player InitPlayer(void);
-void DrawPlayer(Player& player, void* mesh, float cameraX, float cameraY);
+void InitPlayerParticles(Player* player, void* mesh);
+
+void DrawPlayer(Player& player, void* mesh, float cameraX, float cameraY, float dt);
 void DrawPlayerUI(Player& player, WeaponStats& weapon, void* mesh, void* mesh2, float cameraX, float cameraY);  
 void PlayerDashStaminaBar(Player& player, void* mesh, float cameraX, float cameraY);
 void NormalizeVector(float* x, float* y);
 void UpdateBullets(std::vector<Bullet>& bullets, float dt, std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap);
 void UpdateBullets(std::vector<Bullet>& bullets, float dt); // Overload for enemie bullets
 void RenderBullets(const std::vector<Bullet>& bullets, void* mesh, float cameraX, float cameraY);
-void ClearBullets(std::vector<Bullet>& bullets);  // Optional - replaces FreeBullets
+void ClearBullets(std::vector<Bullet>& bullets);  
 int GetBulletCount(const std::vector<Bullet>& bullets);
 WeaponStats GetCurrentWeapon(Player& player);
 void UpdatePlayerMovement(Player* player, float dt, std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap);

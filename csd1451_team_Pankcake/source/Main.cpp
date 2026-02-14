@@ -79,7 +79,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	//Init Player
 	Player player = InitPlayer();
-
 	// Initialize engine (1600x900 window, 60 FPS)
 	AESysInit(hInstance, nCmdShow, 1600, 900, 1, 60, false, NULL);
 	AESysSetWindowTitle("Game Test!");
@@ -90,6 +89,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	//load meshes
 	InitCommonMeshes();
+	InitPlayerParticles(&player , meshes.square);
 
 	// ---------------------------------------------------------------------------
 	// MAP
@@ -123,6 +123,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	// Enable transparency
 	AEGfxSetBlendMode(AE_GFX_BM_BLEND);
 	AEGfxSetTransparency(1.0f);
+
 	while (gGameRunning)
 	{
 		// Frame start
@@ -191,7 +192,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		RenderGrunts(grunts, meshes.circle, cameraX, cameraY);
 
 		//Player Circle (draw on top)
-		DrawPlayer(player, meshes.circle, cameraX, cameraY);
+		DrawPlayer(player, meshes.circle, cameraX, cameraY, dt);
 
 		// Draw bullets (use correct overload with camera)
 		RenderBullets(playerBullets, meshes.circle, cameraX, cameraY);
@@ -216,7 +217,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	ClearBullets(playerBullets);
 	ClearBullets(enemyBullets);
 	AEGfxDestroyFont(fontID);
+	ParticleEmitterFree(&player.trailEmitter);
 	FreeCommonMeshes();
+
 
 	AESysExit();
 

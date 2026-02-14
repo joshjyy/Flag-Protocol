@@ -23,11 +23,37 @@ Player InitPlayer(void) {
         0.0f,                    // shootCooldown
 		false,                     // inDash
         false,                    // isDead
-    };
+
+		 0.0f,                    // velocityX
+         0.0f,                    // velocityY
+         0.0f,                    // prevX
+         0.0f,                    // prevY
+		nullptr,                   // particleMesh
+		nullptr,                   // trailEmitter
+
+     };
+
     return player;
 }
 
+void InitPlayerParticles(Player* player, void* mesh) {
 
+
+    player->trailEmitter = ParticleEmitterCreate();
+    if (!player->trailEmitter) {
+        printf("ERROR: Failed to create particle emitter!\n");
+        return;
+    }
+	//Init emitter properties 
+    ParticleEmitterSetMesh(player->trailEmitter, (AEGfxVertexList*)mesh);
+    ParticleEmitterSetLifeTime(player->trailEmitter, 0.7f, 1.0f);  // Longer life
+	ParticleEmitterSetVelocity(player->trailEmitter, -80.f, 100.f, -80.f, 100.f); // Particles shoot out in all directions
+    ParticleEmitterSetScale(player->trailEmitter, 1.f, 5.f);  // More size variation
+    ParticleEmitterSetColor(player->trailEmitter, 
+        0.0f, 1.0f, 0.392f, 1.0f,     // start color
+        0.392f, 1.0f, 0.039f, 0.0f    // end eolor
+    );
+}
 // math (on god im not sure whats happening here)
 void NormalizeVector(float* x, float* y) {
     float length = sqrtf((*x) * (*x) + (*y) * (*y));
@@ -38,13 +64,48 @@ void NormalizeVector(float* x, float* y) {
 }
 
 
-void DrawPlayer(Player& player, void* mesh, float cameraX, float cameraY) {
+void DrawPlayer(Player& player, void* mesh, float cameraX, float cameraY, float dt) {
     float screenX = player.x - cameraX;
-    float screenY = player.y - cameraY;
-    AEGfxSetColorToMultiply(0.0f, 0.0f, 1.0f, 1.0f);
+    float screenY = player.y - cameraY;    
+    // Draw particles (they're in world space, need camera offset)
+    if (player.trailEmitter) {
+        AEGfxSetRenderMode(AE_GFX_RM_COLOR);
 
+        // Temporarily offset particles for camera
+        for (int i = 0; i < MAX_PARTICLES; i++) {
+            if (player.trailEmitter->particles[i].active) {
+                player.trailEmitter->particles[i].x -= cameraX;
+                player.trailEmitter->particles[i].y -= cameraY;
+            }
+        }
 
-    DrawSprite((AEGfxVertexList*)mesh, screenX, screenY, PLAYER_RADIUS, PLAYER_RADIUS, 0.0f);
+        ParticleEmitterDraw(player.trailEmitter);
+
+        // Restore world positions
+        for (int i = 0; i < MAX_PARTICLES; i++) {
+            if (player.trailEmitter->particles[i].active) {
+                player.trailEmitter->particles[i].x += cameraX;
+                player.trailEmitter->particles[i].y += cameraY;
+            }
+        }
+    }
+    // Pulsing effect
+    static float pulseTime = 0.0f;
+    pulseTime += dt;
+    float pulse = 1.0f + 0.15f * sinf(pulseTime * 5.0f);  // Size multiplier
+
+    // Outer glow (neon green) - PULSING SIZE
+    AEGfxSetRenderMode(AE_GFX_RM_COLOR);
+    AEGfxSetBlendMode(AE_GFX_BM_BLEND);
+    AEGfxSetTransparency(0.3f);
+    AEGfxSetColorToMultiply(0.0f, 1.0f, 0.0f, 1.0f);  // Pure green
+    AEGfxSetColorToAdd(0, 0, 0, 0);
+    DrawSprite((AEGfxVertexList*)mesh, screenX, screenY, PLAYER_RADIUS * 1.0f * pulse, PLAYER_RADIUS * 1.0f * pulse, 0.0f);
+
+    // Inner core (bright neon green)
+    AEGfxSetTransparency(1.0f);
+    AEGfxSetColorToMultiply(0.2f, 1.0f, 0.2f, 1.0f);  // Bright neon green
+    DrawSprite((AEGfxVertexList*)mesh, screenX, screenY, PLAYER_RADIUS * 0.7f, PLAYER_RADIUS * 0.7f, 0.0f);
 }
 
 void DrawPlayerUI(Player& player, WeaponStats& weapon, void* mesh, void* mesh2,
@@ -282,7 +343,11 @@ void UpdatePlayerTimers(Player* player, float dt) {
 
 void UpdatePlayerMovement(Player* player, float dt,
     std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap) {
-    float radius = 25.0f;  // Consistent radius
+    float radius = 25.0f;
+
+    // Store old position BEFORE movement
+    float oldPrevX = player->x;
+    float oldPrevY = player->y;
 
     // Check for dash input
     if (AEInputCheckTriggered(AEVK_SPACE) && player->dashCooldownTimer <= 0.0f) {
@@ -306,14 +371,12 @@ void UpdatePlayerMovement(Player* player, float dt,
 
     // Apply movement
     if (player->dashTimer > 0.0f) {
-        // During dash
         float oldX = player->x;
         float oldY = player->y;
 
         player->x += player->dashDirX * PLAYER_DASH_SPEED * dt;
         player->y += player->dashDirY * PLAYER_DASH_SPEED * dt;
 
-        // Check collision with CONSISTENT radius
         if (checkCollision(player->x, player->y, radius, gameMap)) {
             player->x = oldX;
             player->y = oldY;
@@ -324,7 +387,6 @@ void UpdatePlayerMovement(Player* player, float dt,
     else {
         player->inDash = false;
 
-        // Calculate movement direction
         float moveX = 0.0f;
         float moveY = 0.0f;
 
@@ -333,20 +395,35 @@ void UpdatePlayerMovement(Player* player, float dt,
         if (AEInputCheckCurr(AEVK_D)) moveX += 1.0f;
         if (AEInputCheckCurr(AEVK_A)) moveX -= 1.0f;
 
-        // Only move if there's input
+        // Normalize diagonal movement
         if (moveX != 0.0f || moveY != 0.0f) {
+            float length = sqrtf(moveX * moveX + moveY * moveY);
+            moveX /= length;
+            moveY /= length;
+
             float oldX = player->x;
             float oldY = player->y;
 
             player->x += moveX * PLAYER_WALK_SPEED * dt;
             player->y += moveY * PLAYER_WALK_SPEED * dt;
 
-            // Check collision after movement
             if (checkCollision(player->x, player->y, radius, gameMap)) {
                 player->x = oldX;
                 player->y = oldY;
             }
         }
+    }
+
+    // Calculate velocity  
+    player->velocityX = (player->x - oldPrevX) / dt;
+    player->velocityY = (player->y - oldPrevY) / dt;
+
+    // Emit particles regardless of movement type
+    if (player->trailEmitter && (fabs(player->velocityX) > 0.1f || fabs(player->velocityY) > 0.1f)) {
+        ParticleEmitterEmit(player->trailEmitter, player->x, player->y, 2);
+    }
+    if (player->trailEmitter) {
+        ParticleEmitterUpdate(player->trailEmitter, dt);
     }
 }
 
