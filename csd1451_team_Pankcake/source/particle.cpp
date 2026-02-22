@@ -16,7 +16,7 @@ ParticleEmitter* ParticleEmitterCreate(void) {
     emitter->maxLifeTime = 2.0f;
     emitter->minScale = 2.0f;
     emitter->maxScale = 10.0f;
-    emitter->startA = emitter->endA = 1.0f;
+    emitter->startA = 1.0f;
     return emitter;
 }
 
@@ -63,10 +63,13 @@ void ParticleEmitterSetScale(ParticleEmitter* emitter, float min, float max) {
     emitter->maxScale = max;
 }
 
-void ParticleEmitterSetColor(ParticleEmitter* emitter, float r1, float g1, float b1, float a1, float r2, float g2, float b2, float a2) {
+void ParticleEmitterSetColor(ParticleEmitter* emitter, float r, float g, float b, float a) {
     if (!emitter) return;
-    emitter->startR = r1; emitter->startG = g1; emitter->startB = b1; emitter->startA = a1;
-    emitter->endR = r2; emitter->endG = g2; emitter->endB = b2; emitter->endA = a2;
+    emitter->startR = r;
+    emitter->startG = g;
+    emitter->startB = b; 
+    emitter->startA = a;
+
 }
 
 
@@ -93,10 +96,11 @@ void ParticleEmitterEmit(ParticleEmitter* emitter, float x, float y, int count) 
                 p->velY = RandFloat(emitter->minVelY, emitter->maxVelY);
                 p->scale = RandFloat(emitter->minScale, emitter->maxScale);
                 p->maxLife = p->life = RandFloat(emitter->minLifeTime, emitter->maxLifeTime);
-                p->r = emitter->startR; p->g = emitter->startG;
-                p->b = emitter->startB; p->a = emitter->startA;
-                p->endR = emitter->endR; p->endG = emitter->endG;
-                p->endB = emitter->endB; p->endA = emitter->endA;
+                p->r = emitter->startR; 
+                p->g = emitter->startG;
+                p->b = emitter->startB;
+                p->a = emitter->startA;
+         
                 p->active = true;
                 break;
             }

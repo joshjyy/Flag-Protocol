@@ -82,7 +82,7 @@ void InitCommonMeshes(void) {
 
     // Create circle mesh
     AEGfxMeshStart();
-    int segments = 30;
+    int segments = 360;
     for (int i = 0; i < segments; i++) {
         float angle1 = (i * 360.0f / segments) * PI / 180.0f;
         float angle2 = ((i + 1) * 360.0f / segments) * PI / 180.0f;

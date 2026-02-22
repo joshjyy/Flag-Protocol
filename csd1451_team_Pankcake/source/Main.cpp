@@ -153,8 +153,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 
 		// Update Timers CD
-		UpdatePlayerTimers(&player, dt);
-		UpdatePlayerMovement(&player, dt, gameMap);
+		UpdatePlayer(&player, dt, gameMap);
+
 
 		// Weapon controls
 		ResetShootCooldown(player, dt);
@@ -176,7 +176,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		UpdateBullets(playerBullets, dt, gameMap);
 		UpdateBullets(enemyBullets, dt, gameMap);
 
-
+		if (AEInputCheckTriggered(AEVK_K)) {
+			player.isDead = true;
+		}
 	
 		// ---------------------------------------------------------------------------
 		// Collision Checks
@@ -184,9 +186,27 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		// CHECK COLLISIONS 
 		CheckBulletGruntCollisions(playerBullets, grunts, player);
 		CheckEnemyBulletPlayerCollision(enemyBullets, player);
+
+
+
+
 		// ---------------------------------------------------------------------------
 		// RENDERING
 		// ---------------------------------------------------------------------------
+		// In your update function
+		
+
+		// Debug: Emit particles at mouse position when left-clicking
+		//if (AEInputCheckTriggered(AEVK_LBUTTON)) {
+		//	s32 mx, my;
+		//	AEInputGetCursorPosition(&mx, &my);
+
+		//	float wx = (float)mx - 1600/ 2.0f + cameraX;
+		//	float wy = -(float)my + 800/ 2.0f + cameraY;
+
+		//	ParticleEmitterEmit(player.trailEmitter, wx, wy, 20);
+		//}
+	
 
 		//Enemy Circle (draw first - bottom layer)
 		RenderGrunts(grunts, meshes.circle, cameraX, cameraY);
@@ -218,6 +238,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	ClearBullets(enemyBullets);
 	AEGfxDestroyFont(fontID);
 	ParticleEmitterFree(&player.trailEmitter);
+	ParticleEmitterFree(&player.deathEmitter);
 	FreeCommonMeshes();
 
 
