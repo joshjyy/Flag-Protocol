@@ -195,17 +195,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		// ---------------------------------------------------------------------------
 		// In your update function
 		
-
-		// Debug: Emit particles at mouse position when left-clicking
-		//if (AEInputCheckTriggered(AEVK_LBUTTON)) {
-		//	s32 mx, my;
-		//	AEInputGetCursorPosition(&mx, &my);
-
-		//	float wx = (float)mx - 1600/ 2.0f + cameraX;
-		//	float wy = -(float)my + 800/ 2.0f + cameraY;
-
-		//	ParticleEmitterEmit(player.trailEmitter, wx, wy, 20);
-		//}
 	
 
 		//Enemy Circle (draw first - bottom layer)

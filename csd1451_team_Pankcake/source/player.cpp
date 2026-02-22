@@ -10,7 +10,7 @@
 Player InitPlayer(void) {
     Player player = {
         0,
-        1000.0f,                  // health
+        100.0f,                  // health
         0.0f,                     // x
         0.0f,                     // y
         0.0f,                     // dashTimer
@@ -49,7 +49,7 @@ void InitPlayerParticles(Player* player, void* mesh) {
 	//Init emitter properties 
     ParticleEmitterSetMesh(player->trailEmitter, (AEGfxVertexList*)mesh);
     ParticleEmitterSetLifeTime(player->trailEmitter, 0.7f, 1.0f);  // Longer life
-    ParticleEmitterSetVelocity(player->trailEmitter, -30.0f, 30.0f, -30.0f, 30.0f); // tight spread
+    ParticleEmitterSetVelocity(player->trailEmitter, -30.0f, 30.0f, -40.0f, 40.0f); // tight spread
     ParticleEmitterSetScale(player->trailEmitter, 1.f, 5.f);  // More size variation
     ParticleEmitterSetColor(player->trailEmitter, 
         0.0f, 1.0f, 0.392f, 1.0f   // start color
@@ -362,11 +362,8 @@ WeaponStats GetCurrentWeapon(Player& player) {
 }
 
 
-//Movement
-
 
 void UpdatePlayer(Player* player, float dt, std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap) {
-
     // --- DEATH ---
     if (player->isDead) {
         if (!player->deathExplosionSpawned) {
@@ -374,86 +371,75 @@ void UpdatePlayer(Player* player, float dt, std::array<std::array<int, MAP_WIDTH
             player->deathExplosionSpawned = true;
         }
         ParticleEmitterUpdate(player->deathEmitter, dt);
-        return; // skip everything else
+        return;
     }
 
     // --- TIMERS ---
-    if (player->dashTimer > 0.0f)        player->dashTimer -= dt;
-    if (player->dashCooldownTimer > 0.0f) player->dashCooldownTimer -= dt;
-    if (player->shootCooldown > 0.0f)    player->shootCooldown -= dt;
+    if (player->dashTimer > 0.0f)         player->dashTimer -= dt;
+    if (player->dashCooldownTimer > 0.0f)  player->dashCooldownTimer -= dt;
+    if (player->shootCooldown > 0.0f)      player->shootCooldown -= dt;
 
     // --- MOVEMENT ---
     float radius = 25.0f;
     float oldPrevX = player->x;
     float oldPrevY = player->y;
 
+    // Get WASD input
+    float inputX = 0.0f, inputY = 0.0f;
+    if (AEInputCheckCurr(AEVK_W)) inputY += 1.0f;
+    if (AEInputCheckCurr(AEVK_S)) inputY -= 1.0f;
+    if (AEInputCheckCurr(AEVK_D)) inputX += 1.0f;
+    if (AEInputCheckCurr(AEVK_A)) inputX -= 1.0f;
+
     // Dash input
-    if (AEInputCheckTriggered(AEVK_SPACE) && player->dashCooldownTimer <= 0.0f) {
-        float inputX = 0.0f, inputY = 0.0f;
+    if (AEInputCheckTriggered(AEVK_SPACE) && player->dashCooldownTimer <= 0.0f && (inputX != 0.0f || inputY != 0.0f)) {
+        player->dashDirX = inputX;
+        player->dashDirY = inputY;
+        NormalizeVector(&player->dashDirX, &player->dashDirY);
+        player->dashTimer = DASH_DURATION;
+        player->dashCooldownTimer = DASH_COOLDOWN;
         player->inDash = true;
-
-        if (AEInputCheckCurr(AEVK_W)) inputY += 1.0f;
-        if (AEInputCheckCurr(AEVK_S)) inputY -= 1.0f;
-        if (AEInputCheckCurr(AEVK_D)) inputX += 1.0f;
-        if (AEInputCheckCurr(AEVK_A)) inputX -= 1.0f;
-
-        float length = sqrtf(inputX * inputX + inputY * inputY);
-        if (length > 0.0f) {
-            player->dashDirX = inputX / length;
-            player->dashDirY = inputY / length;
-            player->dashTimer = DASH_DURATION;
-            player->dashCooldownTimer = DASH_COOLDOWN;
-        }
     }
 
-    // Apply dash or walk
+    // Apply movement
+    float oldX = player->x, oldY = player->y;
+
     if (player->dashTimer > 0.0f) {
-        float oldX = player->x, oldY = player->y;
+        // Dashing
         player->x += player->dashDirX * PLAYER_DASH_SPEED * dt;
         player->y += player->dashDirY * PLAYER_DASH_SPEED * dt;
-
-        if (checkCollision(player->x, player->y, radius, gameMap)) {
-            player->x = oldX;
-            player->y = oldY;
-            player->dashTimer = 0.0f;
-            player->inDash = false;
-        }
     }
-    else {
-        player->inDash = false;
-        float moveX = 0.0f, moveY = 0.0f;
-
-        if (AEInputCheckCurr(AEVK_W)) moveY += 1.0f;
-        if (AEInputCheckCurr(AEVK_S)) moveY -= 1.0f;
-        if (AEInputCheckCurr(AEVK_D)) moveX += 1.0f;
-        if (AEInputCheckCurr(AEVK_A)) moveX -= 1.0f;
-
-        if (moveX != 0.0f || moveY != 0.0f) {
-            float length = sqrtf(moveX * moveX + moveY * moveY);
-            moveX /= length;
-            moveY /= length;
-
-            float oldX = player->x, oldY = player->y;
-            player->x += moveX * PLAYER_WALK_SPEED * dt;
-            player->y += moveY * PLAYER_WALK_SPEED * dt;
-
-            if (checkCollision(player->x, player->y, radius, gameMap)) {
-                player->x = oldX;
-                player->y = oldY;
-            }
-        }
+    else if (inputX != 0.0f || inputY != 0.0f) {
+        // Walking
+        NormalizeVector(&inputX, &inputY);
+        player->x += inputX * PLAYER_WALK_SPEED * dt;
+        player->y += inputY * PLAYER_WALK_SPEED * dt;
     }
 
-    // --- VELOCITY & TRAIL PARTICLES ---
+    // Wall collision
+    if (checkCollision(player->x, player->y, radius, gameMap)) {
+        player->x = oldX;
+        player->y = oldY;
+        player->dashTimer = 0.0f;
+    }
+
+    player->inDash = (player->dashTimer > 0.0f);
+
+    // --- TRAIL PARTICLES ---
+    // Calculate velocity based on how much player moved this frame
     player->velocityX = (player->x - oldPrevX) / dt;
     player->velocityY = (player->y - oldPrevY) / dt;
 
     if (player->trailEmitter) {
-        if (fabs(player->velocityX) > 0.1f || fabs(player->velocityY) > 0.1f)
+        bool isMoving = (player->velocityX > 0.1f || player->velocityX < -0.1f ||
+            player->velocityY > 0.1f || player->velocityY < -0.1f);
+        if (isMoving)
             ParticleEmitterEmit(player->trailEmitter, player->x, player->y, 2);
         ParticleEmitterUpdate(player->trailEmitter, dt);
     }
 }
+
+
 
 void CheckEnemyBulletPlayerCollision(std::vector<Bullet>& enemyBullets,
     Player& player) {
