@@ -70,7 +70,7 @@ void Load_Map(std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& arr,
 
 	for (int i = 0; i < MAP_HEIGHT; i++) {
 		for (int j = 0; j < MAP_WIDTH; j++) {
-			if (arr[i][j] != 0) {	
+			if (arr[i][j] != 0) {
 
 				float x = (j * TILE_SIZE) - 800.0f + 25.0f;
 				float y = 450.0f - (i * TILE_SIZE) - 25.0f;

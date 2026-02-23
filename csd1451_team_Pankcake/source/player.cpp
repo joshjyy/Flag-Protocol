@@ -10,8 +10,8 @@
 Player InitPlayer(void) {
     Player player = {
         0,
-        1000.0f,                  // health
-        400.0f,                     // x
+        100.0f,                  // health
+        0.0f,                     // x
         0.0f,                     // y
         0.0f,                     // dashTimer
         0.0f,                     // dashCooldownTimer
@@ -30,6 +30,8 @@ Player InitPlayer(void) {
          0.0f,                    // prevY
 		nullptr,                   // particleMesh
 		nullptr,                   // trailEmitter
+		nullptr,                   // deathEmitter
+		false                      // deathExplosionSpawned
 
      };
 
@@ -47,12 +49,23 @@ void InitPlayerParticles(Player* player, void* mesh) {
 	//Init emitter properties 
     ParticleEmitterSetMesh(player->trailEmitter, (AEGfxVertexList*)mesh);
     ParticleEmitterSetLifeTime(player->trailEmitter, 0.7f, 1.0f);  // Longer life
-	ParticleEmitterSetVelocity(player->trailEmitter, -80.f, 100.f, -80.f, 100.f); // Particles shoot out in all directions
+    ParticleEmitterSetVelocity(player->trailEmitter, -30.0f, 30.0f, -40.0f, 40.0f); // tight spread
     ParticleEmitterSetScale(player->trailEmitter, 1.f, 5.f);  // More size variation
     ParticleEmitterSetColor(player->trailEmitter, 
-        0.0f, 1.0f, 0.392f, 1.0f,     // start color
-        0.392f, 1.0f, 0.039f, 0.0f    // end eolor
+        0.0f, 1.0f, 0.392f, 1.0f   // start color
     );
+
+
+    player->deathEmitter = ParticleEmitterCreate();
+    ParticleEmitterSetMesh(player->deathEmitter, (AEGfxVertexList*)mesh);
+    ParticleEmitterSetLifeTime(player->deathEmitter, 0.4f, 0.8f);
+	ParticleEmitterSetVelocity(player->deathEmitter, -300.0f, 300.0f, -300.0f, 300.0f); //AOE explosion, so wide spread
+    ParticleEmitterSetScale(player->deathEmitter, 5.0f, 5.0f);
+    ParticleEmitterSetColor(player->deathEmitter,
+        0.0f, 1.0f, 0.392f, 1.0f     // start color
+    );
+    ParticleEmitterSetEmissionRate(player->deathEmitter, 0.0f);
+    player->deathExplosionSpawned = false;
 }
 // math (on god im not sure whats happening here)
 void NormalizeVector(float* x, float* y) {
@@ -68,7 +81,7 @@ void DrawPlayer(Player& player, void* mesh, float cameraX, float cameraY, float 
     float screenX = player.x - cameraX;
     float screenY = player.y - cameraY;    
     // Draw particles (they're in world space, need camera offset)
-    if (player.trailEmitter) {
+    if (player.trailEmitter && !player.isDead) {
         AEGfxSetRenderMode(AE_GFX_RM_COLOR);
 
         // Temporarily offset particles for camera
@@ -89,6 +102,26 @@ void DrawPlayer(Player& player, void* mesh, float cameraX, float cameraY, float 
             }
         }
     }
+
+    // Draw death explosion
+    if (player.isDead && player.deathEmitter) {
+        AEGfxSetRenderMode(AE_GFX_RM_COLOR);
+        for (int i = 0; i < MAX_PARTICLES; i++) {
+            if (player.deathEmitter->particles[i].active) {
+                player.deathEmitter->particles[i].x -= cameraX;
+                player.deathEmitter->particles[i].y -= cameraY;
+            }
+        }
+        ParticleEmitterDraw(player.deathEmitter);
+        for (int i = 0; i < MAX_PARTICLES; i++) {
+            if (player.deathEmitter->particles[i].active) {
+                player.deathEmitter->particles[i].x += cameraX;
+                player.deathEmitter->particles[i].y += cameraY;
+            }
+        }
+        return; // skip drawing player body if ded
+    }
+
     // Pulsing effect
     static float pulseTime = 0.0f;
     pulseTime += dt;
@@ -106,6 +139,9 @@ void DrawPlayer(Player& player, void* mesh, float cameraX, float cameraY, float 
     AEGfxSetTransparency(1.0f);
     AEGfxSetColorToMultiply(0.2f, 1.0f, 0.2f, 1.0f);  // Bright neon green
     DrawSprite((AEGfxVertexList*)mesh, screenX, screenY, PLAYER_RADIUS * 0.7f, PLAYER_RADIUS * 0.7f, 0.0f);
+
+
+
 }
 
 void DrawPlayerUI(Player& player, WeaponStats& weapon, void* mesh, void* mesh2,
@@ -326,106 +362,83 @@ WeaponStats GetCurrentWeapon(Player& player) {
 }
 
 
-//Movement
 
+void UpdatePlayer(Player* player, float dt, std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap) {
+    // --- DEATH ---
+    if (player->isDead) {
+        if (!player->deathExplosionSpawned) {
+            ParticleEmitterEmit(player->deathEmitter, player->x, player->y, 64);
+            player->deathExplosionSpawned = true;
+        }
+        ParticleEmitterUpdate(player->deathEmitter, dt);
+        return;
+    }
 
-void UpdatePlayerTimers(Player* player, float dt) {
-    if (player->dashTimer > 0.0f) {
-        player->dashTimer -= dt;
-    }
-    if (player->dashCooldownTimer > 0.0f) {
-        player->dashCooldownTimer -= dt;
-    }
-    if (player->shootCooldown > 0.0f) {
-        player->shootCooldown -= dt;
-    }
-}
+    // --- TIMERS ---
+    if (player->dashTimer > 0.0f)         player->dashTimer -= dt;
+    if (player->dashCooldownTimer > 0.0f)  player->dashCooldownTimer -= dt;
+    if (player->shootCooldown > 0.0f)      player->shootCooldown -= dt;
 
-void UpdatePlayerMovement(Player* player, float dt,
-    std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap) {
+    // --- MOVEMENT ---
     float radius = 25.0f;
-
-    // Store old position BEFORE movement
     float oldPrevX = player->x;
     float oldPrevY = player->y;
 
-    // Check for dash input
-    if (AEInputCheckTriggered(AEVK_SPACE) && player->dashCooldownTimer <= 0.0f) {
-        float inputX = 0.0f;
-        float inputY = 0.0f;
+    // Get WASD input
+    float inputX = 0.0f, inputY = 0.0f;
+    if (AEInputCheckCurr(AEVK_W)) inputY += 1.0f;
+    if (AEInputCheckCurr(AEVK_S)) inputY -= 1.0f;
+    if (AEInputCheckCurr(AEVK_D)) inputX += 1.0f;
+    if (AEInputCheckCurr(AEVK_A)) inputX -= 1.0f;
+
+    // Dash input
+    if (AEInputCheckTriggered(AEVK_SPACE) && player->dashCooldownTimer <= 0.0f && (inputX != 0.0f || inputY != 0.0f)) {
+        player->dashDirX = inputX;
+        player->dashDirY = inputY;
+        NormalizeVector(&player->dashDirX, &player->dashDirY);
+        player->dashTimer = DASH_DURATION;
+        player->dashCooldownTimer = DASH_COOLDOWN;
         player->inDash = true;
-
-        if (AEInputCheckCurr(AEVK_W)) inputY += 1.0f;
-        if (AEInputCheckCurr(AEVK_S)) inputY -= 1.0f;
-        if (AEInputCheckCurr(AEVK_D)) inputX += 1.0f;
-        if (AEInputCheckCurr(AEVK_A)) inputX -= 1.0f;
-
-        float length = sqrtf(inputX * inputX + inputY * inputY);
-        if (length > 0.0f) {
-            player->dashDirX = inputX / length;
-            player->dashDirY = inputY / length;
-            player->dashTimer = DASH_DURATION;
-            player->dashCooldownTimer = DASH_COOLDOWN;
-        }
     }
 
     // Apply movement
-    if (player->dashTimer > 0.0f) {
-        float oldX = player->x;
-        float oldY = player->y;
+    float oldX = player->x, oldY = player->y;
 
+    if (player->dashTimer > 0.0f) {
+        // Dashing
         player->x += player->dashDirX * PLAYER_DASH_SPEED * dt;
         player->y += player->dashDirY * PLAYER_DASH_SPEED * dt;
-
-        if (checkCollision(player->x, player->y, radius, gameMap)) {
-            player->x = oldX;
-            player->y = oldY;
-            player->dashTimer = 0.0f;
-            player->inDash = false;
-        }
     }
-    else {
-        player->inDash = false;
-
-        float moveX = 0.0f;
-        float moveY = 0.0f;
-
-        if (AEInputCheckCurr(AEVK_W)) moveY += 1.0f;
-        if (AEInputCheckCurr(AEVK_S)) moveY -= 1.0f;
-        if (AEInputCheckCurr(AEVK_D)) moveX += 1.0f;
-        if (AEInputCheckCurr(AEVK_A)) moveX -= 1.0f;
-
-        // Normalize diagonal movement
-        if (moveX != 0.0f || moveY != 0.0f) {
-            float length = sqrtf(moveX * moveX + moveY * moveY);
-            moveX /= length;
-            moveY /= length;
-
-            float oldX = player->x;
-            float oldY = player->y;
-
-            player->x += moveX * PLAYER_WALK_SPEED * dt;
-            player->y += moveY * PLAYER_WALK_SPEED * dt;
-
-            if (checkCollision(player->x, player->y, radius, gameMap)) {
-                player->x = oldX;
-                player->y = oldY;
-            }
-        }
+    else if (inputX != 0.0f || inputY != 0.0f) {
+        // Walking
+        NormalizeVector(&inputX, &inputY);
+        player->x += inputX * PLAYER_WALK_SPEED * dt;
+        player->y += inputY * PLAYER_WALK_SPEED * dt;
     }
 
-    // Calculate velocity  
+    // Wall collision
+    if (checkCollision(player->x, player->y, radius, gameMap)) {
+        player->x = oldX;
+        player->y = oldY;
+        player->dashTimer = 0.0f;
+    }
+
+    player->inDash = (player->dashTimer > 0.0f);
+
+    // --- TRAIL PARTICLES ---
+    // Calculate velocity based on how much player moved this frame
     player->velocityX = (player->x - oldPrevX) / dt;
     player->velocityY = (player->y - oldPrevY) / dt;
 
-    // Emit particles regardless of movement type
-    if (player->trailEmitter && (fabs(player->velocityX) > 0.1f || fabs(player->velocityY) > 0.1f)) {
-        ParticleEmitterEmit(player->trailEmitter, player->x, player->y, 2);
-    }
     if (player->trailEmitter) {
+        bool isMoving = (player->velocityX > 0.1f || player->velocityX < -0.1f ||
+            player->velocityY > 0.1f || player->velocityY < -0.1f);
+        if (isMoving)
+            ParticleEmitterEmit(player->trailEmitter, player->x, player->y, 2);
         ParticleEmitterUpdate(player->trailEmitter, dt);
     }
 }
+
 
 
 void CheckEnemyBulletPlayerCollision(std::vector<Bullet>& enemyBullets,

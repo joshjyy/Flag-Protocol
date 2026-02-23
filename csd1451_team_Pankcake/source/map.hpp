@@ -3,7 +3,7 @@
 #include "AEEngine.h"
 
 // Define the dimensions of the game map
-const int MAP_HEIGHT = 64;  // Was 18, now double 
+const int MAP_HEIGHT = 36;  // Was 18, now double 
 const int MAP_WIDTH = 64;   // Was 32, now double 
 /**
  * Loads a game level map from a text file into a 2D array.
