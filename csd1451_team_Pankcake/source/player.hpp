@@ -59,7 +59,6 @@ void RenderBullets(const std::vector<Bullet>& bullets, void* mesh, float cameraX
 void ClearBullets(std::vector<Bullet>& bullets);  
 int GetBulletCount(const std::vector<Bullet>& bullets);
 WeaponStats GetCurrentWeapon(Player& player);
-bool PlayerDeath(Player* player, float dt);
 void UpdatePlayer(Player* player, float dt, std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap);
 
 
