@@ -10,6 +10,7 @@
 #include <vector>
 #include "map.hpp"
 #include "events.hpp"
+#include "screens.hpp"
 
 
 //Legend if needed later
@@ -123,94 +124,121 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	// Enable transparency
 	AEGfxSetBlendMode(AE_GFX_BM_BLEND);
 	AEGfxSetTransparency(1.0f);
-
+	// Screen state
+	GameState currentState = STATE_MENU;
 	while (gGameRunning)
 	{
 		// Frame start
 		AESysFrameStart();
 		// Get frame time
 		float dt = (float)AEFrameRateControllerGetFrameTime();
-
-		// ---------------------------------------------------------------------------
-		// INPUT HANDLING
-		// ---------------------------------------------------------------------------
-
-		//Check what weapon the player is using once per frame
-		WeaponStats weapon = GetCurrentWeapon(player);
-
-		// ---------------------------------------------------------------------------
-		// MAP AND CAMERA
-		// ---------------------------------------------------------------------------
-		//Camera follows the player
-		cameraX = player.x;
-		cameraY = player.y;
-		Load_Map(gameMap, meshes.square, cameraX, cameraY);
-
 		// Exit game
 		if (AEInputCheckTriggered(AEVK_ESCAPE) || 0 == AESysDoesWindowExist())
 			gGameRunning = 0;
-		
-
-
-		// Update Timers CD
-		UpdatePlayer(&player, dt, gameMap);
-
-
-		// Weapon controls
-		ResetShootCooldown(player, dt);
-		WeaponSwitchCheck(player);
-		ShootingCheck(player, playerBullets, weapon, cameraX, cameraY);
-		ReloadBullets(weapon, dt);
-
 		// ---------------------------------------------------------------------------
-		// UPDATE ENEMIES
+		// MENU STATE
 		// ---------------------------------------------------------------------------
+		if (currentState == STATE_MENU)
+		{
+			if (IsQuitClicked()) gGameRunning = 0;
+			currentState = UpdateAndRenderMenu(meshes.square, fontID, dt);
 
-		//Update Grunt to aim at player
-		UpdateGrunts(grunts, player, enemyBullets, dt);
-
-		// ---------------------------------------------------------------------------
-		// UPDATE BULLETS
-		// ---------------------------------------------------------------------------
-
-		UpdateBullets(playerBullets, dt, gameMap);
-		UpdateBullets(enemyBullets, dt, gameMap);
-
-		if (AEInputCheckTriggered(AEVK_K)) {
-			player.isDead = true;
+			if (AEInputCheckTriggered(AEVK_ESCAPE))
+				gGameRunning = 0;
 		}
-	
 		// ---------------------------------------------------------------------------
-		// Collision Checks
+		// EDITOR STATE
 		// ---------------------------------------------------------------------------
-		// CHECK COLLISIONS 
-		CheckBulletGruntCollisions(playerBullets, grunts, player);
-		CheckEnemyBulletPlayerCollision(enemyBullets, player);
+		else if (currentState == STATE_EDITOR)
+		{
+			AEGfxSetBackgroundColor(0.05f, 0.05f, 0.1f);
 
 
-
-
+			if (AEInputCheckTriggered(AEVK_BACK) || AEInputCheckTriggered(AEVK_ESCAPE))
+				currentState = STATE_MENU;
+		}
 		// ---------------------------------------------------------------------------
-		// RENDERING
+		// INPUT HANDLING
 		// ---------------------------------------------------------------------------
-		// In your update function
-		
-	
+		else if (currentState == STATE_GAME)
+		{
+			AEGfxSetBackgroundColor(0.0f, 0.0f, 0.0f);
 
-		//Enemy Circle (draw first - bottom layer)
-		RenderGrunts(grunts, meshes.circle, cameraX, cameraY);
+			//Check what weapon the player is using once per frame
+			WeaponStats weapon = GetCurrentWeapon(player);
 
-		//Player Circle (draw on top)
-		DrawPlayer(player, meshes.circle, cameraX, cameraY, dt);
+			// ---------------------------------------------------------------------------
+			// MAP AND CAMERA
+			// ---------------------------------------------------------------------------
+			//Camera follows the player
+			cameraX = player.x;
+			cameraY = player.y;
+			Load_Map(gameMap, meshes.square, cameraX, cameraY);
 
-		// Draw bullets (use correct overload with camera)
-		RenderBullets(playerBullets, meshes.circle, cameraX, cameraY);
-		RenderBullets(enemyBullets, meshes.circle, cameraX, cameraY);
 
-		//Draw Health Bar UI
-		DrawPlayerUI(player, weapon, meshes.square, meshes.circle, cameraX, cameraY);
-		// *** CHECK WIN CONDITION ***
-		CheckWinCondition(gameEvents, player);
+
+
+
+			// Update Timers CD
+			UpdatePlayer(&player, dt, gameMap);
+
+
+			// Weapon controls
+			ResetShootCooldown(player, dt);
+			WeaponSwitchCheck(player);
+			ShootingCheck(player, playerBullets, weapon, cameraX, cameraY);
+			ReloadBullets(weapon, dt);
+
+			// ---------------------------------------------------------------------------
+			// UPDATE ENEMIES
+			// ---------------------------------------------------------------------------
+
+			//Update Grunt to aim at player
+			UpdateGrunts(grunts, player, enemyBullets, dt);
+
+			// ---------------------------------------------------------------------------
+			// UPDATE BULLETS
+			// ---------------------------------------------------------------------------
+
+			UpdateBullets(playerBullets, dt, gameMap);
+			UpdateBullets(enemyBullets, dt, gameMap);
+
+			if (AEInputCheckTriggered(AEVK_K)) {
+				player.isDead = true;
+			}
+
+			// ---------------------------------------------------------------------------
+			// Collision Checks
+			// ---------------------------------------------------------------------------
+			// CHECK COLLISIONS 
+			CheckBulletGruntCollisions(playerBullets, grunts, player);
+			CheckEnemyBulletPlayerCollision(enemyBullets, player);
+
+
+
+
+			// ---------------------------------------------------------------------------
+			// RENDERING
+			// ---------------------------------------------------------------------------
+			// In your update function
+
+
+
+			//Enemy Circle (draw first - bottom layer)
+			RenderGrunts(grunts, meshes.circle, cameraX, cameraY);
+
+			//Player Circle (draw on top)
+			DrawPlayer(player, meshes.circle, cameraX, cameraY, dt);
+
+			// Draw bullets (use correct overload with camera)
+			RenderBullets(playerBullets, meshes.circle, cameraX, cameraY);
+			RenderBullets(enemyBullets, meshes.circle, cameraX, cameraY);
+
+			//Draw Health Bar UI
+			DrawPlayerUI(player, weapon, meshes.square, meshes.circle, cameraX, cameraY);
+			// *** CHECK WIN CONDITION ***
+			CheckWinCondition(gameEvents, player);
+		}
 		// ---------------------------------------------------------------------------
 		//DEBUGGING
 		// ---------------------------------------------------------------------------
