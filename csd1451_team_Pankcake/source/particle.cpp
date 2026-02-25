@@ -9,7 +9,7 @@ float RandFloat(float min, float max) {
 
 ParticleEmitter* ParticleEmitterCreate(void) {
     ParticleEmitter* emitter = new ParticleEmitter();
-    //printf("ParticleEmitterCreate: allocated at %p, size = %zu bytes\n", emitter, sizeof(ParticleEmitter));
+    //printf("emiiter: allocated at %p, size = %zu bytes\n", emitter, sizeof(ParticleEmitter));
 
     emitter->emissionRate = 10.0f;
     emitter->minLifeTime = 1.0f;
@@ -22,14 +22,13 @@ ParticleEmitter* ParticleEmitterCreate(void) {
 
 
 void ParticleEmitterFree(ParticleEmitter** emitter) {
-    printf("ParticleEmitterFree called\n");
 
     if (*emitter) {
-        printf("Deleting emitter at %p\n", *emitter);
+        //printf("Deleting emitter at %p\n", *emitter);
 
         delete (*emitter);
         *emitter = nullptr;
-        printf("Emitter freed\n");
+        //printf("Emitter freed\n");
 
     }
 }
@@ -81,7 +80,7 @@ void ParticleEmitterSetEmissionRate(ParticleEmitter* emitter, float rate) {
 
 void ParticleEmitterEmit(ParticleEmitter* emitter, float x, float y, int count) {
     if (!emitter) return;
-	// Emit 'count' particles at (x, y)
+	//initialize count number of particles at (x,y) with random properties within emitter's configured ranges
     for (int i = 0; i < count; i++) {
 		// Find an inactive particle slot
 
@@ -135,12 +134,14 @@ void ParticleEmitterUpdate(ParticleEmitter* emitter, float dt) {
 }
 
 void ParticleEmitterDraw(ParticleEmitter* emitter) {
+	// Don't attempt to draw if no emitter or mesh
     if (!emitter || !emitter->mesh) return;
 
-	// Draw active particles
+
     AEGfxSetRenderMode(AE_GFX_RM_COLOR);
     AEGfxSetBlendMode(AE_GFX_BM_BLEND);
 
+	// Loop through particles and draw active ones
     for (int i = 0; i < MAX_PARTICLES; i++) {
         Particle* p = &emitter->particles[i];
         if (!p->active) continue;

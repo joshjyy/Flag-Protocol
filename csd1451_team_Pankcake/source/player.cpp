@@ -214,6 +214,7 @@ void PlayerDashStaminaBar(Player& player, void* mesh, float cameraX, float camer
         // Calculate dash cooldown fill
         const float MAX_DASH_COOLDOWN = 0.5f;
         float cooldownPercent = 1.0f - (player.dashCooldownTimer / MAX_DASH_COOLDOWN);
+		// Clamp between 0 and 1 just in case
         if (cooldownPercent < 0.0f) cooldownPercent = 0.0f;
         if (cooldownPercent > 1.0f) cooldownPercent = 1.0f;
 
@@ -223,6 +224,7 @@ void PlayerDashStaminaBar(Player& player, void* mesh, float cameraX, float camer
 
 		// Color shifting from red to cyan
         float cyan = cooldownPercent;
+		// Invert red so it goes from 1 to 0 as cooldown fills
         float red = 1.0f - cooldownPercent;
         AEGfxSetColorToMultiply(red, cyan, cyan, 1.0f);
         DrawSprite((AEGfxVertexList*)mesh, dashX, dashY - dashOffset, dashBarWidth, currentDashHeight, 0.0f);

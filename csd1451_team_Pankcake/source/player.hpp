@@ -1,7 +1,8 @@
+#pragma once
+
+
 #include "gunTypes.hpp"
 #include <vector>
-#ifndef BULLET_H
-#define BULLET_H
 #include "map.hpp"
 #include "particle.hpp"
 // Bullet structure
@@ -64,4 +65,3 @@ void UpdatePlayer(Player* player, float dt, std::array<std::array<int, MAP_WIDTH
 
 void CheckEnemyBulletPlayerCollision(std::vector<Bullet>& enemyBullets, Player& player);
 
-#endif 
