@@ -1,7 +1,8 @@
+#pragma once
+
+
 #include "gunTypes.hpp"
 #include <vector>
-#ifndef BULLET_H
-#define BULLET_H
 #include "map.hpp"
 #include "particle.hpp"
 // Bullet structure
@@ -65,4 +66,3 @@ void DrawCrosshair(void* mesh);
 
 void CheckEnemyBulletPlayerCollision(std::vector<Bullet>& enemyBullets, Player& player);
 
-#endif 
