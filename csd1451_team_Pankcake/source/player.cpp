@@ -479,3 +479,29 @@ void CheckEnemyBulletPlayerCollision(std::vector<Bullet>& enemyBullets,
         }
     }
 }
+
+void DrawCrosshair(void* mesh) {
+    // Hide the default Windows cursor
+    ShowCursor(false);
+
+    // Get mouse position 
+    s32 mouseX, mouseY;
+    AEInputGetCursorPosition(&mouseX, &mouseY);
+
+    // Convert to AE screen space (centered at 0,0)
+    float cx = (float)mouseX - 800.0f;   // half of 1600
+    float cy = -(float)mouseY + 450.0f;  // half of 900, flipped Y
+
+
+
+    AEGfxSetRenderMode(AE_GFX_RM_COLOR);
+    AEGfxSetTransparency(1.0f);
+    AEGfxSetColorToMultiply(0.0f, 1.0f, 0.0f, 1.0f); // green
+    AEGfxSetColorToAdd(0, 0, 0, 0);
+    float armLength = 15.0f;
+    float thickness = 3.0f;
+    // Horizontal bar
+    DrawSprite((AEGfxVertexList*)mesh, cx, cy, armLength, thickness, 0.0f);
+    // Vertical bar
+    DrawSprite((AEGfxVertexList*)mesh, cx, cy, thickness, armLength, 0.0f);
+}

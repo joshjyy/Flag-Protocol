@@ -236,6 +236,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 			//Draw Health Bar UI
 			DrawPlayerUI(player, weapon, meshes.square, meshes.circle, cameraX, cameraY);
+			 DrawCrosshair(meshes.square);
+
 			// *** CHECK WIN CONDITION ***
 			CheckWinCondition(gameEvents, player);
 		}

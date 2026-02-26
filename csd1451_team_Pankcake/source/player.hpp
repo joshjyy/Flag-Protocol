@@ -60,6 +60,7 @@ void ClearBullets(std::vector<Bullet>& bullets);
 int GetBulletCount(const std::vector<Bullet>& bullets);
 WeaponStats GetCurrentWeapon(Player& player);
 void UpdatePlayer(Player* player, float dt, std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap);
+void DrawCrosshair(void* mesh);
 
 
 void CheckEnemyBulletPlayerCollision(std::vector<Bullet>& enemyBullets, Player& player);
