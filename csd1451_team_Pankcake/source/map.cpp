@@ -61,57 +61,47 @@ int Load_Game_Level(const char* filename, std::array<std::array<int, MAP_WIDTH>,
 void Load_Map(std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& arr,
 	AEGfxVertexList* mesh,
 	float cameraX, float cameraY) {
-
 	AEGfxSetRenderMode(AE_GFX_RM_COLOR);
 	AEGfxSetTransparency(1.0f);
 	AEMtx33 scale, translate, transform;
 	const int TILE_SIZE = 50;
-	const int OUTLINE_THICKNESS = 4;
+	const int EDGE = 4; // thickness of 3D edge
 
 	for (int i = 0; i < MAP_HEIGHT; i++) {
 		for (int j = 0; j < MAP_WIDTH; j++) {
 			if (arr[i][j] != 0) {
-
 				float x = (j * TILE_SIZE) - 800.0f + 25.0f;
 				float y = 450.0f - (i * TILE_SIZE) - 25.0f;
 				float screenX = x - cameraX;
 				float screenY = y - cameraY;
 
-				
-				if (arr[i][j] == 1) {
-					
-					AEGfxSetColorToMultiply(0.0f, 1.0f, 0.0f, 1.0f);
-				}
-				else if (arr[i][j] == 2) {
-					
-					AEGfxSetColorToMultiply(0.0f, 1.0f, 1.0f, 1.0f);
-				}
-				else if (arr[i][j] == 3) {
-					
-					AEGfxSetColorToMultiply(0.5f, 1.0f, 0.0f, 1.0f);
-				}
-				else if (arr[i][j] == 4) {
-					
-					AEGfxSetColorToMultiply(1.0f, 0.8f, 0.0f, 1.0f);
-				}
-				else if (arr[i][j] == 5) {
-					
-					AEGfxSetColorToMultiply(1.0f, 0.0f, 1.0f, 1.0f);
-				}
-				else {
-					
-					AEGfxSetColorToMultiply(1.0f, 1.0f, 1.0f, 1.0f);
-				}
+				// Pick base color
+				float r, g, b;
+				if (arr[i][j] == 1) { r = 0.0f; g = 1.0f;  b = 0.0f; }
+				else if (arr[i][j] == 2) { r = 0.0f; g = 1.0f;  b = 1.0f; }
+				else if (arr[i][j] == 3) { r = 0.5f; g = 1.0f;  b = 0.0f; }
+				else if (arr[i][j] == 4) { r = 1.0f; g = 0.8f;  b = 0.0f; }
+				else if (arr[i][j] == 5) { r = 1.0f; g = 0.0f;  b = 1.0f; }
+				else { r = 1.0f; g = 1.0f;  b = 1.0f; }
 
-				// Draw neon outline 
-				AEMtx33Scale(&scale, (float)(TILE_SIZE + OUTLINE_THICKNESS * 2), (float)(TILE_SIZE + OUTLINE_THICKNESS * 2));
-				AEMtx33Trans(&translate, screenX, screenY);
+				// ── STEP 1: Draw dark bottom-right shadow (slightly bigger) ──
+				AEGfxSetColorToMultiply(r * 0.2f, g * 0.2f, b * 0.2f, 1.0f);
+				AEMtx33Scale(&scale, (float)(TILE_SIZE + EDGE), (float)(TILE_SIZE + EDGE));
+				AEMtx33Trans(&translate, screenX + EDGE * 0.5f, screenY - EDGE * 0.5f);
 				AEMtx33Concat(&transform, &translate, &scale);
 				AEGfxSetTransform(transform.m);
 				AEGfxMeshDraw(mesh, AE_GFX_MDM_TRIANGLES);
 
-				// Draw black interior 
-				AEGfxSetColorToMultiply(0.0f, 0.0f, 0.0f, 1.0f);
+				// ── STEP 2: Draw bright top-left highlight (slightly bigger) ──
+				AEGfxSetColorToMultiply(r, g, b, 1.0f);
+				AEMtx33Scale(&scale, (float)(TILE_SIZE + EDGE), (float)(TILE_SIZE + EDGE));
+				AEMtx33Trans(&translate, screenX - EDGE * 0.5f, screenY + EDGE * 0.5f);
+				AEMtx33Concat(&transform, &translate, &scale);
+				AEGfxSetTransform(transform.m);
+				AEGfxMeshDraw(mesh, AE_GFX_MDM_TRIANGLES);
+
+				// ── STEP 3: Draw main block face (base color darkened) ──
+				AEGfxSetColorToMultiply(r * 0.35f, g * 0.35f, b * 0.35f, 1.0f);
 				AEMtx33Scale(&scale, (float)TILE_SIZE, (float)TILE_SIZE);
 				AEMtx33Trans(&translate, screenX, screenY);
 				AEMtx33Concat(&transform, &translate, &scale);
