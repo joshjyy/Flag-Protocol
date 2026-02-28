@@ -5,6 +5,9 @@
 #include <vector>
 #include "map.hpp"
 #include "particle.hpp"
+
+
+struct Grunt;
 // Bullet structure
 struct Bullet {
     float x, y;
@@ -66,3 +69,4 @@ void DrawCrosshair(void* mesh);
 
 void CheckEnemyBulletPlayerCollision(std::vector<Bullet>& enemyBullets, Player& player);
 
+void CheckPlayerGruntBodyCollision(Player& player, std::vector<Grunt>& grunts);

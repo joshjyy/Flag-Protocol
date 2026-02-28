@@ -213,7 +213,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			// CHECK COLLISIONS 
 			CheckBulletGruntCollisions(playerBullets, grunts, player);
 			CheckEnemyBulletPlayerCollision(enemyBullets, player);
-
+			CheckPlayerGruntBodyCollision(player,grunts);
 
 
 
@@ -239,6 +239,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			 DrawCrosshair(meshes.square);
 
 			// *** CHECK WIN CONDITION ***
+			 removeDeadGrunts(grunts);
 			CheckWinCondition(gameEvents, player);
 		}
 		// ---------------------------------------------------------------------------

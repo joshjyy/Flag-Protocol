@@ -1,9 +1,12 @@
+
+
 #include "player.hpp"
 #include "AEEngine.h"
 #include "utils.hpp"
 #include "gunTypes.hpp"
 #include "weapon.hpp"
 #include "gameConstants.hpp"
+#include "enemies.hpp"
 
 
 
@@ -506,4 +509,38 @@ void DrawCrosshair(void* mesh) {
     DrawSprite((AEGfxVertexList*)mesh, cx, cy, armLength, thickness, 0.0f);
     // Vertical bar
     DrawSprite((AEGfxVertexList*)mesh, cx, cy, thickness, armLength, 0.0f);
+}
+
+
+void CheckPlayerGruntBodyCollision(Player& player, std::vector<Grunt>& grunts) {
+    for (auto& grunt : grunts) {
+        if (grunt.isDead) continue;
+
+        float dx = player.x - grunt.movingX;
+        float dy = player.y - grunt.movingY;
+        float dist = sqrtf(dx * dx + dy * dy);
+        float minDist =  GRUNT_RADIUS; // adjust to your sizes
+
+        if (dist < minDist && dist > 0.0f) {
+			printf("Collision with grunt! Pushing player out.\n");
+            // Push player out
+			float overlap = minDist - dist; // how much circles are intersecting 
+            float nx = dx / dist; // normalize djrection vector
+            float ny = dy / dist;
+			player.x += nx * overlap; //push player out of collision
+            player.y += ny * overlap;
+        }
+
+        if (player.inDash == 1) {
+            if (dist < minDist + 20.0f) { // slightly larger radius for dash hit
+                printf("Dashed into grunt!\n");
+                grunt.health -= 50.0f; // dash damage
+                if (grunt.health <= 0.0f) {
+                    grunt.isDead = true;
+                    player.gruntsKilled++;
+                    printf("Grunt killed by dash! Total kills: %d\n", player.gruntsKilled);
+                }
+			}
+        }
+    }
 }

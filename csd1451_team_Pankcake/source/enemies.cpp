@@ -108,10 +108,12 @@ void CheckBulletGruntCollisions(std::vector<Bullet>& playerBullets,std::vector<G
 		}
 	}
 
-	//check thru grunts backwards to remove dead ones
-	for (int i = static_cast<int>( grunts.size() ) - 1; i >= 0; i--) {
+
+}
+
+void removeDeadGrunts(std::vector<Grunt>& grunts){
+for (int i = static_cast<int>(grunts.size()) - 1; i >= 0; i--) {
 		if (grunts[i].isDead) {
-			printf("Removing dead grunt from list\n");
 			grunts.erase(grunts.begin() + i);
 		}
 	}
