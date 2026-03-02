@@ -111,7 +111,7 @@ void CheckBulletGruntCollisions(std::vector<Bullet>& playerBullets,std::vector<G
 
 }
 
-void removeDeadGrunts(std::vector<Grunt>& grunts){
+void RemoveDeadGrunts(std::vector<Grunt>& grunts){
 for (int i = static_cast<int>(grunts.size()) - 1; i >= 0; i--) {
 		if (grunts[i].isDead) {
 			grunts.erase(grunts.begin() + i);

@@ -90,7 +90,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	//load meshes
 	InitCommonMeshes();
-	InitPlayerParticles(&player , meshes.square);
+	InitPlayerParticles(&player , meshes.square, meshes.circle);
 
 	// ---------------------------------------------------------------------------
 	// MAP
@@ -202,11 +202,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 			UpdateBullets(playerBullets, dt, gameMap);
 			UpdateBullets(enemyBullets, dt, gameMap);
-
-			if (AEInputCheckTriggered(AEVK_K)) {
-				player.isDead = true;
-			}
-
+	
 			// ---------------------------------------------------------------------------
 			// Collision Checks
 			// ---------------------------------------------------------------------------
@@ -236,15 +232,17 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 			//Draw Health Bar UI
 			DrawPlayerUI(player, weapon, meshes.square, meshes.circle, cameraX, cameraY);
-			 DrawCrosshair(meshes.square);
+			DrawCrosshair(meshes.square);
 
 			// *** CHECK WIN CONDITION ***
-			 removeDeadGrunts(grunts);
+			RemoveDeadGrunts(grunts);
 			CheckWinCondition(gameEvents, player);
 		}
 		// ---------------------------------------------------------------------------
 		//DEBUGGING
 		// ---------------------------------------------------------------------------
+		//Debugging Things--------------------------------------------------------------
+		killPlayer(player);
 
 		// Frame end
 		AESysFrameEnd();
@@ -259,6 +257,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	AEGfxDestroyFont(fontID);
 	ParticleEmitterFree(&player.trailEmitter);
 	ParticleEmitterFree(&player.deathEmitter);
+	ParticleEmitterFree(&player.dashTrailEmitter);
 	FreeCommonMeshes();
 
 

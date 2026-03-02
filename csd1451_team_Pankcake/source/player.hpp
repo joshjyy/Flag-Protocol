@@ -45,13 +45,14 @@ struct Player {
     AEGfxVertexList* particleMesh;
     ParticleEmitter* trailEmitter;
     ParticleEmitter* deathEmitter;
+    ParticleEmitter* dashTrailEmitter; 
     bool deathExplosionSpawned;
 
 };
 
 Bullet CreateBullet(float x, float y, float targetX, float targetY, float speed, float damage);
 Player InitPlayer(void);
-void InitPlayerParticles(Player* player, void* mesh);
+void InitPlayerParticles(Player* player, void* mesh, void* mesh2);
 
 void DrawPlayer(Player& player, void* mesh, float cameraX, float cameraY, float dt);
 void DrawPlayerUI(Player& player, WeaponStats& weapon, void* mesh, void* mesh2, float cameraX, float cameraY);  
@@ -70,3 +71,4 @@ void DrawCrosshair(void* mesh);
 void CheckEnemyBulletPlayerCollision(std::vector<Bullet>& enemyBullets, Player& player);
 
 void CheckPlayerGruntBodyCollision(Player& player, std::vector<Grunt>& grunts);
+void killPlayer(Player& player);

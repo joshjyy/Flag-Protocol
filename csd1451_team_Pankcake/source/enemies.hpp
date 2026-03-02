@@ -40,5 +40,5 @@ Grunt SpawnGrunt(float startX, float startY);
 void UpdateGrunts(std::vector<Grunt>& grunts, Player& player, std::vector<Bullet>& enemyBullets, float dt);
 void RenderGrunts(std::vector<Grunt>& grunts, void* mesh, float cameraX, float cameraY);
 void CheckBulletGruntCollisions(std::vector<Bullet>& playerBullets, std::vector<Grunt>& grunts, Player& playerInfo);
-void removeDeadGrunts(std::vector<Grunt>& grunts);	
+void RemoveDeadGrunts(std::vector<Grunt>& grunts);	
 #endif
