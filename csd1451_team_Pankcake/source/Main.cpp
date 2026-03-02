@@ -97,7 +97,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	// ---------------------------------------------------------------------------
 
 	// 2D array to store the game map data (18 rows x 32 columns)
-	std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT> gameMap;
+	auto gameMap =  new std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>;
 	//Camera variables(in main, with other game variables)
 	float cameraX = 0.0f;
 	float cameraY = 0.0f;
@@ -106,7 +106,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	// Update camera to follow player
 	
 	// Load the map from file into the gameMap array
-	if (!Load_Game_Level("Assets/Level_1_Map.txt", gameMap)) {
+	if (!Load_Game_Level("Assets/Level_1_Map.txt", *gameMap)) {
 		printf("Failed to load map! Exiting...\n");
 		gGameRunning = 0;
 	}
@@ -170,9 +170,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			//Camera follows the player
 			cameraX = player.x;
 			cameraY = player.y;
-			Load_Map(gameMap, meshes.square, cameraX, cameraY);
+			Load_Map(*gameMap, meshes.square, cameraX, cameraY);
 			// Update Timers CD
-			UpdatePlayer(&player, dt, gameMap);
+			UpdatePlayer(&player, dt, *gameMap);
 			// Weapon controls
 			ResetShootCooldown(player, dt);
 			WeaponSwitchCheck(player);
@@ -187,8 +187,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			// ---------------------------------------------------------------------------
 			// UPDATE BULLETS
 			// ---------------------------------------------------------------------------
-			UpdateBullets(playerBullets, dt, gameMap);
-			UpdateBullets(enemyBullets, dt, gameMap);
+			UpdateBullets(playerBullets, dt, *gameMap);
+			UpdateBullets(enemyBullets, dt, *gameMap);
 	
 			// ---------------------------------------------------------------------------
 			// Collision Checks
@@ -242,7 +242,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	// ---------------------------------------------------------------------------
 	// CLEANUP
 	// ---------------------------------------------------------------------------
-
+	delete gameMap;
 	ClearBullets(playerBullets);
 	ClearBullets(enemyBullets);
 	AEGfxDestroyFont(fontID);
