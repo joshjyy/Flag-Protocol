@@ -47,15 +47,19 @@ GameState UpdateAndRenderMenu(AEGfxVertexList* mesh, s8 font, float dt) {
     GetNormalizedTextPosition(-100.0f, 300.0f, &tx, &ty);
     AEGfxPrint(font, const_cast<char*>("Flag Protocol"), tx, ty, 2.0f, 0.0f, 1.0f, 0.0f, 1.0f);
 
-    Button playBtn = { 0.0f,  100.0f, 200.0f, 50.0f, "PLAY" };
-    Button editorBtn = { 0.0f,    0.0f, 200.0f, 50.0f, "EDITOR" };
-    Button quitBtn = { 0.0f, -100.0f, 200.0f, 50.0f, "QUIT" };
+    Button playBtn = { 0.0f,  150.0f, 200.0f, 50.0f, "PLAY" };
+    Button tutorialBtn = { 0.0f,   50.0f, 200.0f, 50.0f, "TUTORIAL" };
+    Button editorBtn = { 0.0f,  -50.0f, 200.0f, 50.0f, "EDITOR" };
+    Button quitBtn = { 0.0f, -150.0f, 200.0f, 50.0f, "QUIT" };
 
     DrawButton(playBtn, mesh, font);
+    DrawButton(tutorialBtn, mesh, font);
     DrawButton(editorBtn, mesh, font);
     DrawButton(quitBtn, mesh, font);
 
     if (IsButtonClicked(playBtn))   return STATE_GAME;
+    if (IsButtonClicked(tutorialBtn))   return STATE_TUTORIAL;
+
     if (IsButtonClicked(editorBtn)) return STATE_EDITOR;
 
     return STATE_MENU;

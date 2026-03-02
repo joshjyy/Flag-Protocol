@@ -118,7 +118,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	// GAME LOOP
 	// ---------------------------------------------------------------------------
 	// Set background color (gray)
-	AEGfxSetBackgroundColor(0.0f, 0.0f, 0.0f);
+	AEGfxSetBackgroundColor(0.05f, 0.05f, 0.1f);
 	// Set render mode for colored meshes
 	AEGfxSetRenderMode(AE_GFX_RM_COLOR);
 	// Enable transparency
@@ -162,11 +162,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		// ---------------------------------------------------------------------------
 		else if (currentState == STATE_GAME)
 		{
-			AEGfxSetBackgroundColor(0.0f, 0.0f, 0.0f);
-
 			//Check what weapon the player is using once per frame
 			WeaponStats weapon = GetCurrentWeapon(player);
-
 			// ---------------------------------------------------------------------------
 			// MAP AND CAMERA
 			// ---------------------------------------------------------------------------
@@ -174,32 +171,22 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			cameraX = player.x;
 			cameraY = player.y;
 			Load_Map(gameMap, meshes.square, cameraX, cameraY);
-
-
-
-
-
 			// Update Timers CD
 			UpdatePlayer(&player, dt, gameMap);
-
-
 			// Weapon controls
 			ResetShootCooldown(player, dt);
 			WeaponSwitchCheck(player);
 			ShootingCheck(player, playerBullets, weapon, cameraX, cameraY);
 			ReloadBullets(weapon, dt);
-
 			// ---------------------------------------------------------------------------
 			// UPDATE ENEMIES
 			// ---------------------------------------------------------------------------
-
 			//Update Grunt to aim at player
 			UpdateGrunts(grunts, player, enemyBullets, dt);
 
 			// ---------------------------------------------------------------------------
 			// UPDATE BULLETS
 			// ---------------------------------------------------------------------------
-
 			UpdateBullets(playerBullets, dt, gameMap);
 			UpdateBullets(enemyBullets, dt, gameMap);
 	
@@ -211,32 +198,36 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			CheckEnemyBulletPlayerCollision(enemyBullets, player);
 			CheckPlayerGruntBodyCollision(player,grunts);
 
-
-
 			// ---------------------------------------------------------------------------
 			// RENDERING
 			// ---------------------------------------------------------------------------
-			// In your update function
-
-
-
 			//Enemy Circle (draw first - bottom layer)
 			RenderGrunts(grunts, meshes.circle, cameraX, cameraY);
-
 			//Player Circle (draw on top)
 			DrawPlayer(player, meshes.circle, cameraX, cameraY, dt);
-
 			// Draw bullets (use correct overload with camera)
 			RenderBullets(playerBullets, meshes.circle, cameraX, cameraY);
 			RenderBullets(enemyBullets, meshes.circle, cameraX, cameraY);
-
 			//Draw Health Bar UI
 			DrawPlayerUI(player, weapon, meshes.square, meshes.circle, cameraX, cameraY);
 			DrawCrosshair(meshes.square);
-
 			// *** CHECK WIN CONDITION ***
 			RemoveDeadGrunts(grunts);
 			CheckWinCondition(gameEvents, player);
+		}
+		else if (currentState == STATE_TUTORIAL) {
+			printf("Tutorial State - Not Implemented Yet\n");
+
+
+
+
+
+
+
+
+			 if (AEInputCheckTriggered(AEVK_BACK) || AEInputCheckTriggered(AEVK_ESCAPE))
+				 currentState = STATE_MENU;
+
 		}
 		// ---------------------------------------------------------------------------
 		//DEBUGGING
