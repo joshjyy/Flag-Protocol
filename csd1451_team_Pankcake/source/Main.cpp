@@ -90,11 +90,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	//load meshes
 	InitCommonMeshes();
-	InitPlayerParticles(&player , meshes.square);
-
-	// Editor variables
-	int currentTileType = 1;  // 1 = green wall, 2 = cyan wall, 0 = eraser
-	bool showEditorGrid = true;
+	InitPlayerParticles(&player , meshes.square, meshes.circle);
 
 	// ---------------------------------------------------------------------------
 	// MAP
@@ -122,7 +118,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	// GAME LOOP
 	// ---------------------------------------------------------------------------
 	// Set background color (gray)
-	AEGfxSetBackgroundColor(0.0f, 0.0f, 0.0f);
+	AEGfxSetBackgroundColor(0.05f, 0.05f, 0.1f);
 	// Set render mode for colored meshes
 	AEGfxSetRenderMode(AE_GFX_RM_COLOR);
 	// Enable transparency
@@ -157,159 +153,17 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		{
 			AEGfxSetBackgroundColor(0.05f, 0.05f, 0.1f);
 
-			// Get mouse position for tile painting
-			s32 mouseX, mouseY;
-			AEInputGetCursorPosition(&mouseX, &mouseY);
 
-			// Convert to world coordinates
-			float worldX = (float)mouseX - 800.0f;
-			float worldY = 450.0f - (float)mouseY;
-
-			// Convert to grid coordinates
-			int gridX = (int)((worldX + 800.0f) / 50.0f);
-			int gridY = (int)((450.0f - worldY) / 50.0f);
-
-			// Check if within grid bounds
-			if (gridX >= 0 && gridX < MAP_WIDTH && gridY >= 0 && gridY < MAP_HEIGHT) {
-				// Left click to paint
-				if (AEInputCheckCurr(AEVK_LBUTTON)) {
-					gameMap[gridY][gridX] = currentTileType;
-				}
-				// Right click to erase
-				if (AEInputCheckCurr(AEVK_RBUTTON)) {
-					gameMap[gridY][gridX] = 0;
-				}
-			}
-
-			// Number keys to change tile type
-			if (AEInputCheckTriggered(AEVK_0)) currentTileType = 0;  // Eraser
-			if (AEInputCheckTriggered(AEVK_1)) currentTileType = 1;  // Red, wall/obstacle
-			if (AEInputCheckTriggered(AEVK_2)) currentTileType = 2;  // Blue, Water
-			if (AEInputCheckTriggered(AEVK_3)) currentTileType = 3;  // Green, Grass
-			if (AEInputCheckTriggered(AEVK_4)) currentTileType = 4;  // Yellow, Sand
-			if (AEInputCheckTriggered(AEVK_5)) currentTileType = 5;  // Purple, Special
-
-			// Save map (S key)
-			if (AEInputCheckTriggered(AEVK_S)) {
-				Save_Game_Level("Assets/My_Custom_Map.txt", gameMap);
-				printf("Map saved!\n");
-			}
-
-			// Load map (L key)
-			if (AEInputCheckTriggered(AEVK_L)) {
-				Load_Game_Level("Assets/Level_1_Map.txt", gameMap);
-				printf("Map loaded!\n");
-			}
-
-			// Clear map (C key)
-			if (AEInputCheckTriggered(AEVK_C)) {
-				for (int i = 0; i < MAP_HEIGHT; i++) {
-					for (int j = 0; j < MAP_WIDTH; j++) {
-						gameMap[i][j] = 0;
-					}
-				}
-				printf("Map cleared!\n");
-			}
-
-			// Render the map with centered camera
-			cameraX = 0.0f;  
-			cameraY = 0.0f;
-			Load_Map(gameMap, meshes.square, cameraX, cameraY);
-
-			// Draw UI instructions
-			float uiY = 350.0f;
-			float textX, textY;
-
-			GetNormalizedTextPosition(-700.0f, uiY, &textX, &textY);
-			AEGfxPrint(fontID, "EDITOR MODE", textX, textY, 0.8f, 1.0f, 1.0f, 1.0f, 1.0f);
-
-			// Tiles
-			uiY -= 40.0f;
-			GetNormalizedTextPosition(-700.0f, uiY, &textX, &textY);
-			AEGfxPrint(fontID, "1: Green", textX, textY, 0.6f, 0.0f, 1.0f, 0.0f, 1.0f);  
-
-			uiY -= 30.0f;
-			GetNormalizedTextPosition(-700.0f, uiY, &textX, &textY);
-			AEGfxPrint(fontID, "2: Cyan", textX, textY, 0.6f, 0.0f, 1.0f, 1.0f, 1.0f);  
-
-			uiY -= 30.0f;
-			GetNormalizedTextPosition(-700.0f, uiY, &textX, &textY);
-			AEGfxPrint(fontID, "3: Lime", textX, textY, 0.6f, 0.5f, 1.0f, 0.0f, 1.0f);  
-
-			uiY -= 30.0f;
-			GetNormalizedTextPosition(-700.0f, uiY, &textX, &textY);
-			AEGfxPrint(fontID, "4: Yellow", textX, textY, 0.6f, 1.0f, 0.8f, 0.0f, 1.0f); 
-
-			uiY -= 30.0f;
-			GetNormalizedTextPosition(-700.0f, uiY, &textX, &textY);
-			AEGfxPrint(fontID, "5: Purple", textX, textY, 0.6f, 1.0f, 0.0f, 1.0f, 1.0f); 
-
-			uiY -= 30.0f;
-			GetNormalizedTextPosition(-700.0f, uiY, &textX, &textY);
-			AEGfxPrint(fontID, "0: Eraser", textX, textY, 0.6f, 1.0f, 1.0f, 1.0f, 1.0f);
-
-			uiY -= 50.0f;
-			GetNormalizedTextPosition(-700.0f, uiY, &textX, &textY);
-			AEGfxPrint(fontID, "S: Save", textX, textY, 0.6f, 1.0f, 1.0f, 1.0f, 1.0f);
-
-			uiY -= 30.0f;
-			GetNormalizedTextPosition(-700.0f, uiY, &textX, &textY);
-			AEGfxPrint(fontID, "L: Load", textX, textY, 0.6f, 1.0f, 1.0f, 1.0f, 1.0f);
-
-			uiY -= 30.0f;
-			GetNormalizedTextPosition(-700.0f, uiY, &textX, &textY);
-			AEGfxPrint(fontID, "C: Clear", textX, textY, 0.6f, 1.0f, 1.0f, 1.0f, 1.0f);
-
-			// Show current tile
-			uiY -= 50.0f;
-			GetNormalizedTextPosition(-700.0f, uiY, &textX, &textY);
-			char tileText[32];
-
-			const char* tileName = "";
-			if (currentTileType == 0) tileName = "Eraser";
-			else if (currentTileType == 1) tileName = "Green";
-			else if (currentTileType == 2) tileName = "Cyan";
-			else if (currentTileType == 3) tileName = "Lime";
-			else if (currentTileType == 4) tileName = "Yellow";
-			else if (currentTileType == 5) tileName = "Purple";
-
-			sprintf_s(tileText, 32, "Current: %s", tileName);
-
-			// Colour of tile
-			if (currentTileType == 0)
-				AEGfxPrint(fontID, tileText, textX, textY, 0.6f, 1.0f, 1.0f, 1.0f, 1.0f);
-			else if (currentTileType == 1)
-				AEGfxPrint(fontID, tileText, textX, textY, 0.6f, 0.0f, 1.0f, 0.0f, 1.0f);
-			else if (currentTileType == 2)
-				AEGfxPrint(fontID, tileText, textX, textY, 0.6f, 0.0f, 1.0f, 1.0f, 1.0f);
-			else if (currentTileType == 3)
-				AEGfxPrint(fontID, tileText, textX, textY, 0.6f, 0.5f, 1.0f, 0.0f, 1.0f);
-			else if (currentTileType == 4)
-				AEGfxPrint(fontID, tileText, textX, textY, 0.6f, 1.0f, 0.8f, 0.0f, 1.0f);
-			else if (currentTileType == 5)
-				AEGfxPrint(fontID, tileText, textX, textY, 0.6f, 1.0f, 0.0f, 1.0f, 1.0f);
-
-			// Back to menu
-			if (AEInputCheckTriggered(AEVK_BACK) || AEInputCheckTriggered(AEVK_ESCAPE)) {
+			if (AEInputCheckTriggered(AEVK_BACK) || AEInputCheckTriggered(AEVK_ESCAPE))
 				currentState = STATE_MENU;
-			}
-		}		
-		
+		}
 		// ---------------------------------------------------------------------------
 		// INPUT HANDLING
 		// ---------------------------------------------------------------------------
 		else if (currentState == STATE_GAME)
 		{
-			AEGfxSetBackgroundColor(0.0f, 0.0f, 0.0f);
-
-			//For the pause screen mid-game
-			if (AEInputCheckTriggered(AEVK_P) || AEInputCheckTriggered(AEVK_ESCAPE)) {
-				currentState = STATE_PAUSE;
-			}
-
 			//Check what weapon the player is using once per frame
 			WeaponStats weapon = GetCurrentWeapon(player);
-
 			// ---------------------------------------------------------------------------
 			// MAP AND CAMERA
 			// ---------------------------------------------------------------------------
@@ -317,93 +171,69 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			cameraX = player.x;
 			cameraY = player.y;
 			Load_Map(gameMap, meshes.square, cameraX, cameraY);
-
-
-
-
-
 			// Update Timers CD
 			UpdatePlayer(&player, dt, gameMap);
-
-
 			// Weapon controls
 			ResetShootCooldown(player, dt);
 			WeaponSwitchCheck(player);
 			ShootingCheck(player, playerBullets, weapon, cameraX, cameraY);
 			ReloadBullets(weapon, dt);
-
 			// ---------------------------------------------------------------------------
 			// UPDATE ENEMIES
 			// ---------------------------------------------------------------------------
-
 			//Update Grunt to aim at player
 			UpdateGrunts(grunts, player, enemyBullets, dt);
 
 			// ---------------------------------------------------------------------------
 			// UPDATE BULLETS
 			// ---------------------------------------------------------------------------
-
 			UpdateBullets(playerBullets, dt, gameMap);
 			UpdateBullets(enemyBullets, dt, gameMap);
-
-			if (AEInputCheckTriggered(AEVK_K)) {
-				player.isDead = true;
-			}
-
+	
 			// ---------------------------------------------------------------------------
 			// Collision Checks
 			// ---------------------------------------------------------------------------
 			// CHECK COLLISIONS 
 			CheckBulletGruntCollisions(playerBullets, grunts, player);
 			CheckEnemyBulletPlayerCollision(enemyBullets, player);
-
-
-
+			CheckPlayerGruntBodyCollision(player,grunts);
 
 			// ---------------------------------------------------------------------------
 			// RENDERING
 			// ---------------------------------------------------------------------------
-			// In your update function
-
-
-
 			//Enemy Circle (draw first - bottom layer)
 			RenderGrunts(grunts, meshes.circle, cameraX, cameraY);
-
 			//Player Circle (draw on top)
 			DrawPlayer(player, meshes.circle, cameraX, cameraY, dt);
-
 			// Draw bullets (use correct overload with camera)
 			RenderBullets(playerBullets, meshes.circle, cameraX, cameraY);
 			RenderBullets(enemyBullets, meshes.circle, cameraX, cameraY);
-
 			//Draw Health Bar UI
 			DrawPlayerUI(player, weapon, meshes.square, meshes.circle, cameraX, cameraY);
+			DrawCrosshair(meshes.square);
 			// *** CHECK WIN CONDITION ***
+			RemoveDeadGrunts(grunts);
 			CheckWinCondition(gameEvents, player);
 		}
+		else if (currentState == STATE_TUTORIAL) {
+			printf("Tutorial State - Not Implemented Yet\n");
 
-			// ---------------------------------------------------------------------------
-			// PAUSED STATE
-			// ---------------------------------------------------------------------------
-			else if (currentState == STATE_PAUSE)
-			{
-				Load_Map(gameMap, meshes.square, cameraX, cameraY);
 
-				RenderGrunts(grunts, meshes.circle, cameraX, cameraY);
-				DrawPlayer(player, meshes.circle, cameraX, cameraY, dt);
-				RenderBullets(playerBullets, meshes.circle, cameraX, cameraY);
-				RenderBullets(enemyBullets, meshes.circle, cameraX, cameraY);
 
-				WeaponStats weapon = GetCurrentWeapon(player);
-				DrawPlayerUI(player, weapon, meshes.square, meshes.circle, cameraX, cameraY);
 
-				currentState = UpdateAndRenderPause(meshes.square, fontID, dt);
-				}
 
+
+
+
+			 if (AEInputCheckTriggered(AEVK_BACK) || AEInputCheckTriggered(AEVK_ESCAPE))
+				 currentState = STATE_MENU;
+
+		}
 		// ---------------------------------------------------------------------------
 		//DEBUGGING
 		// ---------------------------------------------------------------------------
+		//Debugging Things--------------------------------------------------------------
+		killPlayer(player);
 
 		// Frame end
 		AESysFrameEnd();
@@ -418,6 +248,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	AEGfxDestroyFont(fontID);
 	ParticleEmitterFree(&player.trailEmitter);
 	ParticleEmitterFree(&player.deathEmitter);
+	ParticleEmitterFree(&player.dashTrailEmitter);
 	FreeCommonMeshes();
 
 
