@@ -113,7 +113,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	else {
 		printf("Map loaded successfully!\n");
 	}
-
+	Spawn_Flag(*gameMap);
 	// ---------------------------------------------------------------------------
 	// GAME LOOP
 	// ---------------------------------------------------------------------------

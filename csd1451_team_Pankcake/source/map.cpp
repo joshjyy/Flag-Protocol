@@ -3,6 +3,7 @@
 #include "map.hpp"
 #include <fstream>
 #include <array>
+#include <cstdlib>
 
 /* 
  * Loads a game level map from a text file into a 2D array.
@@ -110,4 +111,32 @@ void Load_Map(std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& arr,
 			}
 		}
 	}
+}
+
+void Spawn_Flag(std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& arr) {
+	srand(time(0));
+
+	int array[] = { 1, 2, 3, 4 };
+
+	for (int i = 3; i > 0; i--) {
+		int j = rand() % (i + 1);
+		std::swap(array[i], array[j]);
+	}
+	int section = 1; //rigged for testing
+	//int section = array[0]
+	std::cout << "Section: " << section << "\n";
+
+	int rowMin, rowMax, colMin, colMax;
+
+	if (section == 1) { rowMin = 1;  rowMax = 10; colMin = 1;  colMax = 20; }
+	else if (section == 2) { rowMin = 5;  rowMax = 15; colMin = 30; colMax = 50; }
+	else if (section == 3) { rowMin = 20; rowMax = 35; colMin = 5;  colMax = 25; }
+	else { rowMin = 40; rowMax = 60; colMin = 35; colMax = 60; }
+
+	int row = rowMin + rand() % (rowMax - rowMin + 1);
+	int col = colMin + rand() % (colMax - colMin + 1);
+
+	std::cout << "Row: " << row << " Col: " << col << "\n";
+	arr[row][col] = 4;
+	std::cout << "Flag at Row: " << row << " Col: " << col << "\n";
 }

@@ -18,3 +18,5 @@ int Load_Game_Level(const char* filename, std::array<std::array<int, MAP_WIDTH>,
 void Load_Map(std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& arr,
     AEGfxVertexList* mesh,
     float cameraX, float cameraY);
+
+void Spawn_Flag(std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& arr);
