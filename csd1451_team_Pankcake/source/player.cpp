@@ -4,6 +4,7 @@
 #include "gunTypes.hpp"
 #include "weapon.hpp"
 #include "gameConstants.hpp"
+#include "enemies.hpp"
 
 
 
@@ -31,6 +32,7 @@ Player InitPlayer(void) {
 		nullptr,                   // particleMesh
 		nullptr,                   // trailEmitter
 		nullptr,                   // deathEmitter
+		nullptr,                   // dashTrailEmitter
 		false                      // deathExplosionSpawned
 
      };
@@ -38,7 +40,7 @@ Player InitPlayer(void) {
     return player;
 }
 
-void InitPlayerParticles(Player* player, void* mesh) {
+void InitPlayerParticles(Player* player, void* mesh, void*mesh2) {
 
 
     player->trailEmitter = ParticleEmitterCreate();
@@ -66,8 +68,18 @@ void InitPlayerParticles(Player* player, void* mesh) {
     );
     ParticleEmitterSetEmissionRate(player->deathEmitter, 0.0f);
     player->deathExplosionSpawned = false;
+
+    // Dash trail emitter setup
+    player->dashTrailEmitter = ParticleEmitterCreate();
+    ParticleEmitterSetMesh(player->dashTrailEmitter, (AEGfxVertexList*)mesh2);
+    ParticleEmitterSetLifeTime(player->dashTrailEmitter, 0.1f, 0.25f);
+    ParticleEmitterSetVelocity(player->dashTrailEmitter, -10.f, 10.f, -10.f, 10.f);
+    ParticleEmitterSetScale(player->dashTrailEmitter, PLAYER_RADIUS * 0.7f, PLAYER_RADIUS * 0.7f);
+    ParticleEmitterSetColor(player->dashTrailEmitter, 0.0f, 1.0f, 0.0f, 0.4f);
+    ParticleEmitterSetEmissionRate(player->dashTrailEmitter, 30.0f);
 }
-// math (on god im not sure whats happening here)
+
+// Normalizes a 2D vector (x, y) in place to have a length of 1, unless it's the zero vector.
 void NormalizeVector(float* x, float* y) {
     float length = sqrtf((*x) * (*x) + (*y) * (*y));
     if (length > 0.0f) {
@@ -77,71 +89,78 @@ void NormalizeVector(float* x, float* y) {
 }
 
 
-void DrawPlayer(Player& player, void* mesh, float cameraX, float cameraY, float dt) {
+void DrawPlayer(Player& player, void* mesh, float cameraX, float cameraY, float dt)
+{
+    // Helper to offset particles into screen space and back
+    auto offsetParticles = [&](ParticleEmitter* emitter, float dx, float dy)
+        {
+			// Loop through all particles and offset their positions
+            for (int i = 0; i < MAX_PARTICLES; i++)
+            {
+                auto& p = emitter->particles[i];
+                if (p.active) { 
+					// Offset position by camera to convert to screen space
+                    p.x += dx;
+                    p.y += dy;
+                }
+            }
+        };
+
+    // Helper to draw a single emitter in screen space
+    auto drawEmitter = [&](ParticleEmitter* emitter)
+        {
+			// If emitter is null, just skip drawing
+            if (!emitter) return;
+			// offset particles to screen space for correct rendering, then offset back
+            offsetParticles(emitter, -cameraX, -cameraY);
+            ParticleEmitterDraw(emitter);
+            offsetParticles(emitter, cameraX, cameraY);
+        };
+
+	// Set render mode to color for player drawing
+    AEGfxSetRenderMode(AE_GFX_RM_COLOR);
+
+    // --- Death state: draw explosion and skip player body ---
+    if (player.isDead)
+    {
+        drawEmitter(player.deathEmitter);
+        return;
+    }
+
     float screenX = player.x - cameraX;
-    float screenY = player.y - cameraY;    
-    // Draw particles (they're in world space, need camera offset)
-    if (player.trailEmitter && !player.isDead) {
-        AEGfxSetRenderMode(AE_GFX_RM_COLOR);
+    float screenY = player.y - cameraY;
 
-        // Temporarily offset particles for camera
-        for (int i = 0; i < MAX_PARTICLES; i++) {
-            if (player.trailEmitter->particles[i].active) {
-                player.trailEmitter->particles[i].x -= cameraX;
-                player.trailEmitter->particles[i].y -= cameraY;
-            }
-        }
+    // --- Trail & dash particles ---
+    drawEmitter(player.trailEmitter);
+    drawEmitter(player.dashTrailEmitter);
 
-        ParticleEmitterDraw(player.trailEmitter);
-
-        // Restore world positions
-        for (int i = 0; i < MAX_PARTICLES; i++) {
-            if (player.trailEmitter->particles[i].active) {
-                player.trailEmitter->particles[i].x += cameraX;
-                player.trailEmitter->particles[i].y += cameraY;
-            }
-        }
+    // Dash overlay on player body
+    if (player.inDash)
+    {
+        AEGfxSetColorToMultiply(0.0f, 1.0f, 1.0f, 0.7f);
+        DrawSprite((AEGfxVertexList*)mesh, screenX, screenY,
+            PLAYER_RADIUS * 1.2f, PLAYER_RADIUS * 1.2f, 0.0f);
     }
 
-    // Draw death explosion
-    if (player.isDead && player.deathEmitter) {
-        AEGfxSetRenderMode(AE_GFX_RM_COLOR);
-        for (int i = 0; i < MAX_PARTICLES; i++) {
-            if (player.deathEmitter->particles[i].active) {
-                player.deathEmitter->particles[i].x -= cameraX;
-                player.deathEmitter->particles[i].y -= cameraY;
-            }
-        }
-        ParticleEmitterDraw(player.deathEmitter);
-        for (int i = 0; i < MAX_PARTICLES; i++) {
-            if (player.deathEmitter->particles[i].active) {
-                player.deathEmitter->particles[i].x += cameraX;
-                player.deathEmitter->particles[i].y += cameraY;
-            }
-        }
-        return; // skip drawing player body if ded
-    }
-
-    // Pulsing effect
+    // --- Player body ---
     static float pulseTime = 0.0f;
     pulseTime += dt;
-    float pulse = 1.0f + 0.15f * sinf(pulseTime * 5.0f);  // Size multiplier
+    float pulse = 1.0f + 0.15f * sinf(pulseTime * 5.0f);
 
-    // Outer glow (neon green) - PULSING SIZE
-    AEGfxSetRenderMode(AE_GFX_RM_COLOR);
     AEGfxSetBlendMode(AE_GFX_BM_BLEND);
-    AEGfxSetTransparency(0.3f);
-    AEGfxSetColorToMultiply(0.0f, 1.0f, 0.0f, 1.0f);  // Pure green
     AEGfxSetColorToAdd(0, 0, 0, 0);
-    DrawSprite((AEGfxVertexList*)mesh, screenX, screenY, PLAYER_RADIUS * 1.0f * pulse, PLAYER_RADIUS * 1.0f * pulse, 0.0f);
+
+    // Outer glow (pulsing neon green)
+    AEGfxSetTransparency(0.3f);
+    AEGfxSetColorToMultiply(0.0f, 1.0f, 0.0f, 1.0f);
+    DrawSprite((AEGfxVertexList*)mesh, screenX, screenY,
+        PLAYER_RADIUS * pulse, PLAYER_RADIUS * pulse, 0.0f);
 
     // Inner core (bright neon green)
     AEGfxSetTransparency(1.0f);
-    AEGfxSetColorToMultiply(0.2f, 1.0f, 0.2f, 1.0f);  // Bright neon green
-    DrawSprite((AEGfxVertexList*)mesh, screenX, screenY, PLAYER_RADIUS * 0.7f, PLAYER_RADIUS * 0.7f, 0.0f);
-
-
-
+    AEGfxSetColorToMultiply(0.2f, 1.0f, 0.2f, 1.0f);
+    DrawSprite((AEGfxVertexList*)mesh, screenX, screenY,
+        PLAYER_RADIUS * 0.7f, PLAYER_RADIUS * 0.7f, 0.0f);
 }
 
 void DrawPlayerUI(Player& player, WeaponStats& weapon, void* mesh, void* mesh2,
@@ -193,7 +212,6 @@ void DrawPlayerUI(Player& player, WeaponStats& weapon, void* mesh, void* mesh2,
     float circleX = uiX + barWidth / 2.0f + 30.0f;
     float circleSize = 25.0f;
     DrawSprite((AEGfxVertexList*)mesh2, circleX, ammoY, circleSize, circleSize, 0.0f);
-
     PlayerDashStaminaBar(player, meshes.square, cameraX, cameraY);
 }
 
@@ -377,9 +395,14 @@ void UpdatePlayer(Player* player, float dt, std::array<std::array<int, MAP_WIDTH
     }
 
     // --- TIMERS ---
-    if (player->dashTimer > 0.0f)         player->dashTimer -= dt;
-    if (player->dashCooldownTimer > 0.0f)  player->dashCooldownTimer -= dt;
-    if (player->shootCooldown > 0.0f)      player->shootCooldown -= dt;
+    if (player->dashTimer > 0.0f)
+        player->dashTimer -= dt;
+
+    if (player->dashCooldownTimer > 0.0f)  
+        player->dashCooldownTimer -= dt;
+
+    if (player->shootCooldown > 0.0f)     
+        player->shootCooldown -= dt;
 
     // --- MOVEMENT ---
     float radius = 25.0f;
@@ -395,9 +418,13 @@ void UpdatePlayer(Player* player, float dt, std::array<std::array<int, MAP_WIDTH
 
     // Dash input
     if (AEInputCheckTriggered(AEVK_SPACE) && player->dashCooldownTimer <= 0.0f && (inputX != 0.0f || inputY != 0.0f)) {
+		// Start dash in input direction
         player->dashDirX = inputX;
         player->dashDirY = inputY;
+        
         NormalizeVector(&player->dashDirX, &player->dashDirY);
+
+		// Set dash timers
         player->dashTimer = DASH_DURATION;
         player->dashCooldownTimer = DASH_COOLDOWN;
         player->inDash = true;
@@ -411,11 +438,38 @@ void UpdatePlayer(Player* player, float dt, std::array<std::array<int, MAP_WIDTH
         player->x += player->dashDirX * PLAYER_DASH_SPEED * dt;
         player->y += player->dashDirY * PLAYER_DASH_SPEED * dt;
     }
-    else if (inputX != 0.0f || inputY != 0.0f) {
-        // Walking
-        NormalizeVector(&inputX, &inputY);
-        player->x += inputX * PLAYER_WALK_SPEED * dt;
-        player->y += inputY * PLAYER_WALK_SPEED * dt;
+    else {
+        // Sprint cap when holding shift, otherwise walk speed
+        float currentMaxSpeed = AEInputCheckCurr(AEVK_LSHIFT) ? PLAYER_WALK_SPEED * 2.0f : PLAYER_WALK_SPEED;
+
+        // Apply acceleration in input direction only when sprinting
+        if (inputX != 0.0f || inputY != 0.0f) {
+            NormalizeVector(&inputX, &inputY);
+            float currentAccel = AEInputCheckCurr(AEVK_LSHIFT) ? ACCELERATION : 0.0f;
+            player->velocityX += inputX * currentAccel * dt;
+            player->velocityY += inputY * currentAccel * dt;
+
+            // Normal walking movement when not sprinting
+            if (!AEInputCheckCurr(AEVK_LSHIFT)) {
+                player->velocityX = inputX * PLAYER_WALK_SPEED;
+                player->velocityY = inputY * PLAYER_WALK_SPEED;
+            }
+        }
+
+        // Apply friction to gradually slow down when no input or releasing shift
+        player->velocityX -= player->velocityX * FRICTION * dt;
+        player->velocityY -= player->velocityY * FRICTION * dt;
+
+        // Clamp velocity to current max speed
+        float speed = sqrtf(player->velocityX * player->velocityX + player->velocityY * player->velocityY);
+        if (speed > currentMaxSpeed) {
+            player->velocityX = (player->velocityX / speed) * currentMaxSpeed;
+            player->velocityY = (player->velocityY / speed) * currentMaxSpeed;
+        }
+
+        // Move player based on current velocity
+        player->x += player->velocityX * dt;
+        player->y += player->velocityY * dt;
     }
 
     // Wall collision
@@ -423,8 +477,13 @@ void UpdatePlayer(Player* player, float dt, std::array<std::array<int, MAP_WIDTH
         player->x = oldX;
         player->y = oldY;
         player->dashTimer = 0.0f;
+        player->velocityX = 0.0f;  // add this
+        player->velocityY = 0.0f;  // add this
+
     }
 
+
+	// Update dash state (in case dash just ended)
     player->inDash = (player->dashTimer > 0.0f);
 
     // --- TRAIL PARTICLES ---
@@ -439,6 +498,11 @@ void UpdatePlayer(Player* player, float dt, std::array<std::array<int, MAP_WIDTH
             ParticleEmitterEmit(player->trailEmitter, player->x, player->y, 2);
         ParticleEmitterUpdate(player->trailEmitter, dt);
     }
+
+    if (player->inDash) {
+        ParticleEmitterEmit(player->dashTrailEmitter, player->x, player->y, 3);
+    }
+    ParticleEmitterUpdate(player->dashTrailEmitter, dt);
 }
 
 
@@ -460,7 +524,6 @@ void CheckEnemyBulletPlayerCollision(std::vector<Bullet>& enemyBullets,
         );
 
         if (collision > 0 && (!player.isDead)) {
-            // Player got hit!
             player.health -= enemyBullets[i].damage;
 
             printf("Player hit by bullet! Health: %.0f\n", player.health);
@@ -478,6 +541,88 @@ void CheckEnemyBulletPlayerCollision(std::vector<Bullet>& enemyBullets,
 
             // Only take damage from ONE bullet per hit
             break;
+        }
+    }
+}
+
+void DrawCrosshair(void* mesh) {
+    // Hide the default Windows cursor
+    ShowCursor(false);
+
+    // Get mouse position 
+    s32 mouseX, mouseY;
+    AEInputGetCursorPosition(&mouseX, &mouseY);
+
+	// Recenter origin to middle of screen and flip Y for correct orientation
+    float cx = (float)mouseX - 800.0f;   // half of 1600
+    float cy = -(float)mouseY + 450.0f;  // half of 900, flipped Y
+
+
+
+    AEGfxSetRenderMode(AE_GFX_RM_COLOR);
+    AEGfxSetTransparency(1.0f);
+    AEGfxSetColorToMultiply(0.0f, 1.0f, 0.0f, 1.0f); // green
+    AEGfxSetColorToAdd(0, 0, 0, 0);
+    float armLength = 15.0f;
+    float thickness = 3.0f;
+    // Horizontal bar
+    DrawSprite((AEGfxVertexList*)mesh, cx, cy, armLength, thickness, 0.0f);
+    // Vertical bar
+    DrawSprite((AEGfxVertexList*)mesh, cx, cy, thickness, armLength, 0.0f);
+}
+
+
+void CheckPlayerGruntBodyCollision(Player& player, std::vector<Grunt>& grunts) {
+    for (auto& grunt : grunts) {
+        if (grunt.isDead) continue;
+
+        float dx = player.x - grunt.movingX;
+        float dy = player.y - grunt.movingY;
+        float dist = sqrtf(dx * dx + dy * dy);
+        float minDist =  GRUNT_RADIUS; // adjust to your sizes
+
+        if (dist < minDist && dist > 0.0f) {
+			printf("Collision with grunt! Pushing player out.\n");
+            // Push player out
+			float overlap = minDist - dist; // how much circles are intersecting 
+            float nx = dx / dist; // normalize djrection vector
+            float ny = dy / dist;
+			player.x += nx * overlap; //push player out of collision
+            player.y += ny * overlap;
+        }
+
+        if (player.inDash == 1) {
+            if (dist < minDist + 20.0f) { // slightly larger radius for dash hit
+                printf("Dashed into grunt!\n");
+                grunt.health -= 50.0f; // dash damage
+                if (grunt.health <= 0.0f) {
+                    grunt.isDead = true;
+                    player.gruntsKilled++;
+                    printf("Grunt killed by dash! Total kills: %d\n", player.gruntsKilled);
+                }
+			}
+        }
+    }
+}
+
+void killPlayer(Player& player) {
+    if (AEInputCheckTriggered(AEVK_K)) {
+        if (!player.isDead) {
+            player.isDead = true; // kill
+        }
+        else {
+            // revive only after explosion finishes
+            bool explosionDone = true;
+            for (int i = 0; i < MAX_PARTICLES; i++) {
+                if (player.deathEmitter->particles[i].active) {
+                    explosionDone = false;
+                    break;
+                }
+            }
+            if (explosionDone) {
+                player.isDead = false;
+                player.deathExplosionSpawned = false;
+            }
         }
     }
 }

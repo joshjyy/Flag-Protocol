@@ -23,7 +23,7 @@ void ResetShootCooldown(Player &player, float dt) {
 
 void ShootingCheck(Player& player, std::vector<Bullet>& type, WeaponStats weapon, float cameraX, float cameraY) {
 	if (AEInputCheckCurr(AEVK_LBUTTON) && player.shootCooldown <= 0.0f &&
-		player.inDash == false && !(*weapon.inReload)) {
+		player.inDash == false && !(*weapon.inReload) && !player.isDead) {
 
 		if (*weapon.currentAmmo > 0) {
 			s32 mouseX, mouseY;

@@ -90,18 +90,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	//load meshes
 	InitCommonMeshes();
-	InitPlayerParticles(&player , meshes.square);
-
-	// Editor variables
-	int currentTileType = 1;  // 1 = green wall, 2 = cyan wall, 0 = eraser
-	bool showEditorGrid = true;
+	InitPlayerParticles(&player , meshes.square, meshes.circle);
 
 	// ---------------------------------------------------------------------------
 	// MAP
 	// ---------------------------------------------------------------------------
 
 	// 2D array to store the game map data (18 rows x 32 columns)
-	std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT> gameMap;
+	auto gameMap =  new std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>;
 	//Camera variables(in main, with other game variables)
 	float cameraX = 0.0f;
 	float cameraY = 0.0f;
@@ -110,19 +106,19 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	// Update camera to follow player
 	
 	// Load the map from file into the gameMap array
-	if (!Load_Game_Level("Assets/Level_1_Map.txt", gameMap)) {
+	if (!Load_Game_Level("Assets/Level_1_Map.txt", *gameMap)) {
 		printf("Failed to load map! Exiting...\n");
 		gGameRunning = 0;
 	}
 	else {
 		printf("Map loaded successfully!\n");
 	}
-
+	Spawn_Flag(*gameMap);
 	// ---------------------------------------------------------------------------
 	// GAME LOOP
 	// ---------------------------------------------------------------------------
 	// Set background color (gray)
-	AEGfxSetBackgroundColor(0.0f, 0.0f, 0.0f);
+	AEGfxSetBackgroundColor(0.05f, 0.05f, 0.1f);
 	// Set render mode for colored meshes
 	AEGfxSetRenderMode(AE_GFX_RM_COLOR);
 	// Enable transparency
@@ -158,9 +154,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		{
 			AEGfxSetBackgroundColor(0.05f, 0.05f, 0.1f);
 
-			// Get mouse position for tile painting
-			s32 mouseX, mouseY;
-			AEInputGetCursorPosition(&mouseX, &mouseY);
 
 			// Convert to world coordinates
 			float worldX = (float)mouseX - 800.0f;
@@ -329,119 +322,86 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 			// Back to menu
 			if (AEInputCheckTriggered(AEVK_BACK) || AEInputCheckTriggered(AEVK_ESCAPE)) {
+			if (AEInputCheckTriggered(AEVK_BACK) || AEInputCheckTriggered(AEVK_ESCAPE))
 				currentState = STATE_MENU;
-			}
-		}		
-		
+		}
 		// ---------------------------------------------------------------------------
 		// INPUT HANDLING
 		// ---------------------------------------------------------------------------
 		else if (currentState == STATE_GAME)
 		{
-			AEGfxSetBackgroundColor(0.0f, 0.0f, 0.0f);
-
-			//For the pause screen mid-game
-			if (AEInputCheckTriggered(AEVK_P) || AEInputCheckTriggered(AEVK_ESCAPE)) {
-				currentState = STATE_PAUSE;
-			}
-
 			//Check what weapon the player is using once per frame
 			WeaponStats weapon = GetCurrentWeapon(player);
-
 			// ---------------------------------------------------------------------------
 			// MAP AND CAMERA
 			// ---------------------------------------------------------------------------
 			//Camera follows the player
 			cameraX = player.x;
 			cameraY = player.y;
-			Load_Map(gameMap, meshes.square, cameraX, cameraY);
-
-
-
-
-
+			Load_Map(*gameMap, meshes.square, cameraX, cameraY);
 			// Update Timers CD
-			UpdatePlayer(&player, dt, gameMap);
-
-
+			UpdatePlayer(&player, dt, *gameMap);
 			// Weapon controls
 			ResetShootCooldown(player, dt);
 			WeaponSwitchCheck(player);
 			ShootingCheck(player, playerBullets, weapon, cameraX, cameraY);
 			ReloadBullets(weapon, dt);
-
 			// ---------------------------------------------------------------------------
 			// UPDATE ENEMIES
 			// ---------------------------------------------------------------------------
-
 			//Update Grunt to aim at player
 			UpdateGrunts(grunts, player, enemyBullets, dt);
 
 			// ---------------------------------------------------------------------------
 			// UPDATE BULLETS
 			// ---------------------------------------------------------------------------
-
-			UpdateBullets(playerBullets, dt, gameMap);
-			UpdateBullets(enemyBullets, dt, gameMap);
-
-			if (AEInputCheckTriggered(AEVK_K)) {
-				player.isDead = true;
-			}
-
+			UpdateBullets(playerBullets, dt, *gameMap);
+			UpdateBullets(enemyBullets, dt, *gameMap);
+	
 			// ---------------------------------------------------------------------------
 			// Collision Checks
 			// ---------------------------------------------------------------------------
 			// CHECK COLLISIONS 
 			CheckBulletGruntCollisions(playerBullets, grunts, player);
 			CheckEnemyBulletPlayerCollision(enemyBullets, player);
-
-
-
+			CheckPlayerGruntBodyCollision(player,grunts);
 
 			// ---------------------------------------------------------------------------
 			// RENDERING
 			// ---------------------------------------------------------------------------
-			// In your update function
-
-
-
 			//Enemy Circle (draw first - bottom layer)
 			RenderGrunts(grunts, meshes.circle, cameraX, cameraY);
-
 			//Player Circle (draw on top)
 			DrawPlayer(player, meshes.circle, cameraX, cameraY, dt);
-
 			// Draw bullets (use correct overload with camera)
 			RenderBullets(playerBullets, meshes.circle, cameraX, cameraY);
 			RenderBullets(enemyBullets, meshes.circle, cameraX, cameraY);
-
 			//Draw Health Bar UI
 			DrawPlayerUI(player, weapon, meshes.square, meshes.circle, cameraX, cameraY);
+			DrawCrosshair(meshes.square);
 			// *** CHECK WIN CONDITION ***
+			RemoveDeadGrunts(grunts);
 			CheckWinCondition(gameEvents, player);
 		}
+		else if (currentState == STATE_TUTORIAL) {
+			printf("Tutorial State - Not Implemented Yet\n");
 
-			// ---------------------------------------------------------------------------
-			// PAUSED STATE
-			// ---------------------------------------------------------------------------
-			else if (currentState == STATE_PAUSE)
-			{
-				Load_Map(gameMap, meshes.square, cameraX, cameraY);
 
-				RenderGrunts(grunts, meshes.circle, cameraX, cameraY);
-				DrawPlayer(player, meshes.circle, cameraX, cameraY, dt);
-				RenderBullets(playerBullets, meshes.circle, cameraX, cameraY);
-				RenderBullets(enemyBullets, meshes.circle, cameraX, cameraY);
 
-				WeaponStats weapon = GetCurrentWeapon(player);
-				DrawPlayerUI(player, weapon, meshes.square, meshes.circle, cameraX, cameraY);
 
-				currentState = UpdateAndRenderPause(meshes.square, fontID, dt);
-				}
 
+
+
+
+			 if (AEInputCheckTriggered(AEVK_BACK) || AEInputCheckTriggered(AEVK_ESCAPE))
+				 currentState = STATE_MENU;
+
+		}
 		// ---------------------------------------------------------------------------
 		//DEBUGGING
 		// ---------------------------------------------------------------------------
+		//Debugging Things--------------------------------------------------------------
+		killPlayer(player);
 
 		// Frame end
 		AESysFrameEnd();
@@ -450,12 +410,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	// ---------------------------------------------------------------------------
 	// CLEANUP
 	// ---------------------------------------------------------------------------
-
+	delete gameMap;
 	ClearBullets(playerBullets);
 	ClearBullets(enemyBullets);
 	AEGfxDestroyFont(fontID);
 	ParticleEmitterFree(&player.trailEmitter);
 	ParticleEmitterFree(&player.deathEmitter);
+	ParticleEmitterFree(&player.dashTrailEmitter);
 	FreeCommonMeshes();
 
 

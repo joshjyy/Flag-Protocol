@@ -3,6 +3,7 @@
 #include "map.hpp"
 #include <fstream>
 #include <array>
+#include <cstdlib>
 
 /* 
  * Loads a game level map from a text file into a 2D array.
@@ -40,43 +41,6 @@ int Load_Game_Level(const char* filename, std::array<std::array<int, MAP_WIDTH>,
 	return 1; // Return success
 }
 
-/*
- * Saves a game level map from a 2D array into a text file.
- * Opens the specified file and writes MAP_HEIGHT x MAP_WIDTH integers.
- * Each integer represents a tile type (0 = empty, 1-5 = different tiles).
- * Returns nothing, but prints success or error messages.
- * The file is saved in the same format as the load function expects.
- */
-void Save_Game_Level(const char* filename, std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& arr) {
-	// Create output file stream
-	std::ofstream map_file(filename);
-
-	// Check if file opened successfully
-	if (!map_file.is_open()) {
-		std::cout << "Error: Could not save file " << filename << std::endl;
-		return;
-	}
-
-	// Loop through each row of the map
-	for (int i = 0; i < MAP_HEIGHT; i++) {
-		// Loop through each column of the map
-		for (int j = 0; j < MAP_WIDTH; j++) {
-			// Write each integer to file
-			map_file << arr[i][j];
-
-			// Add space between numbers, but not at the end of row
-			if (j < MAP_WIDTH - 1) {
-				map_file << " ";
-			}
-		}
-		// New line at the end of each row
-		map_file << std::endl;
-	}
-
-	// Close the file
-	map_file.close();
-	std::cout << "Map saved successfully to " << filename << "!" << std::endl;
-}
 
 /**
  * Renders the game map by drawing colored squares for each solid tile.
@@ -98,57 +62,47 @@ void Save_Game_Level(const char* filename, std::array<std::array<int, MAP_WIDTH>
 void Load_Map(std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& arr,
 	AEGfxVertexList* mesh,
 	float cameraX, float cameraY) {
-
 	AEGfxSetRenderMode(AE_GFX_RM_COLOR);
 	AEGfxSetTransparency(1.0f);
 	AEMtx33 scale, translate, transform;
 	const int TILE_SIZE = 50;
-	const int OUTLINE_THICKNESS = 4;
+	const int EDGE = 4; // thickness of 3D edge
 
 	for (int i = 0; i < MAP_HEIGHT; i++) {
 		for (int j = 0; j < MAP_WIDTH; j++) {
 			if (arr[i][j] != 0) {
-
 				float x = (j * TILE_SIZE) - 800.0f + 25.0f;
 				float y = 450.0f - (i * TILE_SIZE) - 25.0f;
 				float screenX = x - cameraX;
 				float screenY = y - cameraY;
 
-				
-				if (arr[i][j] == 1) {
-					
-					AEGfxSetColorToMultiply(0.0f, 1.0f, 0.0f, 1.0f);
-				}
-				else if (arr[i][j] == 2) {
-					
-					AEGfxSetColorToMultiply(0.0f, 1.0f, 1.0f, 1.0f);
-				}
-				else if (arr[i][j] == 3) {
-					
-					AEGfxSetColorToMultiply(0.5f, 1.0f, 0.0f, 1.0f);
-				}
-				else if (arr[i][j] == 4) {
-					
-					AEGfxSetColorToMultiply(1.0f, 0.8f, 0.0f, 1.0f);
-				}
-				else if (arr[i][j] == 5) {
-					
-					AEGfxSetColorToMultiply(1.0f, 0.0f, 1.0f, 1.0f);
-				}
-				else {
-					
-					AEGfxSetColorToMultiply(1.0f, 1.0f, 1.0f, 1.0f);
-				}
+				// Pick base color
+				float r, g, b;
+				if (arr[i][j] == 1) { r = 0.0f; g = 1.0f;  b = 0.0f; }
+				else if (arr[i][j] == 2) { r = 0.0f; g = 1.0f;  b = 1.0f; }
+				else if (arr[i][j] == 3) { r = 0.5f; g = 1.0f;  b = 0.0f; }
+				else if (arr[i][j] == 4) { r = 1.0f; g = 0.8f;  b = 0.0f; }
+				else if (arr[i][j] == 5) { r = 1.0f; g = 0.0f;  b = 1.0f; }
+				else { r = 1.0f; g = 1.0f;  b = 1.0f; }
 
-				// Draw neon outline 
-				AEMtx33Scale(&scale, (float)(TILE_SIZE + OUTLINE_THICKNESS * 2), (float)(TILE_SIZE + OUTLINE_THICKNESS * 2));
-				AEMtx33Trans(&translate, screenX, screenY);
+				// ── STEP 1: Draw dark bottom-right shadow (slightly bigger) ──
+				AEGfxSetColorToMultiply(r * 0.2f, g * 0.2f, b * 0.2f, 1.0f);
+				AEMtx33Scale(&scale, (float)(TILE_SIZE + EDGE), (float)(TILE_SIZE + EDGE));
+				AEMtx33Trans(&translate, screenX + EDGE * 0.5f, screenY - EDGE * 0.5f);
 				AEMtx33Concat(&transform, &translate, &scale);
 				AEGfxSetTransform(transform.m);
 				AEGfxMeshDraw(mesh, AE_GFX_MDM_TRIANGLES);
 
-				// Draw black interior 
-				AEGfxSetColorToMultiply(0.0f, 0.0f, 0.0f, 1.0f);
+				// ── STEP 2: Draw bright top-left highlight (slightly bigger) ──
+				AEGfxSetColorToMultiply(r, g, b, 1.0f);
+				AEMtx33Scale(&scale, (float)(TILE_SIZE + EDGE), (float)(TILE_SIZE + EDGE));
+				AEMtx33Trans(&translate, screenX - EDGE * 0.5f, screenY + EDGE * 0.5f);
+				AEMtx33Concat(&transform, &translate, &scale);
+				AEGfxSetTransform(transform.m);
+				AEGfxMeshDraw(mesh, AE_GFX_MDM_TRIANGLES);
+
+				// ── STEP 3: Draw main block face (base color darkened) ──
+				AEGfxSetColorToMultiply(r * 0.35f, g * 0.35f, b * 0.35f, 1.0f);
 				AEMtx33Scale(&scale, (float)TILE_SIZE, (float)TILE_SIZE);
 				AEMtx33Trans(&translate, screenX, screenY);
 				AEMtx33Concat(&transform, &translate, &scale);
@@ -157,4 +111,32 @@ void Load_Map(std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& arr,
 			}
 		}
 	}
+}
+
+void Spawn_Flag(std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& arr) {
+	srand(time(0));
+
+	int array[] = { 1, 2, 3, 4 };
+
+	for (int i = 3; i > 0; i--) {
+		int j = rand() % (i + 1);
+		std::swap(array[i], array[j]);
+	}
+	int section = 1; //rigged for testing
+	//int section = array[0]
+	std::cout << "Section: " << section << "\n";
+
+	int rowMin, rowMax, colMin, colMax;
+
+	if (section == 1) { rowMin = 1;  rowMax = 10; colMin = 1;  colMax = 20; }
+	else if (section == 2) { rowMin = 5;  rowMax = 15; colMin = 30; colMax = 50; }
+	else if (section == 3) { rowMin = 20; rowMax = 35; colMin = 5;  colMax = 25; }
+	else { rowMin = 40; rowMax = 60; colMin = 35; colMax = 60; }
+
+	int row = rowMin + rand() % (rowMax - rowMin + 1);
+	int col = colMin + rand() % (colMax - colMin + 1);
+
+	std::cout << "Row: " << row << " Col: " << col << "\n";
+	arr[row][col] = 4;
+	std::cout << "Flag at Row: " << row << " Col: " << col << "\n";
 }
