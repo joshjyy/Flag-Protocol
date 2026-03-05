@@ -150,6 +150,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			if (AEInputCheckTriggered(AEVK_ESCAPE))
 				gGameRunning = 0;
 		}
+
 		// ---------------------------------------------------------------------------
 		// EDITOR STATE
 		// ---------------------------------------------------------------------------
@@ -221,73 +222,110 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			float textX, textY;
 
 			GetNormalizedTextPosition(-700.0f, uiY, &textX, &textY);
-			AEGfxPrint(fontID, "EDITOR MODE", textX, textY, 0.8f, 1.0f, 1.0f, 1.0f, 1.0f);
+			AEGfxPrint(fontID, "EDITOR MODE", textX, textY, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f);
 
 			// Tiles
 			uiY -= 40.0f;
+
+			// Section header
 			GetNormalizedTextPosition(-700.0f, uiY, &textX, &textY);
-			AEGfxPrint(fontID, "1: Green", textX, textY, 0.6f, 0.0f, 1.0f, 0.0f, 1.0f);  
+			AEGfxPrint(fontID, "TILES", textX, textY, 1.0f, 0.8f, 0.8f, 0.8f, 1.0f);
 
 			uiY -= 30.0f;
-			GetNormalizedTextPosition(-700.0f, uiY, &textX, &textY);
-			AEGfxPrint(fontID, "2: Cyan", textX, textY, 0.6f, 0.0f, 1.0f, 1.0f, 1.0f);  
+
+			// Tile options in columns
+			struct TileDisplay {
+				const char* label;
+				float x;
+				float r, g, b;
+			};
+
+			TileDisplay tiles[] = {
+				{"1: Walls", -700.0f, 0.0f, 1.0f, 0.0f},     // Green
+				{"2: Water", -550.0f, 0.0f, 1.0f, 1.0f},     // Cyan
+				{"3: Grass", -400.0f, 0.5f, 1.0f, 0.0f},     // Lime
+				{"4: Sand",  -700.0f, 1.0f, 0.8f, 0.0f},     // Yellow
+				{"5: Special",-550.0f, 1.0f, 0.0f, 1.0f},    // Purple
+				{"0: Eraser",-400.0f, 1.0f, 1.0f, 1.0f}      // White
+			};
+
+			// First row (1-3)
+			for (int i = 0; i < 3; i++) {
+				GetNormalizedTextPosition(tiles[i].x, uiY, &textX, &textY);
+				AEGfxPrint(fontID, tiles[i].label, textX, textY, 1.0f,
+					tiles[i].r, tiles[i].g, tiles[i].b, 1.0f);
+			}
 
 			uiY -= 30.0f;
-			GetNormalizedTextPosition(-700.0f, uiY, &textX, &textY);
-			AEGfxPrint(fontID, "3: Lime", textX, textY, 0.6f, 0.5f, 1.0f, 0.0f, 1.0f);  
 
-			uiY -= 30.0f;
-			GetNormalizedTextPosition(-700.0f, uiY, &textX, &textY);
-			AEGfxPrint(fontID, "4: Yellow", textX, textY, 0.6f, 1.0f, 0.8f, 0.0f, 1.0f); 
+			// Second row (4-5 and Eraser)
+			for (int i = 3; i < 6; i++) {
+				GetNormalizedTextPosition(tiles[i].x, uiY, &textX, &textY);
+				AEGfxPrint(fontID, tiles[i].label, textX, textY, 1.0f,
+					tiles[i].r, tiles[i].g, tiles[i].b, 1.0f);
+			}
 
-			uiY -= 30.0f;
-			GetNormalizedTextPosition(-700.0f, uiY, &textX, &textY);
-			AEGfxPrint(fontID, "5: Purple", textX, textY, 0.6f, 1.0f, 0.0f, 1.0f, 1.0f); 
-
-			uiY -= 30.0f;
-			GetNormalizedTextPosition(-700.0f, uiY, &textX, &textY);
-			AEGfxPrint(fontID, "0: Eraser", textX, textY, 0.6f, 1.0f, 1.0f, 1.0f, 1.0f);
-
-			uiY -= 50.0f;
-			GetNormalizedTextPosition(-700.0f, uiY, &textX, &textY);
-			AEGfxPrint(fontID, "S: Save", textX, textY, 0.6f, 1.0f, 1.0f, 1.0f, 1.0f);
-
-			uiY -= 30.0f;
-			GetNormalizedTextPosition(-700.0f, uiY, &textX, &textY);
-			AEGfxPrint(fontID, "L: Load", textX, textY, 0.6f, 1.0f, 1.0f, 1.0f, 1.0f);
-
-			uiY -= 30.0f;
-			GetNormalizedTextPosition(-700.0f, uiY, &textX, &textY);
-			AEGfxPrint(fontID, "C: Clear", textX, textY, 0.6f, 1.0f, 1.0f, 1.0f, 1.0f);
+			uiY -= 50.0f;  // Space before commands
 
 			// Show current tile
-			uiY -= 50.0f;
+			GetNormalizedTextPosition(-700.0f, uiY, &textX, &textY);
+			AEGfxPrint(fontID, "CURRENT", textX, textY, 1.0f, 0.8f, 0.8f, 0.8f, 1.0f);
+
+			uiY -= 30.0f;
+
+			// Show current tile with color
 			GetNormalizedTextPosition(-700.0f, uiY, &textX, &textY);
 			char tileText[32];
 
-			const char* tileName = "";
-			if (currentTileType == 0) tileName = "Eraser";
-			else if (currentTileType == 1) tileName = "Green";
-			else if (currentTileType == 2) tileName = "Cyan";
-			else if (currentTileType == 3) tileName = "Lime";
-			else if (currentTileType == 4) tileName = "Yellow";
-			else if (currentTileType == 5) tileName = "Purple";
+			const char* tileNames[] = { "Eraser", "Walls", "Water", "Grass", "Sand", "Special" };
+			float tileColors[6][3] = {
+				{1.0f, 1.0f, 1.0f},
+				{0.0f, 1.0f, 0.0f},
+				{0.0f, 1.0f, 1.0f},
+				{0.5f, 1.0f, 0.0f},
+				{1.0f, 0.8f, 0.0f},
+				{1.0f, 0.0f, 1.0f}
+			};
 
-			sprintf_s(tileText, 32, "Current: %s", tileName);
+			sprintf_s(tileText, 32, "Current: %s", tileNames[currentTileType]);
 
-			// Colour of tile
-			if (currentTileType == 0)
-				AEGfxPrint(fontID, tileText, textX, textY, 0.6f, 1.0f, 1.0f, 1.0f, 1.0f);
-			else if (currentTileType == 1)
-				AEGfxPrint(fontID, tileText, textX, textY, 0.6f, 0.0f, 1.0f, 0.0f, 1.0f);
-			else if (currentTileType == 2)
-				AEGfxPrint(fontID, tileText, textX, textY, 0.6f, 0.0f, 1.0f, 1.0f, 1.0f);
-			else if (currentTileType == 3)
-				AEGfxPrint(fontID, tileText, textX, textY, 0.6f, 0.5f, 1.0f, 0.0f, 1.0f);
-			else if (currentTileType == 4)
-				AEGfxPrint(fontID, tileText, textX, textY, 0.6f, 1.0f, 0.8f, 0.0f, 1.0f);
-			else if (currentTileType == 5)
-				AEGfxPrint(fontID, tileText, textX, textY, 0.6f, 1.0f, 0.0f, 1.0f, 1.0f);
+			AEGfxPrint(fontID, tileText, textX, textY, 1.0f,
+				tileColors[currentTileType][0],
+				tileColors[currentTileType][1],
+				tileColors[currentTileType][2], 1.0f);
+
+			// Commands section
+			uiY -= 40.0f;
+			GetNormalizedTextPosition(-700.0f, uiY, &textX, &textY);
+			AEGfxPrint(fontID, "COMMANDS", textX, textY, 1.0f, 0.8f, 0.8f, 0.8f, 1.0f);
+
+			uiY -= 30.0f;
+
+			struct CommandDisplay {
+				const char* label;
+				const char* desc;
+				float x;
+			};
+
+			CommandDisplay commands[] = {
+				{"S: Save", "(custom file)", -700.0f},
+				{"L: Load", "(original map)", -550.0f},
+				{"C: Clear", "(entire map)", -400.0f}
+			};
+
+			// Command keys
+			for (int i = 0; i < 3; i++) {
+				GetNormalizedTextPosition(commands[i].x, uiY, &textX, &textY);
+				AEGfxPrint(fontID, commands[i].label, textX, textY, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f);
+			}
+
+			uiY -= 30.0f;
+
+			// Descriptions
+			for (int i = 0; i < 3; i++) {
+				GetNormalizedTextPosition(commands[i].x, uiY, &textX, &textY);
+				AEGfxPrint(fontID, commands[i].desc, textX, textY, 1.0f, 0.7f, 0.7f, 0.7f, 1.0f);
+			}
 
 			// Back to menu
 			if (AEInputCheckTriggered(AEVK_BACK) || AEInputCheckTriggered(AEVK_ESCAPE)) {
