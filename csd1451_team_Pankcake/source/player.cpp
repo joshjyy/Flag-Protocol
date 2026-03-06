@@ -11,7 +11,7 @@
 Player InitPlayer(void) {
     Player player = {
         0,
-        100.0f,                  // health
+        1000.0f,                  // health
         0.0f,                     // x
         0.0f,                     // y
         0.0f,                     // dashTimer

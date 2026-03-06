@@ -4,7 +4,10 @@
 #include <fstream>
 #include <array>
 #include <cstdlib>
+#include <random>
 
+std::random_device rd;
+std::mt19937 gen(rd());	
 /* 
  * Loads a game level map from a text file into a 2D array.
  * Opens the specified file and reads MAP_HEIGHT x MAP_WIDTH integers.
@@ -70,20 +73,19 @@ void Load_Map(std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& arr,
 
 	for (int i = 0; i < MAP_HEIGHT; i++) {
 		for (int j = 0; j < MAP_WIDTH; j++) {
-			if (arr[i][j] != 0) {
+			if (arr[i][j] != 0 && arr[i][j] != 5) {
 				float x = (j * TILE_SIZE) - 800.0f + 25.0f;
 				float y = 450.0f - (i * TILE_SIZE) - 25.0f;
 				float screenX = x - cameraX;
 				float screenY = y - cameraY;
 
-				// Pick base color
-				float r, g, b;
-				if (arr[i][j] == 1) { r = 0.0f; g = 1.0f;  b = 0.0f; }
-				else if (arr[i][j] == 2) { r = 0.0f; g = 1.0f;  b = 1.0f; }
-				else if (arr[i][j] == 3) { r = 0.5f; g = 1.0f;  b = 0.0f; }
-				else if (arr[i][j] == 4) { r = 1.0f; g = 0.8f;  b = 0.0f; }
-				else if (arr[i][j] == 5) { r = 1.0f; g = 0.0f;  b = 1.0f; }
-				else { r = 1.0f; g = 1.0f;  b = 1.0f; }
+				
+				float r = 0.0f, g = 0.0f, b = 0.0f;
+				if (arr[i][j] == 1) { r = 0.0f; g = 1.0f; b = 0.0f; }  // green blocks
+				else if (arr[i][j] == 2) { r = 0.5f; g = 0.0f; b = 1.0f; }  // purple goal
+				else if (arr[i][j] == 3) { r = 1.0f; g = 0.0f; b = 0.0f; }  // red
+				else if (arr[i][j] == 4) {  r = 0.0f; g = 1.0f; b = 1.0f; }  // lime flag
+				
 
 				// ── STEP 1: Draw dark bottom-right shadow (slightly bigger) ──
 				AEGfxSetColorToMultiply(r * 0.2f, g * 0.2f, b * 0.2f, 1.0f);
@@ -114,29 +116,29 @@ void Load_Map(std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& arr,
 }
 
 void Spawn_Flag(std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& arr) {
-	srand(time(0));
-
-	int array[] = { 1, 2, 3, 4 };
-
-	for (int i = 3; i > 0; i--) {
-		int j = rand() % (i + 1);
-		std::swap(array[i], array[j]);
+	struct Tile { int row, col; };
+	Tile found[100];
+	int count = 0;
+	for (int i = 0; i < MAP_HEIGHT; i++) {
+		for (int j = 0; j < MAP_WIDTH; j++) {
+			if (arr[i][j] == 5) {
+				found[count].row = i;
+				found[count].col = j;
+				count++;
+			}
+		}
 	}
-	int section = 1; //rigged for testing
-	//int section = array[0]
-	std::cout << "Section: " << section << "\n";
+	if (count == 0) {
+		std::cout << "No flag tiles found!\n";
+		return;
+	}
 
-	int rowMin, rowMax, colMin, colMax;
+	srand((unsigned int)time(0));
+	int index = rand() % count;
 
-	if (section == 1) { rowMin = 1;  rowMax = 10; colMin = 1;  colMax = 20; }
-	else if (section == 2) { rowMin = 5;  rowMax = 15; colMin = 30; colMax = 50; }
-	else if (section == 3) { rowMin = 20; rowMax = 35; colMin = 5;  colMax = 25; }
-	else { rowMin = 40; rowMax = 60; colMin = 35; colMax = 60; }
+	int row = found[index].row;
+	int col = found[index].col;
 
-	int row = rowMin + rand() % (rowMax - rowMin + 1);
-	int col = colMin + rand() % (colMax - colMin + 1);
-
-	std::cout << "Row: " << row << " Col: " << col << "\n";
+	std::cout << "Flag spawned at Row: " << row << " Col: " << col << "\n";
 	arr[row][col] = 4;
-	std::cout << "Flag at Row: " << row << " Col: " << col << "\n";
 }
