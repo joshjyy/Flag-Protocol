@@ -81,18 +81,10 @@ void Load_Map(std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& arr,
 
 				
 				float r = 0.0f, g = 0.0f, b = 0.0f;
-				if (arr[i][j] == 1) {
-					r = 0.0f; g = 1.0f;  b = 0.0f;
-				}
-				else if (arr[i][j] == 2) {
-					r = 0.0f; g = 1.0f;  b = 1.0f;
-				}
-				else if (arr[i][j] == 3) {
-					r = 0.5f; g = 1.0f;  b = 0.0f; 
-				}
-				else if (arr[i][j] == 4) {
-					r = 1.0f; g = 0.0f;  b = 0.0f; 
-				}
+				if (arr[i][j] == 1) { r = 0.0f; g = 1.0f; b = 0.0f; }  // green blocks
+				else if (arr[i][j] == 2) { r = 0.5f; g = 0.0f; b = 1.0f; }  // purple goal
+				else if (arr[i][j] == 3) { r = 1.0f; g = 0.0f; b = 0.0f; }  // red
+				else if (arr[i][j] == 4) {  r = 0.0f; g = 1.0f; b = 1.0f; }  // lime flag
 				
 
 				// ── STEP 1: Draw dark bottom-right shadow (slightly bigger) ──
@@ -129,7 +121,7 @@ void Spawn_Flag(std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& arr) {
 	int count = 0;
 	for (int i = 0; i < MAP_HEIGHT; i++) {
 		for (int j = 0; j < MAP_WIDTH; j++) {
-			if (arr[i][j] == 4) {
+			if (arr[i][j] == 5) {
 				found[count].row = i;
 				found[count].col = j;
 				count++;
@@ -148,4 +140,5 @@ void Spawn_Flag(std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& arr) {
 	int col = found[index].col;
 
 	std::cout << "Flag spawned at Row: " << row << " Col: " << col << "\n";
+	arr[row][col] = 4;
 }
