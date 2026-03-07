@@ -12,6 +12,11 @@ const int MAP_WIDTH = 64;   // Was 32, now double
 int Load_Game_Level(const char* filename, std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& arr);
 
 /**
+ * Saves a game level map from a 2D array into a text file.
+ */
+void Save_Game_Level(const char* filename, std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& arr);
+
+/**
  * Renders the game map using the provided mesh.
  * Draws colored squares for each solid tile (value of 1) in the array.
  */

@@ -2,7 +2,7 @@
 // includes
 
 #include "AEEngine.h"
-#include "utils.hpp"  
+#include "utils.hpp"  D
 #include "player.hpp"
 #include "gunTypes.hpp"
 #include "enemies.hpp"
@@ -67,6 +67,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	std::vector<Bullet> playerBullets;
 	std::vector<Bullet> enemyBullets;
 
+	// Editor state variables
+	int currentTileType = 1;  // 1 = Walls (Green)
+	s32 mouseX = 0;
+	s32 mouseY = 0;
+
 	//Init Grunt Enemy type
 	std::vector<Grunt> grunts;
 
@@ -97,7 +102,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	// ---------------------------------------------------------------------------
 
 	// 2D array to store the game map data (18 rows x 32 columns)
-	auto gameMap =  new std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>;
+	std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>* gameMap = new std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>;
 	//Camera variables(in main, with other game variables)
 	float cameraX = 0.0f;
 	float cameraY = 0.0f;
@@ -154,6 +159,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		{
 			AEGfxSetBackgroundColor(0.05f, 0.05f, 0.1f);
 
+			// Get mouse position for tile painting
+			AEInputGetCursorPosition(&mouseX, &mouseY);
 
 			// Convert to world coordinates
 			float worldX = (float)mouseX - 800.0f;
@@ -167,60 +174,56 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			if (gridX >= 0 && gridX < MAP_WIDTH && gridY >= 0 && gridY < MAP_HEIGHT) {
 				// Left click to paint
 				if (AEInputCheckCurr(AEVK_LBUTTON)) {
-					gameMap[gridY][gridX] = currentTileType;
+					(*gameMap)[gridY][gridX] = currentTileType;
 				}
 				// Right click to erase
 				if (AEInputCheckCurr(AEVK_RBUTTON)) {
-					gameMap[gridY][gridX] = 0;
+					(*gameMap)[gridY][gridX] = 0;
 				}
 			}
 
 			// Number keys to change tile type
 			if (AEInputCheckTriggered(AEVK_0)) currentTileType = 0;  // Eraser
-			if (AEInputCheckTriggered(AEVK_1)) currentTileType = 1;  // Red, wall/obstacle
-			if (AEInputCheckTriggered(AEVK_2)) currentTileType = 2;  // Blue, Water
-			if (AEInputCheckTriggered(AEVK_3)) currentTileType = 3;  // Green, Grass
-			if (AEInputCheckTriggered(AEVK_4)) currentTileType = 4;  // Yellow, Sand
-			if (AEInputCheckTriggered(AEVK_5)) currentTileType = 5;  // Purple, Special
+			if (AEInputCheckTriggered(AEVK_1)) currentTileType = 1;  // Green blocks
+			if (AEInputCheckTriggered(AEVK_2)) currentTileType = 2;  // Purple goal
+			if (AEInputCheckTriggered(AEVK_3)) currentTileType = 3;  // Red blocks(?)
+			if (AEInputCheckTriggered(AEVK_4)) currentTileType = 4;  // Lime flag
 
 			// Save map (S key)
 			if (AEInputCheckTriggered(AEVK_S)) {
-				Save_Game_Level("Assets/My_Custom_Map.txt", gameMap);
-				printf("Map saved!\n");
+				Save_Game_Level("Assets/My_Custom_Map.txt", *gameMap);
+				printf("Map saved to My_Custom_Map.txt!\n");
 			}
 
 			// Load map (L key)
 			if (AEInputCheckTriggered(AEVK_L)) {
-				Load_Game_Level("Assets/Level_1_Map.txt", gameMap);
-				printf("Map loaded!\n");
+				Load_Game_Level("Assets/Level_1_Map.txt", *gameMap);
+				printf("Original map loaded!\n");
 			}
 
 			// Clear map (C key)
 			if (AEInputCheckTriggered(AEVK_C)) {
 				for (int i = 0; i < MAP_HEIGHT; i++) {
 					for (int j = 0; j < MAP_WIDTH; j++) {
-						gameMap[i][j] = 0;
+						(*gameMap)[i][j] = 0;
 					}
 				}
 				printf("Map cleared!\n");
 			}
 
-			// Render the map with centered camera
-			cameraX = 0.0f;  
+			// Centered camera
+			cameraX = 0.0f;
 			cameraY = 0.0f;
-			Load_Map(gameMap, meshes.square, cameraX, cameraY);
+			Load_Map(*gameMap, meshes.square, cameraX, cameraY);
 
-			// Draw UI instructions
 			float uiY = 350.0f;
 			float textX, textY;
 
 			GetNormalizedTextPosition(-700.0f, uiY, &textX, &textY);
 			AEGfxPrint(fontID, "EDITOR MODE", textX, textY, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f);
 
-			// Tiles
+			// Tiles section
 			uiY -= 40.0f;
-
-			// Section header
 			GetNormalizedTextPosition(-700.0f, uiY, &textX, &textY);
 			AEGfxPrint(fontID, "TILES", textX, textY, 1.0f, 0.8f, 0.8f, 0.8f, 1.0f);
 
@@ -234,12 +237,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			};
 
 			TileDisplay tiles[] = {
-				{"1: Walls", -700.0f, 0.0f, 1.0f, 0.0f},     // Green
-				{"2: Water", -550.0f, 0.0f, 1.0f, 1.0f},     // Cyan
-				{"3: Grass", -400.0f, 0.5f, 1.0f, 0.0f},     // Lime
-				{"4: Sand",  -700.0f, 1.0f, 0.8f, 0.0f},     // Yellow
-				{"5: Special",-550.0f, 1.0f, 0.0f, 1.0f},    // Purple
-				{"0: Eraser",-400.0f, 1.0f, 1.0f, 1.0f}      // White
+				{"1: Green Blocks", -700.0f, 0.0f, 1.0f, 0.0f},     // Green
+				{"2: Purple Goal", -550.0f, 0.5f, 0.0f, 1.0f},      // Purple
+				{"3: Red Blocks", -400.0f, 1.0f, 0.0f, 0.0f},       // Red
+				{"4: Lime Flag", -700.0f, 0.0f, 1.0f, 1.0f},        // Cyan
+				{"0: Eraser", -400.0f, 1.0f, 1.0f, 1.0f}            // White
 			};
 
 			// First row (1-3)
@@ -251,16 +253,16 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 			uiY -= 30.0f;
 
-			// Second row (4-5 and Eraser)
-			for (int i = 3; i < 6; i++) {
+			// Second row (4 and Eraser)
+			for (int i = 3; i < 5; i++) {
 				GetNormalizedTextPosition(tiles[i].x, uiY, &textX, &textY);
 				AEGfxPrint(fontID, tiles[i].label, textX, textY, 1.0f,
 					tiles[i].r, tiles[i].g, tiles[i].b, 1.0f);
 			}
 
-			uiY -= 50.0f;  // Space before commands
+			uiY -= 50.0f;
 
-			// Show current tile
+			// Current tile selection
 			GetNormalizedTextPosition(-700.0f, uiY, &textX, &textY);
 			AEGfxPrint(fontID, "CURRENT", textX, textY, 1.0f, 0.8f, 0.8f, 0.8f, 1.0f);
 
@@ -270,14 +272,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			GetNormalizedTextPosition(-700.0f, uiY, &textX, &textY);
 			char tileText[32];
 
-			const char* tileNames[] = { "Eraser", "Walls", "Water", "Grass", "Sand", "Special" };
-			float tileColors[6][3] = {
-				{1.0f, 1.0f, 1.0f},
-				{0.0f, 1.0f, 0.0f},
-				{0.0f, 1.0f, 1.0f},
-				{0.5f, 1.0f, 0.0f},
-				{1.0f, 0.8f, 0.0f},
-				{1.0f, 0.0f, 1.0f}
+			const char* tileNames[] = { "Eraser", "Green Blocks", "Purple Goal", "Red Blocks", "Lime Flag" };
+			float tileColors[5][3] = {
+				{1.0f, 1.0f, 1.0f},  // Eraser
+				{0.0f, 1.0f, 0.0f},  // Green blocks
+				{0.5f, 0.0f, 1.0f},  // Purple goal
+				{1.0f, 0.0f, 0.0f},  // Red blocks(?)
+				{0.0f, 1.0f, 1.0f}   // Lime flag
 			};
 
 			sprintf_s(tileText, 32, "Current: %s", tileNames[currentTileType]);
@@ -287,7 +288,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				tileColors[currentTileType][1],
 				tileColors[currentTileType][2], 1.0f);
 
-			// Commands section
+			// Commands
 			uiY -= 40.0f;
 			GetNormalizedTextPosition(-700.0f, uiY, &textX, &textY);
 			AEGfxPrint(fontID, "COMMANDS", textX, textY, 1.0f, 0.8f, 0.8f, 0.8f, 1.0f);
@@ -322,9 +323,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 			// Back to menu
 			if (AEInputCheckTriggered(AEVK_BACK) || AEInputCheckTriggered(AEVK_ESCAPE)) {
-			if (AEInputCheckTriggered(AEVK_BACK) || AEInputCheckTriggered(AEVK_ESCAPE))
 				currentState = STATE_MENU;
+			}
 		}
+
 		// ---------------------------------------------------------------------------
 		// INPUT HANDLING
 		// ---------------------------------------------------------------------------

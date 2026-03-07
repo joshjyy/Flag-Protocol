@@ -44,15 +44,50 @@ int Load_Game_Level(const char* filename, std::array<std::array<int, MAP_WIDTH>,
 	return 1; // Return success
 }
 
-
 /**
+ * Saves a game level map from a 2D array into a text file.
+ * Opens the specified file and writes MAP_HEIGHT x MAP_WIDTH integers.
+ * Each integer represents a tile type (0 = empty, 1-5 = different tiles).
+ **/
+void Save_Game_Level(const char* filename, std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& arr) {
+	// Create output file stream
+	std::ofstream map_file(filename);
+
+	// Check if file opened successfully
+	if (!map_file.is_open()) {
+		std::cout << "Error: Could not save file " << filename << std::endl;
+		return;
+	}
+
+	// Loop through each row of the map
+	for (int i = 0; i < MAP_HEIGHT; i++) {
+		// Loop through each column of the map
+		for (int j = 0; j < MAP_WIDTH; j++) {
+			// Write each integer to file
+			map_file << arr[i][j];
+
+			// Add space between numbers, but not at the end of row
+			if (j < MAP_WIDTH - 1) {
+				map_file << " ";
+			}
+		}
+		// New line at the end of each row
+		map_file << std::endl;
+	}
+
+	// Close the file
+	map_file.close();
+	std::cout << "Map saved successfully to " << filename << "!" << std::endl;
+}
+
+/***
  * Renders the game map by drawing colored squares for each solid tile.
  * Loops through the 2D array and draws a 50x50 pixel square for each tile marked as 1.
  * Uses transformation matrices to position and scale each tile correctly on screen.
  * Coordinates are calculated to center the map in a 1600x900 window.
  * Empty tiles (0) are skipped and not rendered.
  */
- /**
+ /***
   * Renders the game map by drawing colored squares for each tile.
   * Different tile values are rendered with different colors:
   * 0 = empty (not drawn)
