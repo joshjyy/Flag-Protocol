@@ -3,7 +3,11 @@
 #include "map.hpp"
 #include <fstream>
 #include <array>
+#include <cstdlib>
+#include <random>
 
+std::random_device rd;
+std::mt19937 gen(rd());	
 /* 
  * Loads a game level map from a text file into a 2D array.
  * Opens the specified file and reads MAP_HEIGHT x MAP_WIDTH integers.
@@ -61,57 +65,46 @@ int Load_Game_Level(const char* filename, std::array<std::array<int, MAP_WIDTH>,
 void Load_Map(std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& arr,
 	AEGfxVertexList* mesh,
 	float cameraX, float cameraY) {
-
 	AEGfxSetRenderMode(AE_GFX_RM_COLOR);
 	AEGfxSetTransparency(1.0f);
 	AEMtx33 scale, translate, transform;
 	const int TILE_SIZE = 50;
-	const int OUTLINE_THICKNESS = 4;
+	const int EDGE = 4; // thickness of 3D edge
 
 	for (int i = 0; i < MAP_HEIGHT; i++) {
 		for (int j = 0; j < MAP_WIDTH; j++) {
-			if (arr[i][j] != 0) {
-
+			if (arr[i][j] != 0 && arr[i][j] != 5) {
 				float x = (j * TILE_SIZE) - 800.0f + 25.0f;
 				float y = 450.0f - (i * TILE_SIZE) - 25.0f;
 				float screenX = x - cameraX;
 				float screenY = y - cameraY;
 
 				
-				if (arr[i][j] == 1) {
-					
-					AEGfxSetColorToMultiply(0.0f, 1.0f, 0.0f, 1.0f);
-				}
-				else if (arr[i][j] == 2) {
-					
-					AEGfxSetColorToMultiply(0.0f, 1.0f, 1.0f, 1.0f);
-				}
-				else if (arr[i][j] == 3) {
-					
-					AEGfxSetColorToMultiply(0.5f, 1.0f, 0.0f, 1.0f);
-				}
-				else if (arr[i][j] == 4) {
-					
-					AEGfxSetColorToMultiply(1.0f, 0.8f, 0.0f, 1.0f);
-				}
-				else if (arr[i][j] == 5) {
-					
-					AEGfxSetColorToMultiply(1.0f, 0.0f, 1.0f, 1.0f);
-				}
-				else {
-					
-					AEGfxSetColorToMultiply(1.0f, 1.0f, 1.0f, 1.0f);
-				}
+				float r = 0.0f, g = 0.0f, b = 0.0f;
+				if (arr[i][j] == 1) { r = 0.0f; g = 1.0f; b = 0.0f; }  // green blocks
+				else if (arr[i][j] == 2) { r = 0.5f; g = 0.0f; b = 1.0f; }  // purple goal
+				else if (arr[i][j] == 3) { r = 1.0f; g = 0.0f; b = 0.0f; }  // red
+				else if (arr[i][j] == 4) {  r = 0.0f; g = 1.0f; b = 1.0f; }  // lime flag
+				
 
-				// Draw neon outline 
-				AEMtx33Scale(&scale, (float)(TILE_SIZE + OUTLINE_THICKNESS * 2), (float)(TILE_SIZE + OUTLINE_THICKNESS * 2));
-				AEMtx33Trans(&translate, screenX, screenY);
+				// ── STEP 1: Draw dark bottom-right shadow (slightly bigger) ──
+				AEGfxSetColorToMultiply(r * 0.2f, g * 0.2f, b * 0.2f, 1.0f);
+				AEMtx33Scale(&scale, (float)(TILE_SIZE + EDGE), (float)(TILE_SIZE + EDGE));
+				AEMtx33Trans(&translate, screenX + EDGE * 0.5f, screenY - EDGE * 0.5f);
 				AEMtx33Concat(&transform, &translate, &scale);
 				AEGfxSetTransform(transform.m);
 				AEGfxMeshDraw(mesh, AE_GFX_MDM_TRIANGLES);
 
-				// Draw black interior 
-				AEGfxSetColorToMultiply(0.0f, 0.0f, 0.0f, 1.0f);
+				// ── STEP 2: Draw bright top-left highlight (slightly bigger) ──
+				AEGfxSetColorToMultiply(r, g, b, 1.0f);
+				AEMtx33Scale(&scale, (float)(TILE_SIZE + EDGE), (float)(TILE_SIZE + EDGE));
+				AEMtx33Trans(&translate, screenX - EDGE * 0.5f, screenY + EDGE * 0.5f);
+				AEMtx33Concat(&transform, &translate, &scale);
+				AEGfxSetTransform(transform.m);
+				AEGfxMeshDraw(mesh, AE_GFX_MDM_TRIANGLES);
+
+				// ── STEP 3: Draw main block face (base color darkened) ──
+				AEGfxSetColorToMultiply(r * 0.35f, g * 0.35f, b * 0.35f, 1.0f);
 				AEMtx33Scale(&scale, (float)TILE_SIZE, (float)TILE_SIZE);
 				AEMtx33Trans(&translate, screenX, screenY);
 				AEMtx33Concat(&transform, &translate, &scale);
@@ -120,4 +113,32 @@ void Load_Map(std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& arr,
 			}
 		}
 	}
+}
+
+void Spawn_Flag(std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& arr) {
+	struct Tile { int row, col; };
+	Tile found[100];
+	int count = 0;
+	for (int i = 0; i < MAP_HEIGHT; i++) {
+		for (int j = 0; j < MAP_WIDTH; j++) {
+			if (arr[i][j] == 5) {
+				found[count].row = i;
+				found[count].col = j;
+				count++;
+			}
+		}
+	}
+	if (count == 0) {
+		std::cout << "No flag tiles found!\n";
+		return;
+	}
+
+	srand((unsigned int)time(0));
+	int index = rand() % count;
+
+	int row = found[index].row;
+	int col = found[index].col;
+
+	std::cout << "Flag spawned at Row: " << row << " Col: " << col << "\n";
+	arr[row][col] = 4;
 }

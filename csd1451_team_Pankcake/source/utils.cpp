@@ -82,7 +82,7 @@ void InitCommonMeshes(void) {
 
     // Create circle mesh
     AEGfxMeshStart();
-    int segments = 30;
+    int segments = 360;
     for (int i = 0; i < segments; i++) {
         float angle1 = (i * 360.0f / segments) * PI / 180.0f;
         float angle2 = ((i + 1) * 360.0f / segments) * PI / 180.0f;
@@ -131,16 +131,16 @@ int checkCollision(float playerX, float playerY, float radius,
     }
 
     // Step 4: Check all 4 corners
-    if (gameMap[topRow][leftCol] >= 1 && gameMap[topRow][leftCol] <= 4) {
+    if (gameMap[topRow][leftCol] == 1) {
         return 1;
     }
-    if (gameMap[topRow][rightCol] >= 1 && gameMap[topRow][rightCol] <= 4) {
+    if (gameMap[topRow][rightCol] == 1 ) {
         return 1;
     }
-    if (gameMap[bottomRow][leftCol] >= 1 && gameMap[bottomRow][leftCol] <= 4) {
+    if (gameMap[bottomRow][leftCol] == 1) {
         return 1;
     }
-    if (gameMap[bottomRow][rightCol] >= 1 && gameMap[bottomRow][rightCol] <= 4) {
+    if (gameMap[bottomRow][rightCol] == 1) {
         return 1;
     }
 
