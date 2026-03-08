@@ -144,25 +144,6 @@ int checkCollision(float playerX, float playerY, float radius,
         return 1;
     }
 
-
-	//Flag tile collision check (4 = flag tile)
-    if (gameMap[topRow][leftCol] == 4) {
-        return 4;
-    }
-    if (gameMap[topRow][rightCol] == 4) {
-        return 4;
-
-    }
-    if (gameMap[bottomRow][leftCol] == 4) {
-        return 4;
-
-    }
-    if (gameMap[bottomRow][rightCol] == 4) {
-        return 4;
-
-    }
-
-
     return 0;
 }
 
@@ -174,13 +155,4 @@ void GetNormalizedTextPosition(float pixelX, float pixelY, float* outNormalizedX
 
     *outNormalizedX = pixelX / (SCREEN_WIDTH / 2.0f);
     *outNormalizedY = pixelY / (SCREEN_HEIGHT / 2.0f);
-}
-
-// Normalizes a 2D vector (x, y) in place to have a length of 1, unless it's the zero vector.
-void NormalizeVector(float* x, float* y) {
-    float length = sqrtf((*x) * (*x) + (*y) * (*y));
-    if (length > 0.0f) {
-        *x /= length;
-        *y /= length;
-    }
 }

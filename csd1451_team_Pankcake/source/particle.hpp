@@ -1,7 +1,7 @@
 #pragma once
 #include "AEEngine.h"
 
-#define MAX_PARTICLES 200
+#define MAX_PARTICLES 1000
 
 
 typedef struct Particle {

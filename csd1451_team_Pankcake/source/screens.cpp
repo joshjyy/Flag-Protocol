@@ -1,15 +1,6 @@
 #include "screens.hpp"
 #include "utils.hpp"
 #include <string.h>
-#include "AEEngine.h"
-#include "utils.hpp"  
-#include "player.hpp"
-#include "gunTypes.hpp"
-#include "enemies.hpp"
-#include "weapon.hpp"
-#include <vector>
-#include "map.hpp"
-#include "events.hpp"
 
 bool IsButtonClicked(const Button& btn) {
     if (!AEInputCheckTriggered(AEVK_LBUTTON)) return false;
@@ -68,23 +59,13 @@ GameState UpdateAndRenderMenu(AEGfxVertexList* mesh, s8 font, float dt) {
 
     if (IsButtonClicked(playBtn))   return STATE_GAME;
     if (IsButtonClicked(tutorialBtn))   return STATE_TUTORIAL;
-    if (IsButtonClicked(editorBtn)) return STATE_EDITOR;
-    if (IsButtonClicked(quitBtn))   return STATE_QUIT;
 
+    if (IsButtonClicked(editorBtn)) return STATE_EDITOR;
 
     return STATE_MENU;
 }
 
-
-
-//void GameStateLoad() {
-//}
-//
-//void GameStateInit() {
-//}
-//
-//void GameStateFree() {
-//}
-//
-//void GameStateUnload() {
-//}
+bool IsQuitClicked() {
+    Button quitBtn = { 0.0f, -100.0f, 200.0f, 50.0f, "QUIT" };
+    return IsButtonClicked(quitBtn);
+}

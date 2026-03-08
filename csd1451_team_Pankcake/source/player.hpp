@@ -18,7 +18,6 @@ struct Bullet {
 
 struct Player {
 	int gruntsKilled;
-	int score;
     float health;
     // Position
     float x;
@@ -38,7 +37,6 @@ struct Player {
 
     bool inDash;
 	bool isDead;
-	bool holdingFlag;
 
     float velocityX;
     float velocityY;
@@ -59,6 +57,7 @@ void InitPlayerParticles(Player* player, void* mesh, void* mesh2);
 void DrawPlayer(Player& player, void* mesh, float cameraX, float cameraY, float dt);
 void DrawPlayerUI(Player& player, WeaponStats& weapon, void* mesh, void* mesh2, float cameraX, float cameraY);  
 void PlayerDashStaminaBar(Player& player, void* mesh, float cameraX, float cameraY);
+void NormalizeVector(float* x, float* y);
 void UpdateBullets(std::vector<Bullet>& bullets, float dt, std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap);
 void UpdateBullets(std::vector<Bullet>& bullets, float dt); // Overload for enemie bullets
 void RenderBullets(const std::vector<Bullet>& bullets, void* mesh, float cameraX, float cameraY);
@@ -73,5 +72,3 @@ void CheckEnemyBulletPlayerCollision(std::vector<Bullet>& enemyBullets, Player& 
 
 void CheckPlayerGruntBodyCollision(Player& player, std::vector<Grunt>& grunts);
 void killPlayer(Player& player);
-void LoadPlayer(Player& player, AEGfxVertexList* particleMesh);
-void UnloadPlayer(Player& player);
