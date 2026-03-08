@@ -6,6 +6,7 @@
 #include "player.hpp"
 #include "gunTypes.hpp"
 #include "enemies.hpp"
+#include "AI.hpp"  
 #include "weapon.hpp"
 #include <vector>
 #include "map.hpp"

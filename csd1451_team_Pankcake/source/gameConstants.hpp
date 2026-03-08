@@ -16,3 +16,13 @@ const float DASH_DURATION = 0.1f;
 const float DASH_COOLDOWN = 0.5f;
 const float ACCELERATION = 10000.0f;
 const float FRICTION = 10.0f;
+
+// AI Consts
+const float AI_DETECTION_RANGE = 400.0f;
+const float AI_ATTACK_RANGE = 300.0f;
+const float AI_RETREAT_HEALTH = 30.0f;
+const float AI_TOO_CLOSE_RANGE = 150.0f;
+const float AI_PATROL_SPEED = 50.0f;
+const float AI_CHASE_SPEED = 150.0f;
+const float AI_RETREAT_SPEED = 200.0f;
+const float AI_STRAFE_SPEED = 80.0f;

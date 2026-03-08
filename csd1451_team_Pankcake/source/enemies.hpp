@@ -5,54 +5,66 @@
 #include "player.hpp"
 #include <vector>
 
+//Forward Declaration
+enum GruntAIState;
 
 struct Grunt {
+    // Stats
     float health;
-    float maxHealth;  // For health bars
     float armour;
+
+    // Position
     float startX;
     float startY;
     float movingX;
     float movingY;
+
+    // State
     bool isDead;
+
+    // Weapon
     Pistol pistol;
     float shootCooldown;
 
-    // Default grunt
-    Grunt(float x, float y)
-        : health(100.0f),
-        maxHealth(100.0f),
-        armour(0.0f),
-        startX(x),
-        startY(y),
-        movingX(x),
-        movingY(y),
-        isDead(false),
-        pistol(),
-        shootCooldown(0.0f)
-    {
-    }
+    // AI data
+    GruntAIState currentState;
+    float detectionRange;
+    float attackRange;
+    float retreatHealthThreshold;
+    float lastSeenPlayerX;
+    float lastSeenPlayerY;
+    float stateTimer;
+
+    // Patrol
+    float patrolRadius;
+    float patrolAngle;
+    float patrolSpeed;
+
+    // Constructor with member initializer list
+    Grunt(float x, float y);
+
     // Overload for elite enemies
-    // Custom stats (for elite grunts, bosses, etc.)
-    Grunt(float x, float y, float hp, float armor)
-        : health(hp),
-        maxHealth(hp),
-        armour(armor),
-        startX(x),
-        startY(y),
-        movingX(x),
-        movingY(y),
-        isDead(false),
-        pistol(),
-        shootCooldown(0.0f)
-    {
-    }
+    //// Custom stats (for elite grunts, bosses, etc.)
+    //Grunt(float x, float y, float hp, float armor)
+    //    : health(hp),
+    //    maxHealth(hp),
+    //    armour(armor),
+    //    startX(x),
+    //    startY(y),
+    //    movingX(x),
+    //    movingY(y),
+    //    isDead(false),
+    //    pistol(),
+    //    shootCooldown(0.0f)
+    //{
+    //}
 };
 
 // Function declarations
 Grunt SpawnGrunt(float startX, float startY);
 void UpdateGrunts(std::vector<Grunt>& grunts, Player& player, std::vector<Bullet>& enemyBullets, float dt);
 void RenderGrunts(std::vector<Grunt>& grunts, void* mesh, float cameraX, float cameraY);
-void CheckBulletGruntCollisions(std::vector<Bullet>& playerBullets, std::vector<Grunt>& grunts, Player& playerInfo);
-void RemoveDeadGrunts(std::vector<Grunt>& grunts);	
+void RemoveDeadGrunts(std::vector<Grunt>& grunts);
+void CheckBulletGruntCollisions(std::vector<Bullet>& playerBullets, std::vector<Grunt>& grunts, Player& player);
+
 #endif
