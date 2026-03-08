@@ -6,6 +6,7 @@
 #include "player.hpp"
 #include "gunTypes.hpp"
 #include "enemies.hpp"
+#include "AI.hpp"  
 #include "weapon.hpp"
 #include <vector>
 #include "map.hpp"
@@ -188,7 +189,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			// UPDATE ENEMIES
 			// ---------------------------------------------------------------------------
 			//Update Grunt to aim at player
-			UpdateGrunts(grunts, player, enemyBullets, dt);
+			UpdateGrunts(grunts, player, enemyBullets, dt, *gameMap);
 
 			// ---------------------------------------------------------------------------
 			// UPDATE BULLETS
