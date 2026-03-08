@@ -183,7 +183,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			// UPDATE ENEMIES
 			// ---------------------------------------------------------------------------
 			//Update Grunt to aim at player
-			UpdateGrunts(grunts, player, enemyBullets, dt);
+			UpdateGrunts(grunts, player, enemyBullets, dt, *gameMap);
 
 			// ---------------------------------------------------------------------------
 			// UPDATE BULLETS

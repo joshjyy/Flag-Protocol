@@ -3,9 +3,9 @@
 
 #include "gunTypes.hpp"
 #include "player.hpp"
+#include "map.hpp"
 #include <vector>
 
-//Forward Declaration
 enum GruntAIState;
 
 struct Grunt {
@@ -62,7 +62,7 @@ struct Grunt {
 
 // Function declarations
 Grunt SpawnGrunt(float startX, float startY);
-void UpdateGrunts(std::vector<Grunt>& grunts, Player& player, std::vector<Bullet>& enemyBullets, float dt);
+void UpdateGrunts(std::vector<Grunt>& grunts, Player& player, std::vector<Bullet>& enemyBullets, float dt, std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap);
 void RenderGrunts(std::vector<Grunt>& grunts, void* mesh, float cameraX, float cameraY);
 void RemoveDeadGrunts(std::vector<Grunt>& grunts);
 void CheckBulletGruntCollisions(std::vector<Bullet>& playerBullets, std::vector<Grunt>& grunts, Player& player);

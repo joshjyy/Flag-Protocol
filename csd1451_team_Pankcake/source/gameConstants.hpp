@@ -1,5 +1,8 @@
 #pragma once
 
+// Mathematical constants
+const float pi = 3.14159265359f;
+
 // Player constants
 const float PLAYER_RADIUS = 50.0f;
 

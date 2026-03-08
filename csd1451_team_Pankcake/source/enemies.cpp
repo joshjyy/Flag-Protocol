@@ -1,5 +1,5 @@
 #include "enemies.hpp"
-#include "ai.hpp"
+#include "AI.hpp"
 #include "gameConstants.hpp"
 #include "AEEngine.h"
 #include "utils.hpp"
@@ -36,13 +36,14 @@ Grunt SpawnGrunt(float startX, float startY) {
 
 //UPDATING GRUNT
 // Update all grunts - shooting logic
-void UpdateGrunts(std::vector<Grunt>& grunts, Player& player, std::vector<Bullet>& enemyBullets, float dt) {
+void UpdateGrunts(std::vector<Grunt>& grunts, Player& player, std::vector<Bullet>& enemyBullets, float dt, std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap) {
 	for (auto& grunt : grunts) {
 		if (!grunt.isDead) {
-			UpdateGruntAI(grunt, player, enemyBullets, dt);  // Use AI system
+			UpdateGruntAI(grunt, player, enemyBullets, dt, gameMap);
 		}
 	}
 }
+
 
 //RENDERING
 // Render all grunts
