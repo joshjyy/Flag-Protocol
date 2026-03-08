@@ -16,7 +16,7 @@ int checkCollision(float playerX, float playerY, float radius,
     std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap);
 
 void GetNormalizedTextPosition(float pixelX, float pixelY, float* outNormalizedX, float* outNormalizedY);
-
+void NormalizeVector(float* x, float* y);
 // Common mesh management
 typedef struct {
     AEGfxVertexList* square;

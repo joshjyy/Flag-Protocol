@@ -10,8 +10,9 @@
 
 Player InitPlayer(void) {
     Player player = {
-        0,
-        1000.0f,                  // health
+		0,                          //gruntsKilled
+		0,                        // score
+        100.0f,                  // health
         0.0f,                     // x
         0.0f,                     // y
         0.0f,                     // dashTimer
@@ -24,6 +25,7 @@ Player InitPlayer(void) {
         0.0f,                    // shootCooldown
 		false,                     // inDash
         false,                    // isDead
+        false,                      //holdingFlag
 
 		 0.0f,                    // velocityX
          0.0f,                    // velocityY
@@ -33,7 +35,9 @@ Player InitPlayer(void) {
 		nullptr,                   // trailEmitter
 		nullptr,                   // deathEmitter
 		nullptr,                   // dashTrailEmitter
-		false                      // deathExplosionSpawned
+		false                // deathExplosionSpawned
+
+        
 
      };
 
@@ -42,12 +46,8 @@ Player InitPlayer(void) {
 
 void InitPlayerParticles(Player* player, void* mesh, void*mesh2) {
 
-
+	// Trail emitter setup
     player->trailEmitter = ParticleEmitterCreate();
-    if (!player->trailEmitter) {
-        printf("ERROR: Failed to create particle emitter!\n");
-        return;
-    }
 	//Init emitter properties 
     ParticleEmitterSetMesh(player->trailEmitter, (AEGfxVertexList*)mesh);
     ParticleEmitterSetLifeTime(player->trailEmitter, 0.7f, 1.0f);  // Longer life
@@ -57,7 +57,7 @@ void InitPlayerParticles(Player* player, void* mesh, void*mesh2) {
         0.0f, 1.0f, 0.392f, 1.0f   // start color
     );
 
-
+	// Death explosion emitter setup
     player->deathEmitter = ParticleEmitterCreate();
     ParticleEmitterSetMesh(player->deathEmitter, (AEGfxVertexList*)mesh);
     ParticleEmitterSetLifeTime(player->deathEmitter, 0.4f, 0.8f);
@@ -66,9 +66,8 @@ void InitPlayerParticles(Player* player, void* mesh, void*mesh2) {
     ParticleEmitterSetColor(player->deathEmitter,
         0.0f, 1.0f, 0.392f, 1.0f     // start color
     );
-    ParticleEmitterSetEmissionRate(player->deathEmitter, 0.0f);
-    player->deathExplosionSpawned = false;
 
+    ParticleEmitterSetEmissionRate(player->deathEmitter, 0.0f);
     // Dash trail emitter setup
     player->dashTrailEmitter = ParticleEmitterCreate();
     ParticleEmitterSetMesh(player->dashTrailEmitter, (AEGfxVertexList*)mesh2);
@@ -77,36 +76,33 @@ void InitPlayerParticles(Player* player, void* mesh, void*mesh2) {
     ParticleEmitterSetScale(player->dashTrailEmitter, PLAYER_RADIUS * 0.7f, PLAYER_RADIUS * 0.7f);
     ParticleEmitterSetColor(player->dashTrailEmitter, 0.0f, 1.0f, 0.0f, 0.4f);
     ParticleEmitterSetEmissionRate(player->dashTrailEmitter, 30.0f);
+
+
+
 }
 
-// Normalizes a 2D vector (x, y) in place to have a length of 1, unless it's the zero vector.
-void NormalizeVector(float* x, float* y) {
-    float length = sqrtf((*x) * (*x) + (*y) * (*y));
-    if (length > 0.0f) {
-        *x /= length;
-        *y /= length;
-    }
-}
 
 
 void DrawPlayer(Player& player, void* mesh, float cameraX, float cameraY, float dt)
 {
-    // Helper to offset particles into screen space and back
+	// Lamda  to offset particles for camera movement 
+    //returns particles to world space for correct position, then back to screen space after drawing
+	//note - [&] captures all local variables by reference, allowing access to cameraX and cameraY
     auto offsetParticles = [&](ParticleEmitter* emitter, float dx, float dy)
         {
-			// Loop through all particles and offset their positions
+			// Loop through all particles and offset their positions based on camera
             for (int i = 0; i < MAX_PARTICLES; i++)
             {
+                
                 auto& p = emitter->particles[i];
                 if (p.active) { 
-					// Offset position by camera to convert to screen space
+					// Offset position by adding dx and dy which is camera
                     p.x += dx;
                     p.y += dy;
                 }
             }
         };
-
-    // Helper to draw a single emitter in screen space
+	// Helper to draw a single emitter based on camera screen space, handles null checks and offsetting
     auto drawEmitter = [&](ParticleEmitter* emitter)
         {
 			// If emitter is null, just skip drawing
@@ -143,24 +139,35 @@ void DrawPlayer(Player& player, void* mesh, float cameraX, float cameraY, float 
     }
 
     // --- Player body ---
-    static float pulseTime = 0.0f;
-    pulseTime += dt;
-    float pulse = 1.0f + 0.15f * sinf(pulseTime * 5.0f);
 
-    AEGfxSetBlendMode(AE_GFX_BM_BLEND);
-    AEGfxSetColorToAdd(0, 0, 0, 0);
 
-    // Outer glow (pulsing neon green)
-    AEGfxSetTransparency(0.3f);
-    AEGfxSetColorToMultiply(0.0f, 1.0f, 0.0f, 1.0f);
+    // Halo effect (health/flag indicator)
+    static float haloTime = 0.0f;
+    haloTime += dt;
+    float halo = 1.0f + 0.5f * sinf(haloTime * 4.0f);
+
+    AEGfxSetTransparency(0.4f);
+
+    // Determine color: Flag > Low Health > Full Health
+    if (player.holdingFlag) {
+        AEGfxSetColorToMultiply(1.0f, 1.0f, 0.0f, 1.0f); // Gold
+    }
+    else if (player.health < 40.0f) {
+        AEGfxSetColorToMultiply(1.0f, 0.0f, 0.0f, 1.0f); // Red
+    }
+    else {
+        AEGfxSetColorToMultiply(0.0f, 1.0f, 0.0f, 1.0f); // Green
+    }
+
     DrawSprite((AEGfxVertexList*)mesh, screenX, screenY,
-        PLAYER_RADIUS * pulse, PLAYER_RADIUS * pulse, 0.0f);
+        PLAYER_RADIUS * 1.1f * halo, PLAYER_RADIUS * 1.1f * halo, 0.0f);
 
     // Inner core (bright neon green)
     AEGfxSetTransparency(1.0f);
     AEGfxSetColorToMultiply(0.2f, 1.0f, 0.2f, 1.0f);
     DrawSprite((AEGfxVertexList*)mesh, screenX, screenY,
         PLAYER_RADIUS * 0.7f, PLAYER_RADIUS * 0.7f, 0.0f);
+
 }
 
 void DrawPlayerUI(Player& player, WeaponStats& weapon, void* mesh, void* mesh2,
@@ -175,7 +182,7 @@ void DrawPlayerUI(Player& player, WeaponStats& weapon, void* mesh, void* mesh2,
     DrawSprite((AEGfxVertexList*)mesh, uiX, uiY, barWidth, barHeight, 0.0f);
 
     AEGfxSetColorToMultiply(1.0f, 0.0f, 0.0f, 1.0f);
-    float currentHealthWidth = (player.health / 1000.0f) * barWidth;
+    float currentHealthWidth = (player.health / 100.0f) * barWidth;
     float healthOffset = (barWidth - currentHealthWidth) / 2.0f;
     DrawSprite((AEGfxVertexList*)mesh, uiX - healthOffset, uiY, currentHealthWidth, barHeight, 0.0f);
 
@@ -216,7 +223,7 @@ void DrawPlayerUI(Player& player, WeaponStats& weapon, void* mesh, void* mesh2,
 }
 
 void PlayerDashStaminaBar(Player& player, void* mesh, float cameraX, float cameraY) {
-    if (player.dashCooldownTimer > 0.0f) {
+    if (player.dashCooldownTimer > 0.0f && player.isDead == false) {
         float dashBarOffsetX = 50.0f;
         float dashBarOffsetY = 0.0f;
 
@@ -296,9 +303,11 @@ void UpdateBullets(std::vector<Bullet>& bullets, float dt) {
         if (bullets[i].y > 500.0f || bullets[i].y < -500.0f ||
             bullets[i].x > 900.0f || bullets[i].x < -900.0f) {
             bullets.erase(bullets.begin() + i);
+
         }
     }
 }
+
 
 void RenderBullets(const std::vector<Bullet>& bullets, void* mesh,
     float cameraX, float cameraY) {  
@@ -306,18 +315,19 @@ void RenderBullets(const std::vector<Bullet>& bullets, void* mesh,
 
     for (const Bullet& bullet : bullets) {
         //  Convert world position to screen position
+		// minus camera position to ensure bullets are drawn in the correct place relative to the player
         float screenX = bullet.x - cameraX;
         float screenY = bullet.y - cameraY;
 
-        // Outer glow - USE screenX, screenY
+        // Outer glow 
         AEGfxSetColorToMultiply(1.0f, 1.0f, 0.0f, 0.3f);
         DrawSprite((AEGfxVertexList*)mesh, screenX, screenY, BULLET_RADIUS, BULLET_RADIUS, 0.0f);
 
-        // Middle glow - USE screenX, screenY
+        // Middle glow
         AEGfxSetColorToMultiply(1.0f, 1.0f, 0.0f, 0.6f);
         DrawSprite((AEGfxVertexList*)mesh, screenX, screenY, BULLET_RADIUS - 10.0f, BULLET_RADIUS - 10.0f, 0.0f);
 
-        // Core - USE screenX, screenY
+        // Core
         AEGfxSetColorToMultiply(1.0f, 1.0f, 1.0f, 1.0f);
         DrawSprite((AEGfxVertexList*)mesh, screenX, screenY, BULLET_RADIUS -20.0f, BULLET_RADIUS -20.0f, 0.0f);
     }
@@ -331,6 +341,7 @@ void ClearBullets(std::vector<Bullet>& bullets) {
 int GetBulletCount(const std::vector<Bullet>& bullets) {
     return (int)bullets.size();
 }
+
 //current ammo and max ammo are addressed bc they are being modified outside this function
 WeaponStats GetCurrentWeapon(Player& player) {
     if (player.currentWeaponIndex == 0) {
@@ -384,9 +395,17 @@ WeaponStats GetCurrentWeapon(Player& player) {
 
 
 void UpdatePlayer(Player* player, float dt, std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap) {
-    // --- DEATH ---
+	if (player->health > 0.0f)
+	player->health -= dt * 2.0f;  // Passive health drain over time
+    if(player->health <= 0.0f && !player->isDead) {
+        player->isDead = true;
+
+	}
+
+	// If player is dead, only update death explosion and skip all movement/input
     if (player->isDead) {
         if (!player->deathExplosionSpawned) {
+			// Spawn a burst of particles at the player's position for the death explosion
             ParticleEmitterEmit(player->deathEmitter, player->x, player->y, 64);
             player->deathExplosionSpawned = true;
         }
@@ -395,6 +414,7 @@ void UpdatePlayer(Player* player, float dt, std::array<std::array<int, MAP_WIDTH
     }
 
     // --- TIMERS ---
+	//decrease dash timer if currently dashing, and cooldown timer if on cooldown. 
     if (player->dashTimer > 0.0f)
         player->dashTimer -= dt;
 
@@ -406,6 +426,7 @@ void UpdatePlayer(Player* player, float dt, std::array<std::array<int, MAP_WIDTH
 
     // --- MOVEMENT ---
     float radius = 25.0f;
+	// Store previous position for velocity calculation and collision 
     float oldPrevX = player->x;
     float oldPrevY = player->y;
 
@@ -417,20 +438,26 @@ void UpdatePlayer(Player* player, float dt, std::array<std::array<int, MAP_WIDTH
     if (AEInputCheckCurr(AEVK_A)) inputX -= 1.0f;
 
     // Dash input
+	// Only trigger if space is pressed, dash is not on cooldown, and there is some movement input (can't dash in place)
     if (AEInputCheckTriggered(AEVK_SPACE) && player->dashCooldownTimer <= 0.0f && (inputX != 0.0f || inputY != 0.0f)) {
-		// Start dash in input direction
+		// Start dash in input direction (
         player->dashDirX = inputX;
         player->dashDirY = inputY;
         
+		//Get direction of input 
         NormalizeVector(&player->dashDirX, &player->dashDirY);
 
 		// Set dash timers
         player->dashTimer = DASH_DURATION;
         player->dashCooldownTimer = DASH_COOLDOWN;
         player->inDash = true;
+        if(player->health < 10.0f){
+            player->health = 0.0f;
+		}
+        else player->health -= 10.0f;  // Dash costs health
     }
 
-    // Apply movement
+	//Store old position before moving for collision checks
     float oldX = player->x, oldY = player->y;
 
     if (player->dashTimer > 0.0f) {
@@ -440,23 +467,24 @@ void UpdatePlayer(Player* player, float dt, std::array<std::array<int, MAP_WIDTH
     }
     else {
         // Sprint cap when holding shift, otherwise walk speed
-        float currentMaxSpeed = AEInputCheckCurr(AEVK_LSHIFT) ? PLAYER_WALK_SPEED * 2.0f : PLAYER_WALK_SPEED;
+        float currentMaxSpeed = AEInputCheckCurr(AEVK_RBUTTON) ? PLAYER_WALK_SPEED * 2.0f : PLAYER_WALK_SPEED;
 
         // Apply acceleration in input direction only when sprinting
         if (inputX != 0.0f || inputY != 0.0f) {
+			//Get direction of input and apply acceleration if sprinting
             NormalizeVector(&inputX, &inputY);
-            float currentAccel = AEInputCheckCurr(AEVK_LSHIFT) ? ACCELERATION : 0.0f;
+            float currentAccel = AEInputCheckCurr(AEVK_RBUTTON) ? ACCELERATION : 0.0f;
             player->velocityX += inputX * currentAccel * dt;
             player->velocityY += inputY * currentAccel * dt;
 
             // Normal walking movement when not sprinting
-            if (!AEInputCheckCurr(AEVK_LSHIFT)) {
+            if (!AEInputCheckCurr(AEVK_RBUTTON)) {
                 player->velocityX = inputX * PLAYER_WALK_SPEED;
                 player->velocityY = inputY * PLAYER_WALK_SPEED;
             }
         }
 
-        // Apply friction to gradually slow down when no input or releasing shift
+		// Apply friction to gradually slow down when no input or releasing left mouse
         player->velocityX -= player->velocityX * FRICTION * dt;
         player->velocityY -= player->velocityY * FRICTION * dt;
 
@@ -473,13 +501,21 @@ void UpdatePlayer(Player* player, float dt, std::array<std::array<int, MAP_WIDTH
     }
 
     // Wall collision
-    if (checkCollision(player->x, player->y, radius, gameMap)) {
+    if (checkCollision(player->x, player->y, radius, gameMap) == 1) {
         player->x = oldX;
         player->y = oldY;
         player->dashTimer = 0.0f;
-        player->velocityX = 0.0f;  // add this
-        player->velocityY = 0.0f;  // add this
+        player->velocityX = 0.0f;  
+        player->velocityY = 0.0f;  
 
+    }
+    else if (checkCollision(player->x, player->y, radius, gameMap) == 4 && player->holdingFlag == false) {
+		//printf("Player reached the flag! You win!\n");
+		player->holdingFlag = true;
+    }
+    if (AEInputCheckCurr(AEVK_P) == TRUE) {
+        //printf("Dropped Flag!\n");
+		player->holdingFlag = false;
     }
 
 
@@ -491,12 +527,15 @@ void UpdatePlayer(Player* player, float dt, std::array<std::array<int, MAP_WIDTH
     player->velocityX = (player->x - oldPrevX) / dt;
     player->velocityY = (player->y - oldPrevY) / dt;
 
+
     if (player->trailEmitter) {
+		// Emit particles only if player is moving 
         bool isMoving = (player->velocityX > 0.1f || player->velocityX < -0.1f ||
             player->velocityY > 0.1f || player->velocityY < -0.1f);
         if (isMoving)
-            ParticleEmitterEmit(player->trailEmitter, player->x, player->y, 2);
-        ParticleEmitterUpdate(player->trailEmitter, dt);
+			// Emit particles at player's position with a count of 2 for a subtle trail effect
+            ParticleEmitterEmit(player->trailEmitter, player->x, player->y, 1);
+            ParticleEmitterUpdate(player->trailEmitter, dt);
     }
 
     if (player->inDash) {
@@ -526,13 +565,13 @@ void CheckEnemyBulletPlayerCollision(std::vector<Bullet>& enemyBullets,
         if (collision > 0 && (!player.isDead)) {
             player.health -= enemyBullets[i].damage;
 
-            printf("Player hit by bullet! Health: %.0f\n", player.health);
+            //printf("Player hit by bullet! Health: %.0f\n", player.health);
 
             // Check if player died
             if (player.health <= 0.0f) {
 				player.health = 0.0f;
 				player.isDead = true;
-                printf("PLAYER DIED!\n");
+                //printf("PLAYER DIED!\n");
                 // Handle death here
             }
 
@@ -576,29 +615,38 @@ void CheckPlayerGruntBodyCollision(Player& player, std::vector<Grunt>& grunts) {
     for (auto& grunt : grunts) {
         if (grunt.isDead) continue;
 
+		// Simple circle collision check between player and grunt and push player out if colliding
         float dx = player.x - grunt.movingX;
         float dy = player.y - grunt.movingY;
+		// Distance between centers (pyth)
         float dist = sqrtf(dx * dx + dy * dy);
-        float minDist =  GRUNT_RADIUS; // adjust to your sizes
+		// Minimum distance to avoid collision 
+        float minDist =  GRUNT_RADIUS; 
 
+		//if distance is less than minimum and greater than 0 , then collide and  to push the player out
         if (dist < minDist && dist > 0.0f) {
-			printf("Collision with grunt! Pushing player out.\n");
+			//printf("Collision with grunt! Pushing player out.\n");
             // Push player out
 			float overlap = minDist - dist; // how much circles are intersecting 
-            float nx = dx / dist; // normalize djrection vector
+
+			float nx = dx / dist; // normalize djrection vector to get push direction
             float ny = dy / dist;
+
+			//multiply by overlap to get push amount, and add to player position to move them out of collision
 			player.x += nx * overlap; //push player out of collision
             player.y += ny * overlap;
         }
 
         if (player.inDash == 1) {
             if (dist < minDist + 20.0f) { // slightly larger radius for dash hit
-                printf("Dashed into grunt!\n");
+                //printf("Dashed into grunt!\n");
                 grunt.health -= 50.0f; // dash damage
                 if (grunt.health <= 0.0f) {
+					player.health += 20; // heal player for 20 health on kill
+                    
                     grunt.isDead = true;
                     player.gruntsKilled++;
-                    printf("Grunt killed by dash! Total kills: %d\n", player.gruntsKilled);
+                    //printf("Grunt killed by dash! Total kills: %d\n", player.gruntsKilled);
                 }
 			}
         }
@@ -608,7 +656,8 @@ void CheckPlayerGruntBodyCollision(Player& player, std::vector<Grunt>& grunts) {
 void killPlayer(Player& player) {
     if (AEInputCheckTriggered(AEVK_K)) {
         if (!player.isDead) {
-            player.isDead = true; // kill
+            player.isDead = true; 
+            
         }
         else {
             // revive only after explosion finishes
@@ -619,10 +668,77 @@ void killPlayer(Player& player) {
                     break;
                 }
             }
+
             if (explosionDone) {
                 player.isDead = false;
                 player.deathExplosionSpawned = false;
+				player.health = 100.0f;
+				player.dashCooldownTimer = 0.0f;
+				player.dashTimer = 0.0f;
+
             }
         }
     }
 }
+
+void LoadPlayer(Player& player, AEGfxVertexList* particleMesh) {
+    // Initialize player stats
+    player.gruntsKilled = 0;
+    player.score = 0;
+    player.health = 100.0f;
+    player.x = 0.0f;
+    player.y = 0.0f;
+    player.velocityX = 0.0f;
+    player.velocityY = 0.0f;
+    player.prevX = 0.0f;
+    player.prevY = 0.0f;
+
+    // Dash system
+    player.inDash = false;
+    player.dashTimer = 0.0f;
+    player.dashCooldownTimer = 0.0f;
+    player.dashDirX = 0.0f;
+    player.dashDirY = 0.0f;
+
+    // Weapon system
+    player.currentWeaponIndex = 0;
+    player.shootCooldown = 0.0f;
+
+    // State flags
+    player.isDead = false;
+    player.holdingFlag = false;
+    player.deathExplosionSpawned = false;
+
+    // Store mesh reference
+    player.particleMesh = particleMesh;
+
+    // Create particle emitters
+    player.trailEmitter = ParticleEmitterCreate();
+    ParticleEmitterSetMesh(player.trailEmitter, particleMesh);
+    ParticleEmitterSetLifeTime(player.trailEmitter, 0.2f, 0.5f);
+    ParticleEmitterSetVelocity(player.trailEmitter, -50.0f, 50.0f, -50.0f, 50.0f);
+    ParticleEmitterSetScale(player.trailEmitter, 8.0f, 15.0f);
+    ParticleEmitterSetColor(player.trailEmitter, 0.0f, 1.0f, 0.0f, 0.8f);
+
+    player.dashTrailEmitter = ParticleEmitterCreate();
+    ParticleEmitterSetMesh(player.dashTrailEmitter, particleMesh);
+    ParticleEmitterSetLifeTime(player.dashTrailEmitter, 0.3f, 0.6f);
+    ParticleEmitterSetVelocity(player.dashTrailEmitter, -100.0f, 100.0f, -100.0f, 100.0f);
+    ParticleEmitterSetScale(player.dashTrailEmitter, 10.0f, 20.0f);
+    ParticleEmitterSetColor(player.dashTrailEmitter, 0.0f, 1.0f, 1.0f, 0.9f);
+
+    player.deathEmitter = ParticleEmitterCreate();
+    ParticleEmitterSetMesh(player.deathEmitter, particleMesh);
+    ParticleEmitterSetLifeTime(player.deathEmitter, 0.5f, 1.5f);
+    ParticleEmitterSetVelocity(player.deathEmitter, -200.0f, 200.0f, -200.0f, 200.0f);
+    ParticleEmitterSetScale(player.deathEmitter, 15.0f, 30.0f);
+    ParticleEmitterSetColor(player.deathEmitter, 1.0f, 0.3f, 0.0f, 1.0f);
+
+}
+
+void UnloadPlayer(Player& player) {
+    ParticleEmitterFree(&player.trailEmitter);
+    ParticleEmitterFree(&player.dashTrailEmitter);
+    ParticleEmitterFree(&player.deathEmitter);
+}
+
