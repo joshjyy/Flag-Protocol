@@ -38,7 +38,7 @@ void UpdateGrunts(std::vector<Grunt>& grunts, Player& player, std::vector<Bullet
 			//Change this if you want them to shoot faster or slower
 			grunt.shootCooldown = 2.0f;
 
-			printf("Grunt fired! Ammo: %d/%d\n", grunt.pistol.currentAmmo, grunt.pistol.maxAmmo);
+			//printf("Grunt fired! Ammo: %d/%d\n", grunt.pistol.currentAmmo, grunt.pistol.maxAmmo);
 		}
 
 		// Auto-reload when out of ammo
@@ -97,7 +97,7 @@ void CheckBulletGruntCollisions(std::vector<Bullet>& playerBullets,std::vector<G
 				if (grunt.health <= 0.0f) {
 					playerInfo.gruntsKilled++;
 					grunt.isDead = true;
-					printf("Grunt killed! Grunts KillCount: %d\n", playerInfo.gruntsKilled);
+					//printf("Grunt killed! Grunts KillCount: %d\n", playerInfo.gruntsKilled);
 
 
 				}

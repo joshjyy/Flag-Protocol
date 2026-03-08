@@ -2,7 +2,7 @@
 #include "AEEngine.h"
 
 //Game state enums for managing different screens
-enum GameState { STATE_MENU, STATE_GAME, STATE_EDITOR , STATE_TUTORIAL };
+enum GameState { STATE_MENU, STATE_GAME, STATE_EDITOR , STATE_TUTORIAL, STATE_QUIT };
 
 //button struct
 struct Button { float x, y, w, h; const char* label; };
@@ -10,4 +10,3 @@ struct Button { float x, y, w, h; const char* label; };
 bool IsButtonClicked(const Button& btn);
 void DrawButton(const Button& btn, AEGfxVertexList* mesh, s8 font);
 GameState UpdateAndRenderMenu(AEGfxVertexList* mesh, s8 font, float dt);
-bool IsQuitClicked();
