@@ -24,7 +24,8 @@ Grunt::Grunt(float x, float y)
 	stateTimer(0.0f),
 	patrolRadius(100.0f),
 	patrolAngle(0.0f),
-	patrolSpeed(AI_PATROL_SPEED)
+	patrolSpeed(AI_PATROL_SPEED),
+	investigateTimer(0.0f)
 {
 }
 

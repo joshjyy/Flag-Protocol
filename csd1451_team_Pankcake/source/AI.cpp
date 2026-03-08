@@ -4,11 +4,40 @@
 #include "gameConstants.hpp"
 #include <cmath>
 
-//helper function to do checks
+//helper functions to do checks
 float DistanceToPlayer(Grunt& grunt, Player& player) {
     float dx = player.x - grunt.movingX;
     float dy = player.y - grunt.movingY;
     return sqrtf(dx * dx + dy * dy);
+}
+
+bool HasLineOfSight(Grunt& grunt, Player& player, std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap) {
+    // Cast a ray from grunt to player
+    float dx = player.x - grunt.movingX;
+    float dy = player.y - grunt.movingY;
+    float distance = sqrtf(dx * dx + dy * dy);
+
+    // Normalize direction
+    if (distance > 0.0f) {
+        dx /= distance;
+        dy /= distance;
+    }
+
+    // Step along the ray and check for walls
+    const float STEP_SIZE = 10.0f;  // Check every 10 pixels
+    int numSteps = static_cast<int>((distance / STEP_SIZE));
+
+    for (int i = 1; i < numSteps; i++) {
+        float checkX = grunt.movingX + dx * STEP_SIZE * i;
+        float checkY = grunt.movingY + dy * STEP_SIZE * i;
+
+        // If any point hits a wall, no line of sight
+        if (checkCollision(checkX, checkY, 5.0f, gameMap)) {
+            return false;
+        }
+    }
+
+    return true;  // No walls blocking
 }
 
 
@@ -38,39 +67,82 @@ bool IsReloading(Grunt& grunt) {
     return grunt.pistol.inReload;
 }
 
+bool IsPlayerVisible(Grunt& grunt, Player& player, std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap) {
+    float distance = DistanceToPlayer(grunt, player);
+    return (distance < grunt.detectionRange) && HasLineOfSight(grunt, player, gameMap);
+}
+
 //Standard behaviours
 void AI_Patrol(Grunt& grunt, float dt, std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap) {
     // Save old position
     float oldX = grunt.movingX;
     float oldY = grunt.movingY;
 
-    // Check if far from spawn
-    float dx = grunt.startX - grunt.movingX;
-    float dy = grunt.startY - grunt.movingY;
-    float distFromSpawn = sqrtf(dx * dx + dy * dy);
+    // Check if grunt has a last known player position to investigate
+    float dx = grunt.lastSeenPlayerX - grunt.movingX;
+    float dy = grunt.lastSeenPlayerY - grunt.movingY;
+    float distToLastSeen = sqrtf(dx * dx + dy * dy);
 
-    if (distFromSpawn > 20.0f) {
-        // Return to spawn point first
+    const float MAX_INVESTIGATE_TIME = 5.0f;  // Give up after 5 seconds
+
+    // If we have a last seen position and haven't timed out
+    if (distToLastSeen > 30.0f &&
+        (grunt.lastSeenPlayerX != 0.0f || grunt.lastSeenPlayerY != 0.0f) &&
+        grunt.investigateTimer < MAX_INVESTIGATE_TIME) {
+
+        // Increment investigate timer
+        grunt.investigateTimer += dt;
+
+        // Move toward last seen position
         NormalizeVector(&dx, &dy);
-        float returnSpeed = 80.0f;
-        grunt.movingX += dx * returnSpeed * dt;
-        grunt.movingY += dy * returnSpeed * dt;
+        float investigateSpeed = 100.0f;
+        grunt.movingX += dx * investigateSpeed * dt;
+        grunt.movingY += dy * investigateSpeed * dt;
+
+        // Check collision
+        if (checkCollision(grunt.movingX, grunt.movingY, GRUNT_RADIUS / 2, gameMap)) {
+            // Hit wall - revert
+            grunt.movingX = oldX;
+            grunt.movingY = oldY;
+
+            // Try moving perpendicular to navigate around obstacle
+            float perpX = -dy;
+            float perpY = dx;
+
+            grunt.movingX = oldX + perpX * investigateSpeed * 0.8f * dt;
+            grunt.movingY = oldY + perpY * investigateSpeed * 0.8f * dt;
+
+            // Check perpendicular movement
+            if (checkCollision(grunt.movingX, grunt.movingY, GRUNT_RADIUS / 2, gameMap)) {
+                // Try opposite perpendicular
+                grunt.movingX = oldX - perpX * investigateSpeed * 0.8f * dt;
+                grunt.movingY = oldY - perpY * investigateSpeed * 0.8f * dt;
+
+                if (checkCollision(grunt.movingX, grunt.movingY, GRUNT_RADIUS / 2, gameMap)) {
+                    // Completely stuck - just stay here
+                    grunt.movingX = oldX;
+                    grunt.movingY = oldY;
+                }
+            }
+        }
     }
     else {
-        // Normal patrol once near spawn
-        float moveSpeed = 50.0f;
-        grunt.movingX += cosf(grunt.patrolAngle) * moveSpeed * dt;
-        grunt.movingY += sinf(grunt.patrolAngle) * moveSpeed * dt;
+        // Timed out, reached position, or no target - reset and wander
+        grunt.lastSeenPlayerX = 0.0f;
+        grunt.lastSeenPlayerY = 0.0f;
+        grunt.investigateTimer = 0.0f;
 
-        // Increment angle for circular patrol
-        grunt.patrolAngle += grunt.patrolSpeed * dt * 0.02f;
-    }
+        // Idle wander
+        grunt.movingX += cosf(grunt.patrolAngle) * 30.0f * dt;
+        grunt.movingY += sinf(grunt.patrolAngle) * 30.0f * dt;
+        grunt.patrolAngle += 0.5f * dt;
 
-    // Check collision
-    if (checkCollision(grunt.movingX, grunt.movingY, GRUNT_RADIUS / 2, gameMap)) {
-        grunt.movingX = oldX;
-        grunt.movingY = oldY;
-        grunt.patrolAngle += pi;  // Turn around
+        // Check collision during wandering
+        if (checkCollision(grunt.movingX, grunt.movingY, GRUNT_RADIUS / 2, gameMap)) {
+            grunt.movingX = oldX;
+            grunt.movingY = oldY;
+            grunt.patrolAngle += PI / 2;
+        }
     }
 }
 
@@ -78,6 +150,9 @@ void AI_Chase(Grunt& grunt, Player& player, float dt, std::array<std::array<int,
     // Save old position
     float oldX = grunt.movingX;
     float oldY = grunt.movingY;
+
+    //Reset Timer
+    grunt.investigateTimer = 0.0f;
 
     // Move towards player
     float dx = player.x - grunt.movingX;
@@ -190,7 +265,7 @@ void AI_Retreat(Grunt& grunt, Player& player, float dt, std::array<std::array<in
 }
 
 //Update Decision Tree based on Boolean Flags above
-GruntAIState EvaluateDecisionTree(Grunt& grunt, Player& player) {
+GruntAIState EvaluateDecisionTree(Grunt& grunt, Player& player, std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap) {
     // Dead check (highest priority)
     if (grunt.isDead || grunt.health <= 0) {
         return AI_DEAD;
@@ -202,7 +277,7 @@ GruntAIState EvaluateDecisionTree(Grunt& grunt, Player& player) {
     }
 
     // Player detection
-    if (IsPlayerVisible(grunt, player)) {
+    if (IsPlayerVisible(grunt, player, gameMap)) {
         // Reloading check
         if (IsReloading(grunt)) {
             return AI_RETREAT;
@@ -233,25 +308,17 @@ void UpdateGruntAI(Grunt& grunt, Player& player, std::vector<Bullet>& enemyBulle
     grunt.stateTimer += dt;
 
     // Evaluate decision tree
-    GruntAIState newState = EvaluateDecisionTree(grunt, player);
+    GruntAIState newState = EvaluateDecisionTree(grunt, player, gameMap);
 
     // State transition
     if (newState != grunt.currentState) {
-        GruntAIState oldState = grunt.currentState;  // Store old state
+        GruntAIState oldState = grunt.currentState;
         grunt.currentState = newState;
         grunt.stateTimer = 0.0f;
 
-        //Reset patrol angle when entering patrol from another state
-        if (newState == AI_PATROL && oldState != AI_PATROL) {
-            // Calculate angle from current position back toward spawn
-            float dx = grunt.startX - grunt.movingX;
-            float dy = grunt.startY - grunt.movingY;
-            grunt.patrolAngle = atan2f(dy, dx);
-        }
-
-        // Debug output
-        //const char* stateNames[] = { "IDLE", "PATROL", "CHASE", "ATTACK", "RETREAT", "SEEK_COVER", "DEAD" };
-        //printf("Grunt AI: %s -> %s\n", stateNames[oldState], stateNames[newState]);
+        //Debug output
+        const char* stateNames[] = { "IDLE", "PATROL", "CHASE", "ATTACK", "RETREAT", "SEEK_COVER", "DEAD" };
+        printf("Grunt AI: %s -> %s\n", stateNames[oldState], stateNames[newState]);
     }
 
     // Execute behavior

@@ -24,7 +24,7 @@ void UpdateGruntAI(Grunt& grunt, Player& player, std::vector<Bullet>& enemyBulle
     std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap);
 
 //Decision Tree
-GruntAIState EvaluateDecisionTree(Grunt& grunt, Player& player);
+GruntAIState EvaluateDecisionTree(Grunt& grunt, Player& player, std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap);
 
 // Decision Tree Checks
 bool IsPlayerVisible(Grunt& grunt, Player& player);
@@ -33,6 +33,8 @@ bool ShouldRetreat(Grunt& grunt);
 bool IsPlayerTooClose(Grunt& grunt, Player& player);
 bool HasAmmo(Grunt& grunt);
 bool IsReloading(Grunt& grunt);
+bool IsPlayerVisible(Grunt& grunt, Player& player, std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap);
+bool HasLineOfSight(Grunt& grunt, Player& player, std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap);
 
 //Normal Behaviours
 void AI_Patrol(Grunt& grunt, float dt, std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap);

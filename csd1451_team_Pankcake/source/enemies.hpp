@@ -39,6 +39,7 @@ struct Grunt {
     float patrolRadius;
     float patrolAngle;
     float patrolSpeed;
+    float investigateTimer;
 
     // Constructor with member initializer list
     Grunt(float x, float y);
