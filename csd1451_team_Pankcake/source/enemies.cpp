@@ -39,49 +39,8 @@ Grunt SpawnGrunt(float startX, float startY) {
 // Update all grunts - shooting logic
 void UpdateGrunts(std::vector<Grunt>& grunts, Player& player, std::vector<Bullet>& enemyBullets, float dt, std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap) {
 	for (auto& grunt : grunts) {
-		// Update shoot cooldown
-		if (grunt.shootCooldown > 0.0f) {
-			grunt.shootCooldown -= dt;
-		}
-
-		// Shoot at player when shooting goes off cooldown
-		if (grunt.shootCooldown <= 0.0f && grunt.pistol.currentAmmo > 0) {
-			// Create bullet aimed at player
-			Bullet newBullet = CreateBullet(
-				grunt.movingX,	
-				grunt.movingY,
-				player.x,
-				player.y,
-				grunt.pistol.bulletSpeed,
-				grunt.pistol.bulletDamage
-			);
-
-			enemyBullets.push_back(newBullet);
-
-			// Decrease ammo
-			grunt.pistol.currentAmmo--;
-
-			// Reset cooldown to 2 seconds
-			//Change this if you want them to shoot faster or slower
-			grunt.shootCooldown = 2.0f;
-
-			//printf("Grunt fired! Ammo: %d/%d\n", grunt.pistol.currentAmmo, grunt.pistol.maxAmmo);
-		}
-
-		// Auto-reload when out of ammo
-		if (grunt.pistol.currentAmmo <= 0 && grunt.pistol.reloadTimer <= 0.0f) {
-			grunt.pistol.reloadTimer = grunt.pistol.reloadSpeed;
-			grunt.pistol.inReload = true;
-		}
-
-		// Handle reload countdown
-		// doesnt seem like it works, have to test more
-		if (grunt.pistol.reloadTimer > 0.0f) {
-			grunt.pistol.reloadTimer -= dt;
-			if (grunt.pistol.reloadTimer <= 0.0f) {
-				grunt.pistol.currentAmmo = grunt.pistol.maxAmmo;
-				grunt.pistol.inReload = false;
-			}
+		if (!grunt.isDead) {
+			UpdateGruntAI(grunt, player, enemyBullets, dt, gameMap);
 		}
 	}
 }
@@ -130,9 +89,8 @@ void CheckBulletGruntCollisions(std::vector<Bullet>& playerBullets, std::vector<
 				if (grunt.health <= 0.0f) {
 					playerInfo.gruntsKilled++;
 					grunt.isDead = true;
-					//printf("Grunt killed! Grunts KillCount: %d\n", playerInfo.gruntsKilled);
-
-
+					grunt.currentState = AI_DEAD;
+					printf("Grunt killed! Total kills: %d\n", playerInfo.gruntsKilled);
 				}
 
 				playerBullets.erase(playerBullets.begin() + i);

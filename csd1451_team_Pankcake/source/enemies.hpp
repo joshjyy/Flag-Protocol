@@ -6,7 +6,7 @@
 #include "map.hpp"
 #include <vector>
 
-enum GruntAIState;
+enum GruntAIState :int;
 
 struct Grunt {
     // Stats

@@ -229,7 +229,7 @@ void AI_Attack(Grunt& grunt, Player& player, std::vector<Bullet>& enemyBullets, 
     }
 }
 
-void AI_Retreat(Grunt& grunt, Player& player, float dt, std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap)     {
+void AI_Retreat(Grunt& grunt, Player& player, float dt, std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap) {
     // Save old position
     float oldX = grunt.movingX;
     float oldY = grunt.movingY;
