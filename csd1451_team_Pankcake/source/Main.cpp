@@ -168,13 +168,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			// Get mouse position for tile painting
 			AEInputGetCursorPosition(&mouseX, &mouseY);
 
-			// Convert to world coordinates
-			float worldX = (float)mouseX - 800.0f;
-			float worldY = 450.0f - (float)mouseY;
-
-			// Convert to grid coordinates
-			int gridX = (int)((worldX + 800.0f) / 50.0f);
-			int gridY = (int)((450.0f - worldY) / 50.0f);
+			int gridX = (int)((mouseX + camera.x - 25) / 50.0f);
+			int gridY = (int)((mouseY - camera.y - 25) / 50.0f);
 
 			// Check if within grid bounds
 			if (gridX >= 0 && gridX < MAP_WIDTH && gridY >= 0 && gridY < MAP_HEIGHT) {
@@ -219,7 +214,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 			// Centered camera
 			camera = moving_cursor(camera);
-			AEGfxSetCamPosition(camera.x, camera.y);
+
 			Load_Map(*gameMap, meshes.square, camera.x, camera.y);
 
 			float uiY = 350.0f;
