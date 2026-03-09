@@ -217,9 +217,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			camera = moving_cursor(camera);
 
 			Load_Map(*gameMap, camera.x, camera.y);
-			if (gridX >= 0 && gridX < MAP_WIDTH && gridY >= 0 && gridY < MAP_HEIGHT) {
+			
 				hover(*gameMap, camera.x, camera.y, meshes.square);
-			}
+			
 			float uiY = 350.0f;
 			float textX, textY;
 

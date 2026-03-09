@@ -235,24 +235,33 @@ void hover(std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& arr, float camera
 	float y = 450.0f - (gridY * TILE_SIZE) - 25.0f;
 	float screenX = x - cameraX;
 	float screenY = y - cameraY;
-	if (arr[gridY][gridX] == 0){
-		AEGfxSetColorToMultiply(0.5f, 0.5f, 0.5f, 0.5f);
-		AEMtx33Scale(&scale, (float)(TILE_SIZE + EDGE), (float)(TILE_SIZE + EDGE));
-		AEMtx33Trans(&translate, screenX + EDGE * 0.5f, screenY - EDGE * 0.5f);
-		AEMtx33Concat(&transform, &translate, &scale);
-		AEGfxSetTransform(transform.m);
-		AEGfxMeshDraw(mesh, AE_GFX_MDM_TRIANGLES);
-		AEGfxSetColorToMultiply(0.0f, 0.0f, 0.0f, 1.0f);
+
+	float mouseScreenX = mouseX - 800.0f;
+	float mouseScreenY = 450.0f - mouseY;
+	if (gridX < 0 || gridX >= MAP_WIDTH || gridY < 0 || gridY >= MAP_HEIGHT){
+		PrintBlock(1.0f, 0.0f, 0.0f, 1.0f, mouseScreenX, mouseScreenY, meshes.circle);
 	}
 	else {
-		AEGfxSetTransparency(0.5f);
-		AEGfxSetColorToMultiply(0.0f, 0.0f, 0.0f, 1.0f);
-		AEMtx33Scale(&scale, (float)TILE_SIZE, (float)TILE_SIZE);
-		AEMtx33Trans(&translate, screenX, screenY);
-		AEMtx33Concat(&transform, &translate, &scale);
-		AEGfxSetTransform(transform.m);
-		AEGfxMeshDraw(mesh, AE_GFX_MDM_TRIANGLES);
-		AEGfxSetTransparency(1.0f);
+		if (arr[gridY][gridX] == 0) {
+			AEGfxSetColorToMultiply(0.5f, 0.5f, 0.5f, 0.5f);
+			AEMtx33Scale(&scale, (float)(TILE_SIZE + EDGE), (float)(TILE_SIZE + EDGE));
+			AEMtx33Trans(&translate, screenX + EDGE * 0.5f, screenY - EDGE * 0.5f);
+			AEMtx33Concat(&transform, &translate, &scale);
+			AEGfxSetTransform(transform.m);
+			AEGfxMeshDraw(mesh, AE_GFX_MDM_TRIANGLES);
+			AEGfxSetColorToMultiply(0.0f, 0.0f, 0.0f, 1.0f);
+		}
+		else {
+			AEGfxSetTransparency(0.5f);
+			AEGfxSetColorToMultiply(0.0f, 0.0f, 0.0f, 1.0f);
+			AEMtx33Scale(&scale, (float)TILE_SIZE, (float)TILE_SIZE);
+			AEMtx33Trans(&translate, screenX, screenY);
+			AEMtx33Concat(&transform, &translate, &scale);
+			AEGfxSetTransform(transform.m);
+			AEGfxMeshDraw(mesh, AE_GFX_MDM_TRIANGLES);
+			AEGfxSetTransparency(1.0f);
+		}
 	}
+	
 	
 }
