@@ -6,6 +6,7 @@
 #include "player.hpp"
 #include "gunTypes.hpp"
 #include "enemies.hpp"
+#include "AI.hpp"  
 #include "weapon.hpp"
 #include <vector>
 #include "map.hpp"
@@ -143,9 +144,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		// ---------------------------------------------------------------------------
 		// MENU STATE
 		// ---------------------------------------------------------------------------
+
+		if (currentState == STATE_QUIT) {
+			gGameRunning = 0;
+		}
+
 		if (currentState == STATE_MENU)
 		{
-			if (IsQuitClicked()) gGameRunning = 0;
+
 			currentState = UpdateAndRenderMenu(meshes.square, fontID, dt);
 
 			if (AEInputCheckTriggered(AEVK_ESCAPE))
@@ -332,6 +338,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		// ---------------------------------------------------------------------------
 		else if (currentState == STATE_GAME)
 		{
+
 			//Check what weapon the player is using once per frame
 			WeaponStats weapon = GetCurrentWeapon(player);
 			// ---------------------------------------------------------------------------
@@ -341,10 +348,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			cameraX = player.x;
 			cameraY = player.y;
 			Load_Map(*gameMap, meshes.square, cameraX, cameraY);
+			
 			// Update Timers CD
 			UpdatePlayer(&player, dt, *gameMap);
 			// Weapon controls
-			ResetShootCooldown(player, dt);
 			WeaponSwitchCheck(player);
 			ShootingCheck(player, playerBullets, weapon, cameraX, cameraY);
 			ReloadBullets(weapon, dt);
@@ -352,7 +359,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			// UPDATE ENEMIES
 			// ---------------------------------------------------------------------------
 			//Update Grunt to aim at player
-			UpdateGrunts(grunts, player, enemyBullets, dt);
+			UpdateGrunts(grunts, player, enemyBullets, dt, *gameMap);
 
 			// ---------------------------------------------------------------------------
 			// UPDATE BULLETS
@@ -386,11 +393,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			CheckWinCondition(gameEvents, player);
 		}
 		else if (currentState == STATE_TUTORIAL) {
-			printf("Tutorial State - Not Implemented Yet\n");
 
 
-
-
+			printf("Tutorial State - Press BACKSPACE or ESCAPE to return to Menu\n");
 
 
 
@@ -419,6 +424,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	ParticleEmitterFree(&player.trailEmitter);
 	ParticleEmitterFree(&player.deathEmitter);
 	ParticleEmitterFree(&player.dashTrailEmitter);
+
 	FreeCommonMeshes();
 
 

@@ -152,13 +152,11 @@ void Load_Map(std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& arr,
 
 void Spawn_Flag(std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& arr) {
 	struct Tile { int row, col; };
-	Tile found[100];
+	
 	int count = 0;
 	for (int i = 0; i < MAP_HEIGHT; i++) {
 		for (int j = 0; j < MAP_WIDTH; j++) {
 			if (arr[i][j] == 5) {
-				found[count].row = i;
-				found[count].col = j;
 				count++;
 			}
 		}
@@ -166,6 +164,18 @@ void Spawn_Flag(std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& arr) {
 	if (count == 0) {
 		std::cout << "No flag tiles found!\n";
 		return;
+	}
+
+	Tile* found = new Tile[count];
+	int flagloc = 0;
+	for (int i = 0; i < MAP_HEIGHT; i++) {
+		for (int j = 0; j < MAP_WIDTH; j++) {
+			if (arr[i][j] == 5) {
+				found[flagloc].row = i;
+				found[flagloc].col = j;
+				flagloc++;
+			}
+		}
 	}
 
 	srand((unsigned int)time(0));
@@ -176,4 +186,5 @@ void Spawn_Flag(std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& arr) {
 
 	std::cout << "Flag spawned at Row: " << row << " Col: " << col << "\n";
 	arr[row][col] = 4;
+	delete[] found;
 }
