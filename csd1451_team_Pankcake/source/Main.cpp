@@ -174,7 +174,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			// Check if within grid bounds
 			if (gridX >= 0 && gridX < MAP_WIDTH && gridY >= 0 && gridY < MAP_HEIGHT) {
 				// Left click to paint
-				hover(cameraX, cameraY, meshes.square);
+				
 				if (AEInputCheckCurr(AEVK_LBUTTON)) {
 					(*gameMap)[gridY][gridX] = currentTileType;
 				}
@@ -202,7 +202,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				Load_Game_Level("Assets/Level_1_Map.txt", *gameMap);
 				printf("Original map loaded!\n");
 			}
-
+			
 			// Clear map (C key)
 			if (AEInputCheckTriggered(AEVK_C)) {
 				for (int i = 0; i < MAP_HEIGHT; i++) {
@@ -216,8 +216,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			// Centered camera
 			camera = moving_cursor(camera);
 
-			Load_Map(*gameMap, meshes.square, camera.x, camera.y);
-
+			Load_Map(*gameMap, camera.x, camera.y);
+			if (gridX >= 0 && gridX < MAP_WIDTH && gridY >= 0 && gridY < MAP_HEIGHT) {
+				hover(*gameMap, camera.x, camera.y, meshes.square);
+			}
 			float uiY = 350.0f;
 			float textX, textY;
 
@@ -343,7 +345,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			//Camera follows the player
 			cameraX = player.x;
 			cameraY = player.y;
-			Load_Map(*gameMap, meshes.square, cameraX, cameraY);
+			Load_Map(*gameMap, cameraX, cameraY);
 			
 			// Update Timers CD
 			UpdatePlayer(&player, dt, *gameMap);
