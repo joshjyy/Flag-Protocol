@@ -110,22 +110,19 @@ void Load_Map(std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& arr,
 				float y = 450.0f - (i * TILE_SIZE) - 25.0f;
 				float screenX = x - cameraX;
 				float screenY = y - cameraY;
-
-				
-				float r = 0.0f, g = 0.0f, b = 0.0f;
-				if (arr[i][j] == 1) { r = 0.0f; g = 1.0f; b = 0.0f; }  // green blocks
-				else if (arr[i][j] == 2) { r = 0.5f; g = 0.0f; b = 1.0f; }  // purple goal
-				else if (arr[i][j] == 3) { r = 1.0f; g = 0.0f; b = 0.0f; }  // red
-				else if (arr[i][j] == 4) {  r = 0.0f; g = 1.0f; b = 1.0f; }  // lime flag
-
-				PrintBlock(r, g, b, 1.0f, screenX, screenY, meshes.square);
+				PrintBlock(arr[i][j], 1.0f, screenX, screenY, meshes.square);
 			}
 		}
 	}
 	
 }
 
-void PrintBlock(float r, float g, float b, float d, float screenX, float screenY, AEGfxVertexList* mesh) {
+void PrintBlock(int choice, float d, float screenX, float screenY, AEGfxVertexList* mesh) {
+	float r = 0.0f, g = 0.0f, b = 0.0f;
+	if (choice == 1) { r = 0.0f; g = 1.0f; b = 0.0f; }  // green blocks
+	else if (choice == 2) { r = 0.5f; g = 0.0f; b = 1.0f; }  // purple goal
+	else if (choice == 3) { r = 1.0f; g = 0.0f; b = 0.0f; }  // red
+	else if (choice == 4) { r = 0.0f; g = 1.0f; b = 1.0f; }  // lime flag
 	AEGfxSetRenderMode(AE_GFX_RM_COLOR);
 	AEGfxSetTransparency(1.0f);
 	AEMtx33 scale, translate, transform;
@@ -221,7 +218,7 @@ CameraPos moving_cursor(CameraPos camera) {
 }
 
 
-void hover(std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& arr, float cameraX, float cameraY, AEGfxVertexList* mesh) {
+void hover(std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& arr, float cameraX, float cameraY, AEGfxVertexList* mesh,int current_tile) {
 
 	AEGfxSetRenderMode(AE_GFX_RM_COLOR);
 	AEGfxSetTransparency(0.5f);
@@ -239,17 +236,11 @@ void hover(std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& arr, float camera
 	float mouseScreenX = mouseX - 800.0f;
 	float mouseScreenY = 450.0f - mouseY;
 	if (gridX < 0 || gridX >= MAP_WIDTH || gridY < 0 || gridY >= MAP_HEIGHT){
-		PrintBlock(1.0f, 0.0f, 0.0f, 1.0f, mouseScreenX, mouseScreenY, meshes.circle);
+		PrintBlock(3, 1.0f, mouseScreenX, mouseScreenY, meshes.circle);
 	}
 	else {
 		if (arr[gridY][gridX] == 0) {
-			AEGfxSetColorToMultiply(0.5f, 0.5f, 0.5f, 0.5f);
-			AEMtx33Scale(&scale, (float)(TILE_SIZE + EDGE), (float)(TILE_SIZE + EDGE));
-			AEMtx33Trans(&translate, screenX + EDGE * 0.5f, screenY - EDGE * 0.5f);
-			AEMtx33Concat(&transform, &translate, &scale);
-			AEGfxSetTransform(transform.m);
-			AEGfxMeshDraw(mesh, AE_GFX_MDM_TRIANGLES);
-			AEGfxSetColorToMultiply(0.0f, 0.0f, 0.0f, 1.0f);
+			PrintBlock(current_tile, 0.3, screenX, screenY, meshes.square);
 		}
 		else {
 			AEGfxSetTransparency(0.5f);

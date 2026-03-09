@@ -23,7 +23,7 @@ void Save_Game_Level(const char* filename, std::array<std::array<int, MAP_WIDTH>
  */
 void Load_Map(std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& arr, float cameraX, float cameraY);
 
-void PrintBlock(float r, float g, float b, float d, float screenX, float screenY, AEGfxVertexList* mesh);
+void PrintBlock(int choice, float d, float screenX, float screenY, AEGfxVertexList* mesh);
 
 void Spawn_Flag(std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& arr);
 
@@ -32,4 +32,4 @@ struct CameraPos {
     float y = 0.0f;
 };
 CameraPos moving_cursor(CameraPos camera);
-void hover(std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& arr, float cameraX, float cameraY, AEGfxVertexList* mesh);
+void hover(std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& arr, float cameraX, float cameraY, AEGfxVertexList* mesh, int current_tile);

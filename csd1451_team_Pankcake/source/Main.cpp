@@ -218,7 +218,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 			Load_Map(*gameMap, camera.x, camera.y);
 			
-				hover(*gameMap, camera.x, camera.y, meshes.square);
+			hover(*gameMap, camera.x, camera.y, meshes.square, currentTileType);
 			
 			float uiY = 350.0f;
 			float textX, textY;
