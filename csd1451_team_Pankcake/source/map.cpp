@@ -103,7 +103,6 @@ void Load_Map(std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& arr,
 	AEGfxSetRenderMode(AE_GFX_RM_COLOR);
 	AEGfxSetTransparency(1.0f);
 	AEMtx33 scale, translate, transform;
-	const int TILE_SIZE = 50;
 	const int EDGE = 4; // thickness of 3D edge
 
 	for (int i = 0; i < MAP_HEIGHT; i++) {
@@ -213,4 +212,27 @@ CameraPos moving_cursor(CameraPos camera) {
 	prevMouseY = mouseY;
 
 	return camera;
+}
+
+
+void hover(float cameraX, float cameraY, AEGfxVertexList* mesh) {
+	AEGfxSetRenderMode(AE_GFX_RM_COLOR);
+	AEGfxSetTransparency(0.5f);
+	AEMtx33 scale, translate, transform;
+	const int EDGE = 4;
+	int mouseX, mouseY;
+	AEInputGetCursorPosition(&mouseX, &mouseY);
+	int gridX = (int)((mouseX + cameraX - 25) / 50.0f);
+	int gridY = (int)((mouseY - cameraY - 25) / 50.0f);
+	float x = (gridX * TILE_SIZE) - 800.0f + 25.0f;
+	float y = 450.0f - (gridY * TILE_SIZE) - 25.0f;
+	float screenX = x - cameraX;
+	float screenY = y - cameraY;
+	AEGfxSetColorToMultiply(0.5f, 0.5f, 0.5f, 0.5f);
+	AEMtx33Scale(&scale, (float)(TILE_SIZE + EDGE), (float)(TILE_SIZE + EDGE));
+	AEMtx33Trans(&translate, screenX + EDGE * 0.5f, screenY - EDGE * 0.5f);
+	AEMtx33Concat(&transform, &translate, &scale);
+	AEGfxSetTransform(transform.m);
+	AEGfxMeshDraw(mesh, AE_GFX_MDM_TRIANGLES);
+	AEGfxSetColorToMultiply(0.0f, 0.0f, 0.0f, 1.0f);
 }

@@ -174,6 +174,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			// Check if within grid bounds
 			if (gridX >= 0 && gridX < MAP_WIDTH && gridY >= 0 && gridY < MAP_HEIGHT) {
 				// Left click to paint
+				hover(cameraX, cameraY, meshes.square);
 				if (AEInputCheckCurr(AEVK_LBUTTON)) {
 					(*gameMap)[gridY][gridX] = currentTileType;
 				}
