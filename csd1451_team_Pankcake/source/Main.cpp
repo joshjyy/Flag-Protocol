@@ -107,7 +107,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	//Camera variables(in main, with other game variables)
 	float cameraX = 0.0f;
 	float cameraY = 0.0f;
-
+	CameraPos camera;	
 	// In game loop - UPDATE section:
 	// Update camera to follow player
 	
@@ -218,9 +218,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			}
 
 			// Centered camera
-			cameraX = 0.0f;
-			cameraY = 0.0f;
-			Load_Map(*gameMap, meshes.square, cameraX, cameraY);
+			camera = moving_cursor(camera);
+			AEGfxSetCamPosition(camera.x, camera.y);
+			Load_Map(*gameMap, meshes.square, camera.x, camera.y);
 
 			float uiY = 350.0f;
 			float textX, textY;

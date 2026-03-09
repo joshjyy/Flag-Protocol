@@ -25,3 +25,9 @@ void Load_Map(std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& arr,
     float cameraX, float cameraY);
 
 void Spawn_Flag(std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& arr);
+
+struct CameraPos {
+    float x = 0.0f;
+    float y = 0.0f;
+};
+CameraPos moving_cursor(CameraPos camera);

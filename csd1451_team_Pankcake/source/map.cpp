@@ -188,3 +188,29 @@ void Spawn_Flag(std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& arr) {
 	arr[row][col] = 4;
 	delete[] found;
 }
+
+
+CameraPos moving_cursor(CameraPos camera) {
+	static int prevMouseX = 0, prevMouseY = 0;
+
+	int mouseX, mouseY;
+	AEInputGetCursorPosition(&mouseX, &mouseY);
+
+	if (AEInputCheckCurr(AEVK_MBUTTON)) {
+		int deltaX = mouseX - prevMouseX;
+		int deltaY = mouseY - prevMouseY;
+
+		std::cout << "Delta: " << deltaX << " " << deltaY << std::endl;
+
+		float sensitivity = 1.0f;
+		camera.x -= (float)deltaX * sensitivity;
+		camera.y += (float)deltaY * sensitivity;
+
+		std::cout << "Camera: " << camera.x << " " << camera.y << std::endl;
+	}
+
+	prevMouseX = mouseX;
+	prevMouseY = mouseY;
+
+	return camera;
+}
