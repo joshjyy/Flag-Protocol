@@ -586,7 +586,8 @@ void CheckEnemyBulletPlayerCollision(std::vector<Bullet>& enemyBullets,
 
 void DrawCrosshair(void* mesh) {
     // Hide the default Windows cursor
-    
+    ShowCursor(false);
+
     // Get mouse position 
     s32 mouseX, mouseY;
     AEInputGetCursorPosition(&mouseX, &mouseY);

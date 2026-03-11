@@ -78,48 +78,9 @@ GameState UpdateAndRenderMenu(AEGfxVertexList* mesh, s8 font, float dt) {
     return STATE_MENU;
 }
 
-<<<<<<< Updated upstream
-=======
-void GameStateLoad(int& gGameRunning, std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap) {
-    ShowCursor(false);
-    if (!Load_Game_Level("Assets/Level_1_Map.txt", gameMap)) {
-        printf("Failed to load map!\n");
-        gGameRunning = 0;
-    }
-    else printf("Map loaded successfully!\n");
-    Spawn_Flag(gameMap);
-}
-
-void GameStateLoadTutorial(int& gGameRunning, std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap) {
-    ShowCursor(true);
-    if (!Load_Game_Level("Assets/Tutorial.txt", gameMap)) {
-        printf("Failed to load tutorial map!\n");
-        gGameRunning = 0;
-    }
-    else printf("Tutorial map loaded successfully!\n");
-    Spawn_Flag(gameMap);
-}
-
-void GameStateLoadCustom(int& gGameRunning, std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap) {
-    ShowCursor(true);
-    if (!Load_Game_Level("Assets/My_Custom_Map.txt", gameMap)) {
-        printf("Failed to load custom map!\n");
-        gGameRunning = 0;
-    }
-    else printf("Custom map loaded successfully!\n");
-    Spawn_Flag(gameMap);
-}
-
->>>>>>> Stashed changes
 void CurrGamestate(GameState state, int& gGameRunning, std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap) {
-    //ShowCursor(true);
-    if (state == STATE_MENU)
-        while (ShowCursor(true) < 0);
-    else if (state == STATE_GAME) {
+    if (state == STATE_GAME)
         GameStateLoad(gGameRunning, gameMap);
-        ShowCursor(false);
-    }
-        
     else if (state == STATE_TUTORIAL)
         GameStateLoadTutorial(gGameRunning, gameMap);
     else if (state == STATE_LOAD)
