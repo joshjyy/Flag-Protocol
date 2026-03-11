@@ -5,6 +5,7 @@
 #include <array>
 #include <cstdlib>
 #include <random>
+#include "utils.hpp"  
 
 std::random_device rd;
 std::mt19937 gen(rd());	
@@ -98,13 +99,9 @@ void Save_Game_Level(const char* filename, std::array<std::array<int, MAP_WIDTH>
   * 5 = purple (special tiles)
   */
 void Load_Map(std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& arr,
-	AEGfxVertexList* mesh,
+	
 	float cameraX, float cameraY) {
-	AEGfxSetRenderMode(AE_GFX_RM_COLOR);
-	AEGfxSetTransparency(1.0f);
-	AEMtx33 scale, translate, transform;
-	const int TILE_SIZE = 50;
-	const int EDGE = 4; // thickness of 3D edge
+	
 
 	for (int i = 0; i < MAP_HEIGHT; i++) {
 		for (int j = 0; j < MAP_WIDTH; j++) {
@@ -113,41 +110,46 @@ void Load_Map(std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& arr,
 				float y = 450.0f - (i * TILE_SIZE) - 25.0f;
 				float screenX = x - cameraX;
 				float screenY = y - cameraY;
-
-				
-				float r = 0.0f, g = 0.0f, b = 0.0f;
-				if (arr[i][j] == 1) { r = 0.0f; g = 1.0f; b = 0.0f; }  // green blocks
-				else if (arr[i][j] == 2) { r = 0.5f; g = 0.0f; b = 1.0f; }  // purple goal
-				else if (arr[i][j] == 3) { r = 1.0f; g = 0.0f; b = 0.0f; }  // red
-				else if (arr[i][j] == 4) {  r = 0.0f; g = 1.0f; b = 1.0f; }  // lime flag
-				
-
-				// ── STEP 1: Draw dark bottom-right shadow (slightly bigger) ──
-				AEGfxSetColorToMultiply(r * 0.2f, g * 0.2f, b * 0.2f, 1.0f);
-				AEMtx33Scale(&scale, (float)(TILE_SIZE + EDGE), (float)(TILE_SIZE + EDGE));
-				AEMtx33Trans(&translate, screenX + EDGE * 0.5f, screenY - EDGE * 0.5f);
-				AEMtx33Concat(&transform, &translate, &scale);
-				AEGfxSetTransform(transform.m);
-				AEGfxMeshDraw(mesh, AE_GFX_MDM_TRIANGLES);
-
-				// ── STEP 2: Draw bright top-left highlight (slightly bigger) ──
-				AEGfxSetColorToMultiply(r, g, b, 1.0f);
-				AEMtx33Scale(&scale, (float)(TILE_SIZE + EDGE), (float)(TILE_SIZE + EDGE));
-				AEMtx33Trans(&translate, screenX - EDGE * 0.5f, screenY + EDGE * 0.5f);
-				AEMtx33Concat(&transform, &translate, &scale);
-				AEGfxSetTransform(transform.m);
-				AEGfxMeshDraw(mesh, AE_GFX_MDM_TRIANGLES);
-
-				// ── STEP 3: Draw main block face (base color darkened) ──
-				AEGfxSetColorToMultiply(r * 0.35f, g * 0.35f, b * 0.35f, 1.0f);
-				AEMtx33Scale(&scale, (float)TILE_SIZE, (float)TILE_SIZE);
-				AEMtx33Trans(&translate, screenX, screenY);
-				AEMtx33Concat(&transform, &translate, &scale);
-				AEGfxSetTransform(transform.m);
-				AEGfxMeshDraw(mesh, AE_GFX_MDM_TRIANGLES);
+				PrintBlock(arr[i][j], 1.0f, screenX, screenY, meshes.square);
 			}
 		}
 	}
+	
+}
+
+void PrintBlock(int choice, float d, float screenX, float screenY, AEGfxVertexList* mesh) {
+	float r = 0.0f, g = 0.0f, b = 0.0f;
+	if (choice == 1) { r = 0.0f; g = 1.0f; b = 0.0f; }  // green blocks
+	else if (choice == 2) { r = 0.5f; g = 0.0f; b = 1.0f; }  // purple goal
+	else if (choice == 3) { r = 1.0f; g = 0.0f; b = 0.0f; }  // red
+	else if (choice == 4) { r = 0.0f; g = 1.0f; b = 1.0f; }  // lime flag
+	AEGfxSetRenderMode(AE_GFX_RM_COLOR);
+	AEGfxSetTransparency(1.0f);
+	AEMtx33 scale, translate, transform;
+	const int EDGE = 4; 
+	
+	AEGfxSetColorToMultiply(r * 0.2f, g * 0.2f, b * 0.2f, d);
+	AEMtx33Scale(&scale, (float)(TILE_SIZE + EDGE), (float)(TILE_SIZE + EDGE));
+	AEMtx33Trans(&translate, screenX + EDGE * 0.5f, screenY - EDGE * 0.5f);
+	AEMtx33Concat(&transform, &translate, &scale);
+	AEGfxSetTransform(transform.m);
+	AEGfxMeshDraw(mesh, AE_GFX_MDM_TRIANGLES);
+
+	// ── STEP 2: Draw bright top-left highlight (slightly bigger) ──
+	AEGfxSetColorToMultiply(r, g, b, d);
+	AEMtx33Scale(&scale, (float)(TILE_SIZE + EDGE), (float)(TILE_SIZE + EDGE));
+	AEMtx33Trans(&translate, screenX - EDGE * 0.5f, screenY + EDGE * 0.5f);
+	AEMtx33Concat(&transform, &translate, &scale);
+	AEGfxSetTransform(transform.m);
+	AEGfxMeshDraw(mesh, AE_GFX_MDM_TRIANGLES);
+
+	// ── STEP 3: Draw main block face (base color darkened) ──
+	AEGfxSetColorToMultiply(r * 0.35f, g * 0.35f, b * 0.35f, d);
+	AEMtx33Scale(&scale, (float)TILE_SIZE, (float)TILE_SIZE);
+	AEMtx33Trans(&translate, screenX, screenY);
+	AEMtx33Concat(&transform, &translate, &scale);
+	AEGfxSetTransform(transform.m);
+	AEGfxMeshDraw(mesh, AE_GFX_MDM_TRIANGLES);
 }
 
 void Spawn_Flag(std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& arr) {
@@ -187,4 +189,70 @@ void Spawn_Flag(std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& arr) {
 	std::cout << "Flag spawned at Row: " << row << " Col: " << col << "\n";
 	arr[row][col] = 4;
 	delete[] found;
+}
+
+
+CameraPos moving_cursor(CameraPos camera) {
+	static int prevMouseX = 0, prevMouseY = 0;
+
+	int mouseX, mouseY;
+	AEInputGetCursorPosition(&mouseX, &mouseY);
+
+	if (AEInputCheckCurr(AEVK_MBUTTON)) {
+		int deltaX = mouseX - prevMouseX;
+		int deltaY = mouseY - prevMouseY;
+
+		std::cout << "Delta: " << deltaX << " " << deltaY << std::endl;
+
+		float sensitivity = 1.0f;
+		camera.x -= (float)deltaX * sensitivity;
+		camera.y += (float)deltaY * sensitivity;
+
+		std::cout << "Camera: " << camera.x << " " << camera.y << std::endl;
+	}
+
+	prevMouseX = mouseX;
+	prevMouseY = mouseY;
+
+	return camera;
+}
+
+
+void hover(std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& arr, float cameraX, float cameraY, AEGfxVertexList* mesh,int current_tile) {
+
+	AEGfxSetRenderMode(AE_GFX_RM_COLOR);
+	AEGfxSetTransparency(0.5f);
+	AEMtx33 scale, translate, transform;
+	const int EDGE = 4;
+	int mouseX, mouseY;
+	AEInputGetCursorPosition(&mouseX, &mouseY);
+	int gridX = (int)((mouseX + cameraX - 25) / 50.0f);
+	int gridY = (int)((mouseY - cameraY - 25) / 50.0f);
+	float x = (gridX * TILE_SIZE) - 800.0f + 25.0f;
+	float y = 450.0f - (gridY * TILE_SIZE) - 25.0f;
+	float screenX = x - cameraX;
+	float screenY = y - cameraY;
+
+	float mouseScreenX = mouseX - 800.0f;
+	float mouseScreenY = 450.0f - mouseY;
+	if (gridX < 0 || gridX >= MAP_WIDTH || gridY < 0 || gridY >= MAP_HEIGHT){
+		PrintBlock(3, 1.0f, mouseScreenX, mouseScreenY, meshes.circle);
+	}
+	else {
+		if (arr[gridY][gridX] == 0) {
+			PrintBlock(current_tile, 0.3, screenX, screenY, meshes.square);
+		}
+		else {
+			AEGfxSetTransparency(0.5f);
+			AEGfxSetColorToMultiply(0.0f, 0.0f, 0.0f, 1.0f);
+			AEMtx33Scale(&scale, (float)TILE_SIZE, (float)TILE_SIZE);
+			AEMtx33Trans(&translate, screenX, screenY);
+			AEMtx33Concat(&transform, &translate, &scale);
+			AEGfxSetTransform(transform.m);
+			AEGfxMeshDraw(mesh, AE_GFX_MDM_TRIANGLES);
+			AEGfxSetTransparency(1.0f);
+		}
+	}
+	
+	
 }

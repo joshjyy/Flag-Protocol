@@ -2,7 +2,7 @@
 // includes
 
 #include "AEEngine.h"
-#include "utils.hpp"  D
+#include "utils.hpp"  
 #include "player.hpp"
 #include "gunTypes.hpp"
 #include "enemies.hpp"
@@ -99,27 +99,19 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	InitPlayerParticles(&player , meshes.square, meshes.circle);
 
 	// ---------------------------------------------------------------------------
-	// MAP
+	// Camera
 	// ---------------------------------------------------------------------------
 
-	// 2D array to store the game map data (18 rows x 32 columns)
 	std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>* gameMap = new std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>;
 	//Camera variables(in main, with other game variables)
 	float cameraX = 0.0f;
 	float cameraY = 0.0f;
-
+	CameraPos camera;	
 	// In game loop - UPDATE section:
 	// Update camera to follow player
 	
-	// Load the map from file into the gameMap array
-	if (!Load_Game_Level("Assets/Level_1_Map.txt", *gameMap)) {
-		printf("Failed to load map! Exiting...\n");
-		gGameRunning = 0;
-	}
-	else {
-		printf("Map loaded successfully!\n");
-	}
-	Spawn_Flag(*gameMap);
+
+	
 	// ---------------------------------------------------------------------------
 	// GAME LOOP
 	// ---------------------------------------------------------------------------
@@ -132,32 +124,53 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	AEGfxSetTransparency(1.0f);
 	// Screen state
 	GameState currentState = STATE_MENU;
+	static GameState previousState = STATE_MENU;
+	
 	while (gGameRunning)
 	{
-		// Frame start
 		AESysFrameStart();
-		// Get frame time
 		float dt = (float)AEFrameRateControllerGetFrameTime();
-		// Exit game
+
 		if (AEInputCheckTriggered(AEVK_ESCAPE) || 0 == AESysDoesWindowExist())
 			gGameRunning = 0;
-		// ---------------------------------------------------------------------------
-		// MENU STATE
-		// ---------------------------------------------------------------------------
+
+		if (currentState != previousState) {
+			CurrGamestate(currentState, gGameRunning, *gameMap);
+			previousState = currentState;
+		}
 
 		if (currentState == STATE_QUIT) {
 			gGameRunning = 0;
 		}
 
-		if (currentState == STATE_MENU)
-		{
-
+		// ---------------------------------------------------------------------------
+		// STATE_MENU
+		// ---------------------------------------------------------------------------
+		if (currentState == STATE_MENU) {
 			currentState = UpdateAndRenderMenu(meshes.square, fontID, dt);
-
-			if (AEInputCheckTriggered(AEVK_ESCAPE))
+			if (AEInputCheckTriggered(AEVK_Q))
 				gGameRunning = 0;
 		}
 
+		// ---------------------------------------------------------------------------
+		// STATE_TUTORIAL
+		// ---------------------------------------------------------------------------
+		else if (currentState == STATE_TUTORIAL) {
+			Load_Map(*gameMap, cameraX, cameraY);
+			if (AEInputCheckTriggered(AEVK_Q))
+				currentState = STATE_MENU;
+				
+		}
+
+		// ---------------------------------------------------------------------------
+		// STATE_LOAD
+		// ---------------------------------------------------------------------------
+		else if (currentState == STATE_LOAD) {
+			Load_Map(*gameMap, cameraX, cameraY);
+			if (AEInputCheckTriggered(AEVK_Q))
+				currentState = STATE_MENU;
+				
+		}
 		// ---------------------------------------------------------------------------
 		// EDITOR STATE
 		// ---------------------------------------------------------------------------
@@ -168,17 +181,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			// Get mouse position for tile painting
 			AEInputGetCursorPosition(&mouseX, &mouseY);
 
-			// Convert to world coordinates
-			float worldX = (float)mouseX - 800.0f;
-			float worldY = 450.0f - (float)mouseY;
-
-			// Convert to grid coordinates
-			int gridX = (int)((worldX + 800.0f) / 50.0f);
-			int gridY = (int)((450.0f - worldY) / 50.0f);
+			int gridX = (int)((mouseX + camera.x - 25) / 50.0f);
+			int gridY = (int)((mouseY - camera.y - 25) / 50.0f);
 
 			// Check if within grid bounds
 			if (gridX >= 0 && gridX < MAP_WIDTH && gridY >= 0 && gridY < MAP_HEIGHT) {
 				// Left click to paint
+				
 				if (AEInputCheckCurr(AEVK_LBUTTON)) {
 					(*gameMap)[gridY][gridX] = currentTileType;
 				}
@@ -187,6 +196,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 					(*gameMap)[gridY][gridX] = 0;
 				}
 			}
+
+			else if (currentState == STATE_GAME) {
+				if (AEInputCheckTriggered(AEVK_BACK) || AEInputCheckTriggered(AEVK_ESCAPE))
+					currentState = STATE_MENU;
+			}
+
 
 			// Number keys to change tile type
 			if (AEInputCheckTriggered(AEVK_0)) currentTileType = 0;  // Eraser
@@ -206,7 +221,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				Load_Game_Level("Assets/Level_1_Map.txt", *gameMap);
 				printf("Original map loaded!\n");
 			}
-
+			
 			// Clear map (C key)
 			if (AEInputCheckTriggered(AEVK_C)) {
 				for (int i = 0; i < MAP_HEIGHT; i++) {
@@ -218,10 +233,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			}
 
 			// Centered camera
-			cameraX = 0.0f;
-			cameraY = 0.0f;
-			Load_Map(*gameMap, meshes.square, cameraX, cameraY);
+			camera = moving_cursor(camera);
 
+			Load_Map(*gameMap, camera.x, camera.y);
+			
+			hover(*gameMap, camera.x, camera.y, meshes.square, currentTileType);
+			
 			float uiY = 350.0f;
 			float textX, textY;
 
@@ -328,26 +345,27 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			}
 
 			// Back to menu
-			if (AEInputCheckTriggered(AEVK_BACK) || AEInputCheckTriggered(AEVK_ESCAPE)) {
+			if (AEInputCheckTriggered(AEVK_Q)) {
 				currentState = STATE_MENU;
+				
 			}
 		}
 
 		// ---------------------------------------------------------------------------
-		// INPUT HANDLING
+		// GAME STATE
 		// ---------------------------------------------------------------------------
 		else if (currentState == STATE_GAME)
 		{
-
 			//Check what weapon the player is using once per frame
 			WeaponStats weapon = GetCurrentWeapon(player);
+			
 			// ---------------------------------------------------------------------------
 			// MAP AND CAMERA
 			// ---------------------------------------------------------------------------
 			//Camera follows the player
 			cameraX = player.x;
 			cameraY = player.y;
-			Load_Map(*gameMap, meshes.square, cameraX, cameraY);
+			Load_Map(*gameMap, cameraX, cameraY);
 			
 			// Update Timers CD
 			UpdatePlayer(&player, dt, *gameMap);
@@ -391,19 +409,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			// *** CHECK WIN CONDITION ***
 			RemoveDeadGrunts(grunts);
 			CheckWinCondition(gameEvents, player);
+
+			if (AEInputCheckTriggered(AEVK_Q))
+				currentState = STATE_MENU;
+				
 		}
-		else if (currentState == STATE_TUTORIAL) {
-
-
-			printf("Tutorial State - Press BACKSPACE or ESCAPE to return to Menu\n");
-
-
-
-
-			 if (AEInputCheckTriggered(AEVK_BACK) || AEInputCheckTriggered(AEVK_ESCAPE))
-				 currentState = STATE_MENU;
-
-		}
+		
 		// ---------------------------------------------------------------------------
 		//DEBUGGING
 		// ---------------------------------------------------------------------------
