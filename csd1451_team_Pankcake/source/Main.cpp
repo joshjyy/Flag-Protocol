@@ -128,36 +128,47 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	
 	while (gGameRunning)
 	{
-		// Frame start
 		AESysFrameStart();
-		// Get frame time
 		float dt = (float)AEFrameRateControllerGetFrameTime();
-		// Exit game
+
 		if (AEInputCheckTriggered(AEVK_ESCAPE) || 0 == AESysDoesWindowExist())
 			gGameRunning = 0;
-
 
 		if (currentState != previousState) {
 			CurrGamestate(currentState, gGameRunning, *gameMap);
 			previousState = currentState;
 		}
-		// ---------------------------------------------------------------------------
-		// MENU STATE
-		// ---------------------------------------------------------------------------
 
 		if (currentState == STATE_QUIT) {
 			gGameRunning = 0;
 		}
 
-		if (currentState == STATE_MENU)
-		{
-
+		// ---------------------------------------------------------------------------
+		// STATE_MENU
+		// ---------------------------------------------------------------------------
+		if (currentState == STATE_MENU) {
 			currentState = UpdateAndRenderMenu(meshes.square, fontID, dt);
-
 			if (AEInputCheckTriggered(AEVK_ESCAPE))
 				gGameRunning = 0;
 		}
 
+		// ---------------------------------------------------------------------------
+		// STATE_TUTORIAL
+		// ---------------------------------------------------------------------------
+		else if (currentState == STATE_TUTORIAL) {
+			Load_Map(*gameMap, cameraX, cameraY);
+			if (AEInputCheckTriggered(AEVK_BACK) || AEInputCheckTriggered(AEVK_ESCAPE))
+				currentState = STATE_MENU;
+		}
+
+		// ---------------------------------------------------------------------------
+		// STATE_LOAD
+		// ---------------------------------------------------------------------------
+		else if (currentState == STATE_LOAD) {
+			Load_Map(*gameMap, cameraX, cameraY);
+			if (AEInputCheckTriggered(AEVK_BACK) || AEInputCheckTriggered(AEVK_ESCAPE))
+				currentState = STATE_MENU;
+		}
 		// ---------------------------------------------------------------------------
 		// EDITOR STATE
 		// ---------------------------------------------------------------------------
