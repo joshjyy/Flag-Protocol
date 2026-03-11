@@ -356,6 +356,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		// ---------------------------------------------------------------------------
 		else if (currentState == STATE_GAME)
 		{
+			//Check for pause input
+			if (AEInputCheckTriggered(AEVK_P) || AEInputCheckTriggered(AEVK_ESCAPE)) {
+				currentState = STATE_PAUSE;
+				printf("Pause triggered!\n");
+			}
+
 			//Check what weapon the player is using once per frame
 			WeaponStats weapon = GetCurrentWeapon(player);
 			
@@ -414,6 +420,38 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				currentState = STATE_MENU;
 				
 		}
+
+		// ---------------------------------------------------------------------------
+		// PAUSED STATE
+		// ---------------------------------------------------------------------------
+		else if (currentState == STATE_PAUSE)
+		{
+			ShowCursor(true);
+
+			cameraX = player.x;
+			cameraY = player.y;
+
+			// Render the map
+			Load_Map(*gameMap, cameraX, cameraY);
+
+			// Render enemies
+			RenderGrunts(grunts, meshes.circle, cameraX, cameraY);
+
+			// Render player
+			DrawPlayer(player, meshes.circle, cameraX, cameraY, 0.0f);
+
+			// Render bullets
+			RenderBullets(playerBullets, meshes.circle, cameraX, cameraY);
+			RenderBullets(enemyBullets, meshes.circle, cameraX, cameraY);
+
+			// Render UI
+			WeaponStats weapon = GetCurrentWeapon(player);
+			DrawPlayerUI(player, weapon, meshes.square, meshes.circle, cameraX, cameraY);
+
+			// Pause menu on top
+			currentState = UpdateAndRenderPause(meshes.square, fontID, dt);
+
+			}
 		
 		// ---------------------------------------------------------------------------
 		//DEBUGGING
