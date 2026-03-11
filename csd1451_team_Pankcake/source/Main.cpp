@@ -159,6 +159,27 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		}
 
 		// ---------------------------------------------------------------------------
+<<<<<<< Updated upstream
+=======
+		// STATE_TUTORIAL
+		// ---------------------------------------------------------------------------
+		else if (currentState == STATE_TUTORIAL) {
+			Load_Map(*gameMap, cameraX, cameraY);
+			if (AEInputCheckTriggered(AEVK_Q))
+				currentState = STATE_MENU;
+				
+		}
+
+		// ---------------------------------------------------------------------------
+		// STATE_LOAD
+		// ---------------------------------------------------------------------------
+		else if (currentState == STATE_LOAD) {
+			Load_Map(*gameMap, cameraX, cameraY);
+			if (AEInputCheckTriggered(AEVK_Q))
+				currentState = STATE_MENU;
+		}
+		// ---------------------------------------------------------------------------
+>>>>>>> Stashed changes
 		// EDITOR STATE
 		// ---------------------------------------------------------------------------
 		else if (currentState == STATE_EDITOR)
@@ -328,6 +349,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			// Back to menu
 			if (AEInputCheckTriggered(AEVK_BACK) || AEInputCheckTriggered(AEVK_ESCAPE)) {
 				currentState = STATE_MENU;
+<<<<<<< Updated upstream
+=======
+				
+>>>>>>> Stashed changes
 			}
 		}
 
@@ -339,6 +364,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 			//Check what weapon the player is using once per frame
 			WeaponStats weapon = GetCurrentWeapon(player);
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
 			// ---------------------------------------------------------------------------
 			// MAP AND CAMERA
 			// ---------------------------------------------------------------------------
@@ -346,7 +375,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			cameraX = player.x;
 			cameraY = player.y;
 			Load_Map(*gameMap, cameraX, cameraY);
-			
+
 			// Update Timers CD
 			UpdatePlayer(&player, dt, *gameMap);
 			// Weapon controls
@@ -364,14 +393,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			// ---------------------------------------------------------------------------
 			UpdateBullets(playerBullets, dt, *gameMap);
 			UpdateBullets(enemyBullets, dt, *gameMap);
-	
+
 			// ---------------------------------------------------------------------------
 			// Collision Checks
 			// ---------------------------------------------------------------------------
 			// CHECK COLLISIONS 
 			CheckBulletGruntCollisions(playerBullets, grunts, player);
 			CheckEnemyBulletPlayerCollision(enemyBullets, player);
-			CheckPlayerGruntBodyCollision(player,grunts);
+			CheckPlayerGruntBodyCollision(player, grunts);
 
 			// ---------------------------------------------------------------------------
 			// RENDERING
@@ -389,6 +418,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			// *** CHECK WIN CONDITION ***
 			RemoveDeadGrunts(grunts);
 			CheckWinCondition(gameEvents, player);
+<<<<<<< Updated upstream
+=======
+
+			if (AEInputCheckTriggered(AEVK_Q)) {
+				currentState = STATE_MENU;
+				
+			}
+>>>>>>> Stashed changes
 		}
 		else if (currentState == STATE_TUTORIAL) {
 
