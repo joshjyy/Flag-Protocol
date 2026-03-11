@@ -58,16 +58,19 @@ GameState UpdateAndRenderMenu(AEGfxVertexList* mesh, s8 font, float dt) {
 
     Button playBtn = { 0.0f,  150.0f, 200.0f, 50.0f, "PLAY" };
     Button tutorialBtn = { 0.0f,   50.0f, 200.0f, 50.0f, "TUTORIAL" };
-    Button editorBtn = { 0.0f,  -50.0f, 200.0f, 50.0f, "EDITOR" };
-    Button quitBtn = { 0.0f, -150.0f, 200.0f, 50.0f, "QUIT" };
+    Button loadBtn = { 0.0f,  -50.0f, 200.0f, 50.0f, "Load" };
+    Button editorBtn = { 0.0f,  -150.0f, 200.0f, 50.0f, "EDITOR" };
+    Button quitBtn = { 0.0f, -300.0f, 200.0f, 50.0f, "QUIT" };
 
     DrawButton(playBtn, mesh, font);
     DrawButton(tutorialBtn, mesh, font);
+    DrawButton(loadBtn, mesh, font);
     DrawButton(editorBtn, mesh, font);
     DrawButton(quitBtn, mesh, font);
 
     if (IsButtonClicked(playBtn))   return STATE_GAME;
     if (IsButtonClicked(tutorialBtn))   return STATE_TUTORIAL;
+    if (IsButtonClicked(loadBtn)) return STATE_LOAD;
     if (IsButtonClicked(editorBtn)) return STATE_EDITOR;
     if (IsButtonClicked(quitBtn))   return STATE_QUIT;
 
@@ -75,10 +78,49 @@ GameState UpdateAndRenderMenu(AEGfxVertexList* mesh, s8 font, float dt) {
     return STATE_MENU;
 }
 
+void CurrGamestate(GameState state, int& gGameRunning, std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap) {
+    if (state == STATE_GAME)
+        GameStateLoad(gGameRunning, gameMap);
+    else if (state == STATE_TUTORIAL)
+        GameStateLoadTutorial(gGameRunning, gameMap);
+    else if (state == STATE_LOAD)
+        GameStateLoadCustom(gGameRunning, gameMap);
+}
+
+void GameStateLoad(int& gGameRunning, std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap) {
+    if (!Load_Game_Level("Assets/Level_1_Map.txt", gameMap)) {
+        printf("Failed to load map! Exiting...\n");
+        gGameRunning = 0;
+    }
+    else {
+        printf("Map loaded successfully!\n");
+    }
+    Spawn_Flag(gameMap);
+}
+
+void GameStateLoadTutorial(int& gGameRunning, std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap) {
+    if (!Load_Game_Level("Assets/Tutorial.txt", gameMap)) {
+        printf("Failed to load tutorial map! Exiting...\n");
+        gGameRunning = 0;
+    }
+    else {
+        printf("Tutorial map loaded successfully!\n");
+    }
+    Spawn_Flag(gameMap);
+}
+
+void GameStateLoadCustom(int& gGameRunning, std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap) {
+    if (!Load_Game_Level("Assets/My_Custom_Map.txt", gameMap)) {
+        printf("Failed to load custom map! Exiting...\n");
+        gGameRunning = 0;
+    }
+    else {
+        printf("Custom map loaded successfully!\n");
+    }
+    Spawn_Flag(gameMap);
+}
 
 
-//void GameStateLoad() {
-//}
 //
 //void GameStateInit() {
 //}

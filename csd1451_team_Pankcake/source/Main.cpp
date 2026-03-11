@@ -99,10 +99,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	InitPlayerParticles(&player , meshes.square, meshes.circle);
 
 	// ---------------------------------------------------------------------------
-	// MAP
+	// Camera
 	// ---------------------------------------------------------------------------
 
-	// 2D array to store the game map data (18 rows x 32 columns)
 	std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>* gameMap = new std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>;
 	//Camera variables(in main, with other game variables)
 	float cameraX = 0.0f;
@@ -111,15 +110,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	// In game loop - UPDATE section:
 	// Update camera to follow player
 	
-	// Load the map from file into the gameMap array
-	if (!Load_Game_Level("Assets/Level_1_Map.txt", *gameMap)) {
-		printf("Failed to load map! Exiting...\n");
-		gGameRunning = 0;
-	}
-	else {
-		printf("Map loaded successfully!\n");
-	}
-	Spawn_Flag(*gameMap);
+
+	
 	// ---------------------------------------------------------------------------
 	// GAME LOOP
 	// ---------------------------------------------------------------------------
@@ -132,6 +124,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	AEGfxSetTransparency(1.0f);
 	// Screen state
 	GameState currentState = STATE_MENU;
+	static GameState previousState = STATE_MENU;
+	
 	while (gGameRunning)
 	{
 		// Frame start
@@ -141,6 +135,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		// Exit game
 		if (AEInputCheckTriggered(AEVK_ESCAPE) || 0 == AESysDoesWindowExist())
 			gGameRunning = 0;
+
+
+		if (currentState != previousState) {
+			CurrGamestate(currentState, gGameRunning, *gameMap);
+			previousState = currentState;
+		}
 		// ---------------------------------------------------------------------------
 		// MENU STATE
 		// ---------------------------------------------------------------------------
