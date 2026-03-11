@@ -148,7 +148,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		// ---------------------------------------------------------------------------
 		if (currentState == STATE_MENU) {
 			currentState = UpdateAndRenderMenu(meshes.square, fontID, dt);
-			if (AEInputCheckTriggered(AEVK_ESCAPE))
+			if (AEInputCheckTriggered(AEVK_Q))
 				gGameRunning = 0;
 		}
 
@@ -157,8 +157,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		// ---------------------------------------------------------------------------
 		else if (currentState == STATE_TUTORIAL) {
 			Load_Map(*gameMap, cameraX, cameraY);
-			if (AEInputCheckTriggered(AEVK_BACK) || AEInputCheckTriggered(AEVK_ESCAPE))
+			if (AEInputCheckTriggered(AEVK_Q))
 				currentState = STATE_MENU;
+				ShowCursor(true);
 		}
 
 		// ---------------------------------------------------------------------------
@@ -166,8 +167,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		// ---------------------------------------------------------------------------
 		else if (currentState == STATE_LOAD) {
 			Load_Map(*gameMap, cameraX, cameraY);
-			if (AEInputCheckTriggered(AEVK_BACK) || AEInputCheckTriggered(AEVK_ESCAPE))
+			if (AEInputCheckTriggered(AEVK_Q))
 				currentState = STATE_MENU;
+				ShowCursor(true);
 		}
 		// ---------------------------------------------------------------------------
 		// EDITOR STATE
@@ -194,6 +196,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 					(*gameMap)[gridY][gridX] = 0;
 				}
 			}
+
+			else if (currentState == STATE_GAME) {
+				if (AEInputCheckTriggered(AEVK_BACK) || AEInputCheckTriggered(AEVK_ESCAPE))
+					currentState = STATE_MENU;
+			}
+
 
 			// Number keys to change tile type
 			if (AEInputCheckTriggered(AEVK_0)) currentTileType = 0;  // Eraser
@@ -337,19 +345,20 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			}
 
 			// Back to menu
-			if (AEInputCheckTriggered(AEVK_BACK) || AEInputCheckTriggered(AEVK_ESCAPE)) {
+			if (AEInputCheckTriggered(AEVK_Q)) {
 				currentState = STATE_MENU;
+				ShowCursor(true);
 			}
 		}
 
 		// ---------------------------------------------------------------------------
-		// INPUT HANDLING
+		// GAME STATE
 		// ---------------------------------------------------------------------------
 		else if (currentState == STATE_GAME)
 		{
-
 			//Check what weapon the player is using once per frame
 			WeaponStats weapon = GetCurrentWeapon(player);
+			ShowCursor(false);
 			// ---------------------------------------------------------------------------
 			// MAP AND CAMERA
 			// ---------------------------------------------------------------------------
@@ -400,19 +409,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			// *** CHECK WIN CONDITION ***
 			RemoveDeadGrunts(grunts);
 			CheckWinCondition(gameEvents, player);
+
+			if (AEInputCheckTriggered(AEVK_Q))
+				currentState = STATE_MENU;
+				ShowCursor(true);
 		}
-		else if (currentState == STATE_TUTORIAL) {
-
-
-			printf("Tutorial State - Press BACKSPACE or ESCAPE to return to Menu\n");
-
-
-
-
-			 if (AEInputCheckTriggered(AEVK_BACK) || AEInputCheckTriggered(AEVK_ESCAPE))
-				 currentState = STATE_MENU;
-
-		}
+		
 		// ---------------------------------------------------------------------------
 		//DEBUGGING
 		// ---------------------------------------------------------------------------
