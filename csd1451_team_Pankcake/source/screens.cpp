@@ -32,12 +32,19 @@ void DrawButton(const Button& btn, AEGfxVertexList* mesh, s8 font) {
     AEGfxSetColorToAdd(0.0f, 0.0f, 0.0f, 0.0f);
     DrawSprite(mesh, btn.x, btn.y, btn.w, btn.h, 0.0f);
 
-    // Estimate text width to center it horizontally on the button
-    float charWidth = 15.0f;
-    float textOffsetX = (strlen(btn.label) * charWidth) * 0.5f;
-
+    // Text centering in box
+    float textScale = 1.2f;
+    float textWidth, textHeight;
+    AEGfxGetPrintSize(font, btn.label, textScale, &textWidth, &textHeight);
+    
     float nx, ny;
-    GetNormalizedTextPosition(btn.x - textOffsetX, btn.y - 8.0f, &nx, &ny);
+    
+    nx = btn.x / 800.0f;
+    ny = btn.y / 450.0f;
+    
+    // Center the text on the button
+    nx -= textWidth / 2;
+    ny -= textHeight / 2;
 
     // Green text
     AEGfxPrint(font, const_cast<char*>(btn.label), nx, ny, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f);
@@ -75,6 +82,64 @@ GameState UpdateAndRenderMenu(AEGfxVertexList* mesh, s8 font, float dt) {
     return STATE_MENU;
 }
 
+<<<<<<< Updated upstream
+=======
+GameState UpdateAndRenderPause(AEGfxVertexList* mesh, s8 font, float dt) {
+    (void)dt;
+
+    // Show cursor for pause menu
+    ShowCursor(true);
+
+    // Translucent background
+    AEGfxSetRenderMode(AE_GFX_RM_COLOR);
+    AEGfxSetBlendMode(AE_GFX_BM_BLEND);
+    AEGfxSetTransparency(0.1f);
+    AEGfxSetColorToMultiply(0.0f, 0.0f, 0.0f, 1.0f);
+    AEGfxSetColorToAdd(0.0f, 0.0f, 0.0f, 0.0f);
+    DrawSprite(mesh, 0.0f, 0.0f, 1600.0f, 900.0f, 0.0f);
+
+    // Reset transparency for UI elements
+    AEGfxSetTransparency(1.0f);
+
+    // "PAUSED" title
+    float tx, ty;
+    float titleScale = 2.0f;
+
+    float titleWidth, titleHeight;
+    AEGfxGetPrintSize(font, "PAUSED", titleScale, &titleWidth, &titleHeight);
+
+    tx = -titleWidth / 2;
+    ty = 0.65f;
+
+    // White text for PAUSED
+    AEGfxPrint(font, const_cast<char*>("PAUSED"), tx, ty, titleScale, 1.0f, 1.0f, 1.0f, 1.0f);
+
+    // Buttons with boxes
+    Button resumeBtn = { 0.0f,  120.0f, 200.0f, 50.0f, "RESUME" };
+    Button menuBtn = { 0.0f,   20.0f, 200.0f, 50.0f, "MENU" };
+    Button quitBtn = { 0.0f,  -80.0f, 200.0f, 50.0f, "QUIT" };
+
+    DrawButton(resumeBtn, mesh, font);
+    DrawButton(menuBtn, mesh, font);
+    DrawButton(quitBtn, mesh, font);
+
+    // Button interactions
+    if (IsButtonClicked(resumeBtn)) return STATE_GAME;
+    if (IsButtonClicked(menuBtn)) return STATE_MENU;
+    if (IsButtonClicked(quitBtn)) return STATE_QUIT;
+
+    return STATE_PAUSE;
+}
+
+void GameStateLoad(int& gGameRunning, std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap) {
+    if (!Load_Game_Level("Assets/Level_1_Map.txt", gameMap)) {
+        printf("Failed to load map!\n");
+        gGameRunning = 0;
+    }
+    else printf("Map loaded successfully!\n");
+    Spawn_Flag(gameMap);
+}
+>>>>>>> Stashed changes
 
 
 //void GameStateLoad() {
