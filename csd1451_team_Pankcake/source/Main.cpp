@@ -391,7 +391,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			// *** CHECK WIN CONDITION ***
 			RemoveDeadGrunts(grunts);
 			CheckWinCondition(gameEvents, player);
-<<<<<<< Updated upstream
 		}
 		else if (currentState == STATE_TUTORIAL) {
 
