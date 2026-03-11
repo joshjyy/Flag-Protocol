@@ -159,7 +159,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			Load_Map(*gameMap, cameraX, cameraY);
 			if (AEInputCheckTriggered(AEVK_Q))
 				currentState = STATE_MENU;
-				ShowCursor(true);
+				
 		}
 
 		// ---------------------------------------------------------------------------
@@ -169,7 +169,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			Load_Map(*gameMap, cameraX, cameraY);
 			if (AEInputCheckTriggered(AEVK_Q))
 				currentState = STATE_MENU;
-				ShowCursor(true);
+				
 		}
 		// ---------------------------------------------------------------------------
 		// EDITOR STATE
@@ -347,7 +347,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			// Back to menu
 			if (AEInputCheckTriggered(AEVK_Q)) {
 				currentState = STATE_MENU;
-				ShowCursor(true);
+				
 			}
 		}
 
@@ -358,7 +358,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		{
 			//Check what weapon the player is using once per frame
 			WeaponStats weapon = GetCurrentWeapon(player);
-			ShowCursor(false);
+			
 			// ---------------------------------------------------------------------------
 			// MAP AND CAMERA
 			// ---------------------------------------------------------------------------
@@ -412,7 +412,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 			if (AEInputCheckTriggered(AEVK_Q))
 				currentState = STATE_MENU;
-				ShowCursor(true);
+				
 		}
 		
 		// ---------------------------------------------------------------------------
