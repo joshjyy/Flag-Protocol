@@ -338,15 +338,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		// ---------------------------------------------------------------------------
 		else if (currentState == STATE_GAME)
 		{
-<<<<<<< Updated upstream
 
-=======
-			// Check for pause input
-			if (AEInputCheckTriggered(AEVK_P) || AEInputCheckTriggered(AEVK_ESCAPE)) {
-				currentState = STATE_PAUSE;
-				printf("Pause triggered!\n");
-			}
->>>>>>> Stashed changes
 			//Check what weapon the player is using once per frame
 			WeaponStats weapon = GetCurrentWeapon(player);
 			// ---------------------------------------------------------------------------
@@ -413,48 +405,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				 currentState = STATE_MENU;
 
 		}
-=======
-
-			if (AEInputCheckTriggered(AEVK_Q))
-				currentState = STATE_MENU;
-				ShowCursor(true);
-
-		}
-
-		// ---------------------------------------------------------------------------
-		// PAUSED STATE
-		// ---------------------------------------------------------------------------
-		else if (currentState == STATE_PAUSE)
-		{
-			ShowCursor(true);
-
-			cameraX = player.x;
-			cameraY = player.y;
-
-			// Render the map
-			Load_Map(*gameMap, cameraX, cameraY);
-
-			// Render enemies
-			RenderGrunts(grunts, meshes.circle, cameraX, cameraY);
-
-			// Render player
-			DrawPlayer(player, meshes.circle, cameraX, cameraY, 0.0f);
-
-			// Render bullets
-			RenderBullets(playerBullets, meshes.circle, cameraX, cameraY);
-			RenderBullets(enemyBullets, meshes.circle, cameraX, cameraY);
-
-			// Render UI
-			WeaponStats weapon = GetCurrentWeapon(player);
-			DrawPlayerUI(player, weapon, meshes.square, meshes.circle, cameraX, cameraY);
-
-			// Pause menu text appears on screen
-			currentState = UpdateAndRenderPause(meshes.square, fontID, dt);
-		}
-
-
-		
->>>>>>> Stashed changes
 		// ---------------------------------------------------------------------------
 		//DEBUGGING
 		// ---------------------------------------------------------------------------
