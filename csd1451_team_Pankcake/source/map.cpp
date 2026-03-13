@@ -203,13 +203,10 @@ CameraPos moving_cursor(CameraPos camera) {
 		int deltaX = mouseX - prevMouseX;
 		int deltaY = mouseY - prevMouseY;
 
-		std::cout << "Delta: " << deltaX << " " << deltaY << std::endl;
-
 		float sensitivity = 1.0f;
 		camera.x -= (float)deltaX * sensitivity;
 		camera.y += (float)deltaY * sensitivity;
 
-		std::cout << "Camera: " << camera.x << " " << camera.y << std::endl;
 	}
 
 	prevMouseX = mouseX;
@@ -255,7 +252,7 @@ void hover(std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& arr, float camera
 		}
 	}
 }
-void zoom(int& TILE_SIZE, float cameraX, float cameraY) {
+void zoom(int& TILE_SIZE, float& cameraX, float& cameraY) {
 	int scrollDelta = 0;
 	AEInputMouseWheelDelta(&scrollDelta);
 
@@ -265,5 +262,14 @@ void zoom(int& TILE_SIZE, float cameraX, float cameraY) {
 	else if (scrollDelta < 0 && TILE_SIZE >= 14) {
 		TILE_SIZE -= 1;
 	}
-	std::cout << TILE_SIZE << std::endl;
+
+	float worldSize = 64.0f * TILE_SIZE;
+	float screenW = (float)AEGfxGetWindowWidth();
+	float screenH = (float)AEGfxGetWindowHeight();
+
+	float maxY = worldSize - screenH - 100.0f;
+	if (maxY < 0.0f) maxY = 0.0f;
+
+	cameraX = (worldSize - screenW) / 2.0f;
+	cameraY = AEClamp(cameraY, 0.0f, maxY);
 }
