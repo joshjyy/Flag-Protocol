@@ -9,6 +9,7 @@
 
 std::random_device rd;
 std::mt19937 gen(rd());	
+int TILE_SIZE = 50;
 /* 
  * Loads a game level map from a text file into a 2D array.
  * Opens the specified file and reads MAP_HEIGHT x MAP_WIDTH integers.
@@ -226,8 +227,8 @@ void hover(std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& arr, float camera
 	const int EDGE = 4;
 	int mouseX, mouseY;
 	AEInputGetCursorPosition(&mouseX, &mouseY);
-	int gridX = (int)((mouseX + cameraX - 25) / 50.0f);
-	int gridY = (int)((mouseY - cameraY - 25) / 50.0f);
+	int gridX = (int)((mouseX + cameraX - 25) / TILE_SIZE);
+	int gridY = (int)((mouseY - cameraY - 25) / TILE_SIZE);
 	float x = (gridX * TILE_SIZE) - 800.0f + 25.0f;
 	float y = 450.0f - (gridY * TILE_SIZE) - 25.0f;
 	float screenX = x - cameraX;
@@ -253,6 +254,15 @@ void hover(std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& arr, float camera
 			AEGfxSetTransparency(1.0f);
 		}
 	}
-	
-	
+}
+void zoom(int& TILE_SIZE) {
+	int scrollDelta = 0;
+	AEInputMouseWheelDelta(&scrollDelta);
+
+	if (scrollDelta > 0) {
+		TILE_SIZE += 5;
+	}
+	else if (scrollDelta < 0) {
+		TILE_SIZE -= 5;
+	}
 }

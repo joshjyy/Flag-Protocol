@@ -184,8 +184,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			// Get mouse position for tile painting
 			AEInputGetCursorPosition(&mouseX, &mouseY);
 
-			int gridX = (int)((mouseX + camera.x - 25) / 50.0f);
-			int gridY = (int)((mouseY - camera.y - 25) / 50.0f);
+			int gridX = (int)((mouseX + camera.x - 25) / TILE_SIZE);
+			int gridY = (int)((mouseY - camera.y - 25) / TILE_SIZE);
 
 
 			if (!editorPaintReady) {
@@ -244,8 +244,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 					}
 				}
 				printf("Map cleared!\n");
-			}
-
+			}	
+			zoom(TILE_SIZE);
 			// Centered camera
 			camera = moving_cursor(camera);
 
