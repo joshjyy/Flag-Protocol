@@ -255,14 +255,15 @@ void hover(std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& arr, float camera
 		}
 	}
 }
-void zoom(int& TILE_SIZE) {
+void zoom(int& TILE_SIZE, float cameraX, float cameraY) {
 	int scrollDelta = 0;
 	AEInputMouseWheelDelta(&scrollDelta);
 
-	if (scrollDelta > 0) {
-		TILE_SIZE += 5;
+	if (scrollDelta > 0 && TILE_SIZE <= 50) {
+		TILE_SIZE += 1;
 	}
-	else if (scrollDelta < 0) {
-		TILE_SIZE -= 5;
+	else if (scrollDelta < 0 && TILE_SIZE >= 14) {
+		TILE_SIZE -= 1;
 	}
+	std::cout << TILE_SIZE << std::endl;
 }

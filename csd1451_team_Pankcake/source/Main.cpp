@@ -245,7 +245,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				}
 				printf("Map cleared!\n");
 			}	
-			zoom(TILE_SIZE);
+			zoom(TILE_SIZE, camera.x, camera.y);
 			// Centered camera
 			camera = moving_cursor(camera);
 

@@ -33,4 +33,4 @@ struct CameraPos {
 };
 CameraPos moving_cursor(CameraPos camera);
 void hover(std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& arr, float cameraX, float cameraY, AEGfxVertexList* mesh, int current_tile);
-void zoom(int& TILE_SIZE);
+void zoom(int& TILE_SIZE, float cameraX, float cameraY);
