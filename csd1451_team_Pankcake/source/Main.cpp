@@ -101,7 +101,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	// ---------------------------------------------------------------------------
 	// Camera
 	// ---------------------------------------------------------------------------
-
+	bool editorPaintReady = false;
 	std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>* gameMap = new std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>;
 	//Camera variables(in main, with other game variables)
 	float cameraX = 0.0f;
@@ -137,6 +137,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		if (currentState != previousState) {
 			CurrGamestate(currentState, gGameRunning, *gameMap);
 			previousState = currentState;
+			if (currentState == STATE_EDITOR) {
+				editorPaintReady = false;
+			}
 		}
 
 		if (currentState == STATE_QUIT) {
@@ -184,13 +187,24 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			int gridX = (int)((mouseX + camera.x - 25) / 50.0f);
 			int gridY = (int)((mouseY - camera.y - 25) / 50.0f);
 
+
+			if (!editorPaintReady) {
+				if (!AEInputCheckCurr(AEVK_LBUTTON)) {
+					editorPaintReady = true;
+				}
+			}
+
 			// Check if within grid bounds
 			if (gridX >= 0 && gridX < MAP_WIDTH && gridY >= 0 && gridY < MAP_HEIGHT) {
 				// Left click to paint
-				
-				if (AEInputCheckCurr(AEVK_LBUTTON)) {
+				if (editorPaintReady && AEInputCheckCurr(AEVK_LBUTTON)) {
 					(*gameMap)[gridY][gridX] = currentTileType;
 				}
+
+				if (editorPaintReady && AEInputCheckCurr(AEVK_LBUTTON)) {
+					(*gameMap)[gridY][gridX] = currentTileType;
+				}
+				
 				// Right click to erase
 				if (AEInputCheckCurr(AEVK_RBUTTON)) {
 					(*gameMap)[gridY][gridX] = 0;
@@ -344,7 +358,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				AEGfxPrint(fontID, commands[i].desc, textX, textY, 1.0f, 0.7f, 0.7f, 0.7f, 1.0f);
 			}
 
-			// Back to menu
+			// Back to menuZ
 			if (AEInputCheckTriggered(AEVK_Q)) {
 				currentState = STATE_MENU;
 				
