@@ -6,10 +6,13 @@
 #include <cstdlib>
 #include <random>
 #include "utils.hpp"  
+#include <stack>
+#include <utility>
 
 std::random_device rd;
 std::mt19937 gen(rd());	
 int TILE_SIZE = 50;
+std::array<std::array<int, MAP_WIDTH+2>, MAP_HEIGHT+2> newMap{};
 /* 
  * Loads a game level map from a text file into a 2D array.
  * Opens the specified file and reads MAP_HEIGHT x MAP_WIDTH integers.
@@ -99,7 +102,7 @@ void Save_Game_Level(const char* filename, std::array<std::array<int, MAP_WIDTH>
   * 4 = yellow (sand)
   * 5 = purple (special tiles)
   */
-void Load_Map(std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& arr,
+	void Load_Map(std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& arr,
 	
 	float cameraX, float cameraY) {
 	
@@ -276,4 +279,56 @@ void zoom(int& TILE_SIZE) {
 		TILE_SIZE -= 1;
 	}
 
+}
+
+void floodfill(std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& arr, int x, int y)
+{
+	std::stack<std::pair<int, int>> stack;
+	newMap = {};
+	
+	for (int i = 0; i < MAP_HEIGHT; i++) {
+		for (int j = 0; j < MAP_WIDTH; j++) {
+			newMap[i + 1][j + 1] =arr[i][j];
+		}
+	}
+	stack.push({ x, y });
+
+	while (!stack.empty())
+	{
+		std::pair<int, int> cell = stack.top();
+		stack.pop();
+		int cx = cell.first;
+		int cy = cell.second;
+
+		if (cx < 0 || cy >= MAP_WIDTH+2 || cy < 0 || cx >= MAP_HEIGHT+2) {
+			continue;
+		}
+		else if (newMap[cx][cy] == 0) {
+			newMap[cx][cy] = -1;
+			stack.push({ cx, cy + 1 });
+			stack.push({ cx, cy - 1});
+			stack.push({ cx + 1, cy });
+			stack.push({ cx - 1, cy });
+		}
+		else if (newMap[cx][cy] == 1 || newMap[cx][cy] == -1 || newMap[cx][cy] == -1 || newMap[cx][cy] == 2 || newMap[cx][cy] == 3 || newMap[cx][cy] == 4 || newMap[cx][cy] == 5) {
+			continue;
+		}
+
+	}
+}
+
+bool HasHole(std::array<std::array<int, MAP_WIDTH + 2>, MAP_HEIGHT + 2>& newMap) {
+	bool hole = true;
+	for (int i = 0; i < MAP_HEIGHT + 2; i++) {
+		for (int j = 0; j < MAP_WIDTH + 2; j++) {
+			if (newMap[i][j] == 0) {
+				hole = false;
+				std::cout << "hole at: " << i << ", " << j << "\n";
+			}
+		}
+	}
+	
+	if (hole) std::cout << "leak exists";
+	else std::cout << "no leak";
+	return hole;
 }

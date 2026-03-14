@@ -196,7 +196,7 @@ void GameStateLoadEditor(int& gGameRunning, std::array<std::array<int, MAP_WIDTH
     static bool loaded = false;
     if (loaded) return;
 
-    if (!Load_Game_Level("Assets/My_Custom_Map.txt", gameMap)) {
+    if (!Load_Game_Level("Assets/Test_Map.txt", gameMap)) {
         printf("Failed to load editor map! Exiting...\n");
         gGameRunning = 0;
     }

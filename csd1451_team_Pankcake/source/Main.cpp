@@ -228,6 +228,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			if (AEInputCheckTriggered(AEVK_S)) {
 				Save_Game_Level("Assets/My_Custom_Map.txt", *gameMap);
 				printf("Map saved to My_Custom_Map.txt!\n");
+				floodfill(*gameMap, 0, 0);
+				HasHole(newMap);
 			}
 
 			// Load map (L key)
