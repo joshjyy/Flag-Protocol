@@ -118,6 +118,7 @@ GameState UpdateAndRenderPause(AEGfxVertexList* mesh, s8 font, float dt) {
     Button menuBtn = { 0.0f,    0.0f, 200.0f, 50.0f, "MENU" };
     Button quitBtn = { 0.0f, -100.0f, 200.0f, 50.0f, "QUIT" };
 
+
     DrawButton(resumeBtn, mesh, font);
     DrawButton(menuBtn, mesh, font);
     DrawButton(quitBtn, mesh, font);
@@ -126,6 +127,10 @@ GameState UpdateAndRenderPause(AEGfxVertexList* mesh, s8 font, float dt) {
     if (IsButtonClicked(resumeBtn)) {
         ShowCursor(false);
         return STATE_GAME;
+    }
+    if (IsButtonClicked(menuBtn)) {
+        ShowCursor(false);
+        return STATE_MENU;
     }
     if (IsButtonClicked(menuBtn)) {
         ShowCursor(false);
@@ -146,11 +151,13 @@ void CurrGamestate(GameState state, int& gGameRunning, std::array<std::array<int
         GameStateLoad(gGameRunning, gameMap);
         ShowCursor(false);
     }
-        
     else if (state == STATE_TUTORIAL)
         GameStateLoadTutorial(gGameRunning, gameMap);
     else if (state == STATE_LOAD)
         GameStateLoadCustom(gGameRunning, gameMap);
+    else if (state == STATE_EDITOR)
+        GameStateLoadCustom(gGameRunning, gameMap);
+    
 }
 
 void GameStateLoad(int& gGameRunning, std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap) {
@@ -185,7 +192,19 @@ void GameStateLoadCustom(int& gGameRunning, std::array<std::array<int, MAP_WIDTH
     }
     Spawn_Flag(gameMap);
 }
+void GameStateLoadEditor(int& gGameRunning, std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap) {
+    static bool loaded = false;
+    if (loaded) return;
 
+    if (!Load_Game_Level("Assets/My_Custom_Map.txt", gameMap)) {
+        printf("Failed to load editor map! Exiting...\n");
+        gGameRunning = 0;
+    }
+    else {
+        printf("Editor map loaded successfully!\n");
+    }
+    loaded = true;
+}
 
 //
 //void GameStateInit() {

@@ -180,7 +180,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		else if (currentState == STATE_EDITOR)
 		{
 			AEGfxSetBackgroundColor(0.05f, 0.05f, 0.1f);
-
+			GameStateLoadEditor(gGameRunning, *gameMap);
 			// Get mouse position for tile painting
 			AEInputGetCursorPosition(&mouseX, &mouseY);
 
