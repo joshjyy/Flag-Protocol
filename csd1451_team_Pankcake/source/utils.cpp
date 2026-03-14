@@ -163,6 +163,23 @@ int checkCollision(float playerX, float playerY, float radius,
     }
 
 
+    //Flag tile collision check (2 = flag point)
+    if (gameMap[topRow][leftCol] == 2) {
+        return 2;
+    }
+    if (gameMap[topRow][rightCol] == 2) {
+        return 2;
+
+    }
+    if (gameMap[bottomRow][leftCol] == 2) {
+        return 2;
+
+    }
+    if (gameMap[bottomRow][rightCol] == 2) {
+        return 2;
+
+    }
+
     return 0;
 }
 

@@ -12,6 +12,7 @@
 #include "map.hpp"
 #include "events.hpp"
 #include "screens.hpp"
+#include "tutorial.hpp"
 
 
 //Legend if needed later
@@ -137,6 +138,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		if (currentState != previousState) {
 			CurrGamestate(currentState, gGameRunning, *gameMap);
 			previousState = currentState;
+
+			// Force spawn when entering tutorial temporary fix
+			if (currentState == STATE_TUTORIAL) {
+				player.x = 15 * TILE_SIZE - 800.0f + 25.0f;
+				player.y = 450.0f - 31 * TILE_SIZE - 25.0f;
+			}
+
 			if (currentState == STATE_EDITOR) {
 				editorPaintReady = false;
 			}
@@ -159,7 +167,47 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		// STATE_TUTORIAL
 		// ---------------------------------------------------------------------------
 		else if (currentState == STATE_TUTORIAL) {
+			ShowCursor(false);
 			Load_Map(*gameMap, cameraX, cameraY);
+
+			Tutorial_RenderHints(fontID);
+			Range_Hacks(player);
+
+			//Check what weapon the player is using once per frame
+			WeaponStats weapon = GetCurrentWeapon(player);
+
+			// ---------------------------------------------------------------------------
+			// MAP AND CAMERA
+			// ---------------------------------------------------------------------------
+			//Camera follows the player
+			cameraX = player.x;
+			cameraY = player.y;
+
+			// Update Timers CD
+			UpdatePlayer(&player, dt, *gameMap);
+			// Weapon controls
+			WeaponSwitchCheck(player);
+			ShootingCheck(player, playerBullets, weapon, cameraX, cameraY);
+			ReloadBullets(weapon, dt);
+	
+			// ---------------------------------------------------------------------------
+			// UPDATE BULLETS
+			// ---------------------------------------------------------------------------
+			UpdateBullets(playerBullets, dt, *gameMap);
+		
+			// ---------------------------------------------------------------------------
+			// RENDERING
+			// ---------------------------------------------------------------------------
+			//Player Circle (draw on top)
+			DrawPlayer(player, meshes.circle, cameraX, cameraY, dt);
+			// Draw bullets (use correct overload with camera)
+			RenderBullets(playerBullets, meshes.circle, cameraX, cameraY);
+
+			//Draw Health Bar UI
+			DrawPlayerUI(player, weapon, meshes.square, meshes.circle, cameraX, cameraY);
+			DrawCrosshair(meshes.square);
+
+			CheckWinCondition(gameEvents, player);
 			if (AEInputCheckTriggered(AEVK_Q))
 				currentState = STATE_MENU;
 				

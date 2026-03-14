@@ -63,8 +63,8 @@ GameState UpdateAndRenderMenu(AEGfxVertexList* mesh, s8 font, float dt) {
     AEGfxPrint(font, const_cast<char*>("Flag Protocol"), tx, ty, 2.0f, 0.0f, 1.0f, 0.0f, 1.0f);
 
     Button playBtn = { 0.0f,  150.0f, 200.0f, 50.0f, "PLAY" };
-    Button tutorialBtn = { 0.0f,   50.0f, 200.0f, 50.0f, "TUTORIAL" };
-    Button loadBtn = { 0.0f,  -50.0f, 200.0f, 50.0f, "Load" };
+    Button tutorialBtn = { 0.0f,   50.0f, 200.0f, 50.0f, "TRAINING" };
+    Button loadBtn = { 0.0f,  -50.0f, 200.0f, 50.0f, "CUSTOM" };
     Button editorBtn = { 0.0f,  -150.0f, 200.0f, 50.0f, "EDITOR" };
     Button quitBtn = { 0.0f, -300.0f, 200.0f, 50.0f, "QUIT" };
 

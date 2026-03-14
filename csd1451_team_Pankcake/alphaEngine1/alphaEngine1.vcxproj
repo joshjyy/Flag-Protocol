@@ -19,6 +19,7 @@
     <ClCompile Include="..\source\particle.cpp" />
     <ClCompile Include="..\source\player.cpp" />
     <ClCompile Include="..\source\screens.cpp" />
+    <ClCompile Include="..\source\tutorial.cpp" />
     <ClCompile Include="..\source\utils.cpp" />
     <ClCompile Include="..\source\weapon.cpp" />
   </ItemGroup>
@@ -32,6 +33,7 @@
     <ClInclude Include="..\source\particle.hpp" />
     <ClInclude Include="..\source\player.hpp" />
     <ClInclude Include="..\source\screens.hpp" />
+    <ClInclude Include="..\source\tutorial.hpp" />
     <ClInclude Include="..\source\utils.hpp" />
     <ClInclude Include="..\source\weapon.hpp" />
   </ItemGroup>

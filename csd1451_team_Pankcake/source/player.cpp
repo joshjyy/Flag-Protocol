@@ -513,6 +513,16 @@ void UpdatePlayer(Player* player, float dt, std::array<std::array<int, MAP_WIDTH
 		//printf("Player reached the flag! You win!\n");
 		player->holdingFlag = true;
     }
+    else if (checkCollision(player->x, player->y, radius, gameMap) == 2 && player->holdingFlag == true) {
+        printf("Player sent the flag! 100 pts!\n");
+
+        player->holdingFlag = false;
+		player->score += 100; // Award points for capturing the flag
+
+    }
+
+
+
     if (AEInputCheckCurr(AEVK_P) == TRUE) {
         //printf("Dropped Flag!\n");
 		player->holdingFlag = false;
