@@ -193,7 +193,7 @@ void Spawn_Flag(std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& arr) {
 }
 
 
-CameraPos moving_cursor(CameraPos camera) {
+CameraPos moving_cursor(CameraPos camera, int TILE_SIZE) {
 	static int prevMouseX = 0, prevMouseY = 0;
 
 	int mouseX, mouseY;
@@ -206,15 +206,28 @@ CameraPos moving_cursor(CameraPos camera) {
 		float sensitivity = 1.0f;
 		camera.x -= (float)deltaX * sensitivity;
 		camera.y += (float)deltaY * sensitivity;
-
 	}
 
 	prevMouseX = mouseX;
 	prevMouseY = mouseY;
 
+	float worldSize = 64.0f * TILE_SIZE;
+	float screenW = (float)AEGfxGetWindowWidth();
+	float screenH = (float)AEGfxGetWindowHeight();
+
+	float maxX = worldSize - screenW;
+	float minY = -(worldSize - screenH);
+	if (maxX < 0.0f) maxX = 0.0f;
+	if (minY > 0.0f) minY = 0.0f;
+	float paddingX = 500.0f / (float)TILE_SIZE * 10.0f;
+	float paddingY = 500.0f / (float)TILE_SIZE * 2.0f;
+
+	if (camera.x < -paddingX)        camera.x = -paddingX;
+	if (camera.x > maxX + 50.0f)    camera.x = maxX + 50.0f;
+	if (camera.y < minY - paddingY)  camera.y = minY - paddingY;
+	if (camera.y > paddingY)         camera.y = paddingY;
 	return camera;
 }
-
 
 void hover(std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& arr, float cameraX, float cameraY, AEGfxVertexList* mesh,int current_tile) {
 
@@ -252,7 +265,7 @@ void hover(std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& arr, float camera
 		}
 	}
 }
-void zoom(int& TILE_SIZE, float& cameraX, float& cameraY) {
+void zoom(int& TILE_SIZE) {
 	int scrollDelta = 0;
 	AEInputMouseWheelDelta(&scrollDelta);
 
@@ -263,13 +276,4 @@ void zoom(int& TILE_SIZE, float& cameraX, float& cameraY) {
 		TILE_SIZE -= 1;
 	}
 
-	float worldSize = 64.0f * TILE_SIZE;
-	float screenW = (float)AEGfxGetWindowWidth();
-	float screenH = (float)AEGfxGetWindowHeight();
-
-	float maxY = worldSize - screenH - 100.0f;
-	if (maxY < 0.0f) maxY = 0.0f;
-
-	cameraX = (worldSize - screenW) / 2.0f;
-	cameraY = AEClamp(cameraY, 0.0f, maxY);
 }

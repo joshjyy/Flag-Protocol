@@ -245,9 +245,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				}
 				printf("Map cleared!\n");
 			}	
-			zoom(TILE_SIZE, camera.x, camera.y);
+			zoom(TILE_SIZE);
 			// Centered camera
-			camera = moving_cursor(camera);
+			camera = moving_cursor(camera, TILE_SIZE);
 
 			Load_Map(*gameMap, camera.x, camera.y);
 			
