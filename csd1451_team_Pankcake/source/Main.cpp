@@ -230,7 +230,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				floodfill(*gameMap, 0, 0);
 				if (!HasHole(newMap)) {
 					Save_Game_Level("Assets/My_Custom_Map.txt", *gameMap);
-					printf("Map saved to My_Custom_Map.txt!\n");
 				}
 
 			}
