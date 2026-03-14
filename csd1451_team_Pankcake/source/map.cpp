@@ -323,12 +323,11 @@ bool HasHole(std::array<std::array<int, MAP_WIDTH + 2>, MAP_HEIGHT + 2>& newMap)
 		for (int j = 0; j < MAP_WIDTH + 2; j++) {
 			if (newMap[i][j] == 0) {
 				hole = false;
-				std::cout << "hole at: " << i << ", " << j << "\n";
 			}
 		}
 	}
 	
-	if (hole) std::cout << "leak exists";
-	else std::cout << "no leak";
+	if (hole) std::cout << "leak exists" << std::endl;
+	else std::cout << "no leak" << std::endl;
 	return hole;
 }
