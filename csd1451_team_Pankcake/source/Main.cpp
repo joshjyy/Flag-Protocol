@@ -228,7 +228,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			if (AEInputCheckTriggered(AEVK_S)) {
 				
 				floodfill(*gameMap, 0, 0);
-				if (!HasHole(newMap)) {
+				if (!HasHole()) {
 					Save_Game_Level("Assets/My_Custom_Map.txt", *gameMap);
 				}
 
@@ -249,9 +249,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				}
 				printf("Map cleared!\n");
 			}	
-			zoom(TILE_SIZE);
+			zoom();
 			// Centered camera
-			camera = moving_cursor(camera, TILE_SIZE);
+			camera = moving_cursor(camera);
 
 			Load_Map(*gameMap, camera.x, camera.y);
 			

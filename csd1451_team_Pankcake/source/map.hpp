@@ -33,8 +33,8 @@ struct CameraPos {
     float x = 0.0f;
     float y = 0.0f;
 };
-CameraPos moving_cursor(CameraPos camera, int TILE_SIZE);
+CameraPos moving_cursor(CameraPos camera);
 void hover(std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& arr, float cameraX, float cameraY, AEGfxVertexList* mesh, int current_tile);
-void zoom(int& TILE_SIZE);
+void zoom();
 void floodfill(std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& arr, int x, int y);
-bool HasHole(std::array<std::array<int, MAP_WIDTH + 2>, MAP_HEIGHT + 2>& newMap);
+bool HasHole();

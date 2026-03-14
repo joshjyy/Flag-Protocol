@@ -196,7 +196,7 @@ void Spawn_Flag(std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& arr) {
 }
 
 
-CameraPos moving_cursor(CameraPos camera, int TILE_SIZE) {
+CameraPos moving_cursor(CameraPos camera) {
 	static int prevMouseX = 0, prevMouseY = 0;
 
 	int mouseX, mouseY;
@@ -237,7 +237,6 @@ void hover(std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& arr, float camera
 	AEGfxSetRenderMode(AE_GFX_RM_COLOR);
 	AEGfxSetTransparency(0.5f);
 	AEMtx33 scale, translate, transform;
-	const int EDGE = 4;
 	int mouseX, mouseY;
 	AEInputGetCursorPosition(&mouseX, &mouseY);
 	int gridX = (int)((mouseX + cameraX - 25) / TILE_SIZE);
@@ -254,7 +253,7 @@ void hover(std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& arr, float camera
 	}
 	else {
 		if (arr[gridY][gridX] == 0) {
-			PrintBlock(current_tile, 0.3, screenX, screenY, meshes.square);
+			PrintBlock(current_tile, 0.3f, screenX, screenY, meshes.square);
 		}
 		else {
 			AEGfxSetTransparency(0.5f);
@@ -268,7 +267,7 @@ void hover(std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& arr, float camera
 		}
 	}
 }
-void zoom(int& TILE_SIZE) {
+void zoom() {
 	int scrollDelta = 0;
 	AEInputMouseWheelDelta(&scrollDelta);
 
@@ -317,7 +316,7 @@ void floodfill(std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& arr, int x, i
 	}
 }
 
-bool HasHole(std::array<std::array<int, MAP_WIDTH + 2>, MAP_HEIGHT + 2>& newMap) {
+bool HasHole() {
 	bool hole = true;
 	for (int i = 0; i < MAP_HEIGHT + 2; i++) {
 		for (int j = 0; j < MAP_WIDTH + 2; j++) {
