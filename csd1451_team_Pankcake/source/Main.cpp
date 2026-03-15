@@ -13,6 +13,7 @@
 #include "events.hpp"
 #include "screens.hpp"
 #include "tutorial.hpp"
+#include "editor.hpp"
 
 
 //Legend if needed later
@@ -237,201 +238,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			if (Cutscene_Update(cutscene, dt))
 				currentState = STATE_GAME;
 		}   
-		// ---------------------------------------------------------------------------
-		// EDITOR STATE
-		// ---------------------------------------------------------------------------
-		else if (currentState == STATE_EDITOR)
-		{
-			AEGfxSetBackgroundColor(0.05f, 0.05f, 0.1f);
-			GameStateLoadEditor(gGameRunning, *gameMap);
-			// Get mouse position for tile painting
-			AEInputGetCursorPosition(&mouseX, &mouseY);
-
-			int gridX = (int)((mouseX + camera.x - 25) / TILE_SIZE);
-			int gridY = (int)((mouseY - camera.y - 25) / TILE_SIZE);
-
-
-			if (!editorPaintReady) {
-				if (!AEInputCheckCurr(AEVK_LBUTTON)) {
-					editorPaintReady = true;
-				}
-			}
-
-			// Check if within grid bounds
-			if (gridX >= 0 && gridX < MAP_WIDTH && gridY >= 0 && gridY < MAP_HEIGHT) {
-				// Left click to paint
-				if (editorPaintReady && AEInputCheckCurr(AEVK_LBUTTON)) {
-					(*gameMap)[gridY][gridX] = currentTileType;
-				}
-
-				if (editorPaintReady && AEInputCheckCurr(AEVK_LBUTTON)) {
-					(*gameMap)[gridY][gridX] = currentTileType;
-				}
-				
-				// Right click to erase
-				if (AEInputCheckCurr(AEVK_RBUTTON)) {
-					(*gameMap)[gridY][gridX] = 0;
-				}
-			}
-
-			else if (currentState == STATE_GAME) {
-				if (AEInputCheckTriggered(AEVK_BACK) || AEInputCheckTriggered(AEVK_ESCAPE))
-					currentState = STATE_MENU;
-			}
-
-
-			// Number keys to change tile type
-			if (AEInputCheckTriggered(AEVK_0)) currentTileType = 0;  // Eraser
-			if (AEInputCheckTriggered(AEVK_1)) currentTileType = 1;  // Green blocks
-			if (AEInputCheckTriggered(AEVK_2)) currentTileType = 2;  // Purple goal
-			if (AEInputCheckTriggered(AEVK_3)) currentTileType = 3;  // Red blocks(?)
-			if (AEInputCheckTriggered(AEVK_4)) currentTileType = 4;  // Lime flag
-
-			// Save map (S key)
-			if (AEInputCheckTriggered(AEVK_S)) {
-				
-				floodfill(*gameMap, 0, 0);
-				if (!HasHole()) {
-					Save_Game_Level("Assets/My_Custom_Map.txt", *gameMap);
-				}
-
-			}
-
-			// Load map (L key)
-			if (AEInputCheckTriggered(AEVK_L)) {
-				Load_Game_Level("Assets/Level_1_Map.txt", *gameMap);
-				printf("Original map loaded!\n");
-			}
-			
-			// Clear map (C key)
-			if (AEInputCheckTriggered(AEVK_C)) {
-				for (int i = 0; i < MAP_HEIGHT; i++) {
-					for (int j = 0; j < MAP_WIDTH; j++) {
-						(*gameMap)[i][j] = 0;
-					}
-				}
-				printf("Map cleared!\n");
-			}	
-			zoom();
-			// Centered camera
-			camera = moving_cursor(camera);
-
-			Load_Map(*gameMap, camera.x, camera.y);
-			
-			hover(*gameMap, camera.x, camera.y, meshes.square, currentTileType);
-			
-			float uiY = 350.0f;
-			float textX, textY;
-
-			GetNormalizedTextPosition(-700.0f, uiY, &textX, &textY);
-			AEGfxPrint(fontID, "EDITOR MODE", textX, textY, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f);
-
-			// Tiles section
-			uiY -= 40.0f;
-			GetNormalizedTextPosition(-700.0f, uiY, &textX, &textY);
-			AEGfxPrint(fontID, "TILES", textX, textY, 1.0f, 0.8f, 0.8f, 0.8f, 1.0f);
-
-			uiY -= 30.0f;
-
-			// Tile options in columns
-			struct TileDisplay {
-				const char* label;
-				float x;
-				float r, g, b;
-			};
-
-			TileDisplay tiles[] = {
-				{"1: Green Blocks", -700.0f, 0.0f, 1.0f, 0.0f},     // Green
-				{"2: Purple Goal", -550.0f, 0.5f, 0.0f, 1.0f},      // Purple
-				{"3: Red Blocks", -400.0f, 1.0f, 0.0f, 0.0f},       // Red
-				{"4: Lime Flag", -700.0f, 0.0f, 1.0f, 1.0f},        // Cyan
-				{"0: Eraser", -400.0f, 1.0f, 1.0f, 1.0f}            // White
-			};
-
-			// First row (1-3)
-			for (int i = 0; i < 3; i++) {
-				GetNormalizedTextPosition(tiles[i].x, uiY, &textX, &textY);
-				AEGfxPrint(fontID, tiles[i].label, textX, textY, 1.0f,
-					tiles[i].r, tiles[i].g, tiles[i].b, 1.0f);
-			}
-
-			uiY -= 30.0f;
-
-			// Second row (4 and Eraser)
-			for (int i = 3; i < 5; i++) {
-				GetNormalizedTextPosition(tiles[i].x, uiY, &textX, &textY);
-				AEGfxPrint(fontID, tiles[i].label, textX, textY, 1.0f,
-					tiles[i].r, tiles[i].g, tiles[i].b, 1.0f);
-			}
-
-			uiY -= 50.0f;
-
-			// Current tile selection
-			GetNormalizedTextPosition(-700.0f, uiY, &textX, &textY);
-			AEGfxPrint(fontID, "CURRENT", textX, textY, 1.0f, 0.8f, 0.8f, 0.8f, 1.0f);
-
-			uiY -= 30.0f;
-
-			// Show current tile with color
-			GetNormalizedTextPosition(-700.0f, uiY, &textX, &textY);
-			char tileText[32];
-
-			const char* tileNames[] = { "Eraser", "Green Blocks", "Purple Goal", "Red Blocks", "Lime Flag" };
-			float tileColors[5][3] = {
-				{1.0f, 1.0f, 1.0f},  // Eraser
-				{0.0f, 1.0f, 0.0f},  // Green blocks
-				{0.5f, 0.0f, 1.0f},  // Purple goal
-				{1.0f, 0.0f, 0.0f},  // Red blocks(?)
-				{0.0f, 1.0f, 1.0f}   // Lime flag
-			};
-
-			sprintf_s(tileText, 32, "Current: %s", tileNames[currentTileType]);
-
-			AEGfxPrint(fontID, tileText, textX, textY, 1.0f,
-				tileColors[currentTileType][0],
-				tileColors[currentTileType][1],
-				tileColors[currentTileType][2], 1.0f);
-
-			// Commands
-			uiY -= 40.0f;
-			GetNormalizedTextPosition(-700.0f, uiY, &textX, &textY);
-			AEGfxPrint(fontID, "COMMANDS", textX, textY, 1.0f, 0.8f, 0.8f, 0.8f, 1.0f);
-
-			uiY -= 30.0f;
-
-			struct CommandDisplay {
-				const char* label;
-				const char* desc;
-				float x;
-			};
-
-			CommandDisplay commands[] = {
-				{"S: Save", "(custom file)", -700.0f},
-				{"L: Load", "(original map)", -550.0f},
-				{"C: Clear", "(entire map)", -400.0f}
-			};
-
-			// Command keys
-			for (int i = 0; i < 3; i++) {
-				GetNormalizedTextPosition(commands[i].x, uiY, &textX, &textY);
-				AEGfxPrint(fontID, commands[i].label, textX, textY, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f);
-			}
-
-			uiY -= 30.0f;
-
-			// Descriptions
-			for (int i = 0; i < 3; i++) {
-				GetNormalizedTextPosition(commands[i].x, uiY, &textX, &textY);
-				AEGfxPrint(fontID, commands[i].desc, textX, textY, 1.0f, 0.7f, 0.7f, 0.7f, 1.0f);
-			}
-
-			// Back to menuZ
-			if (AEInputCheckTriggered(AEVK_Q)) {
-				currentState = STATE_MENU;
-				
-			}
-		}
-
+	
 		// ---------------------------------------------------------------------------
 		// STATE_CUTSCENE
 		// ---------------------------------------------------------------------------
@@ -545,6 +352,28 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			currentState = UpdateAndRenderPause(meshes.square, fontID, dt);
 
 			}
+
+		// ---------------------------------------------------------------------------
+		// EDITOR STATE
+		// ---------------------------------------------------------------------------
+		else if (currentState == STATE_EDITOR)
+		{
+			static EditorState editor = InitEditor();
+			static bool editorLoaded = false;
+
+			if (!editorLoaded) {
+				GameStateLoadEditor(gGameRunning, *gameMap);
+				SaveInitialEditorMap(*gameMap); 
+				editorLoaded = true;
+			}
+
+			UpdateAndRenderEditor(editor, *gameMap, meshes.square, fontID, gGameRunning);
+
+			if (AEInputCheckTriggered(AEVK_Q)) {
+				currentState = STATE_MENU;
+				editorLoaded = false;
+			}
+		}
 		
 		// ---------------------------------------------------------------------------
 		//DEBUGGING
