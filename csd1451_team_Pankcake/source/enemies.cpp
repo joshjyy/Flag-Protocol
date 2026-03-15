@@ -2,8 +2,12 @@
 #include "AI.hpp"
 #include "gameConstants.hpp"
 #include "AEEngine.h"
+#include "map.hpp"
 #include "utils.hpp"
 #include "damageNumbers.hpp"
+#include <cstdlib> 
+
+GruntSpawner gruntSpawner;
 
 //Constructor for Grunts
 Grunt::Grunt(float x, float y)
@@ -46,6 +50,11 @@ void UpdateGrunts(std::vector<Grunt>& grunts, Player& player, std::vector<Bullet
 	}
 }
 
+//Initialise the spawner
+void InitGruntSpawner() {
+	gruntSpawner.waveTimer = 0.0f;
+	gruntSpawner.waveInterval = 5.0f;
+}
 
 //RENDERING
 // Render all grunts
@@ -60,6 +69,63 @@ void RenderGrunts(std::vector<Grunt>& grunts, void* mesh, float cameraX, float c
 		float screenY = grunt.movingY - cameraY;
 
 		DrawSprite((AEGfxVertexList*)mesh, screenX, screenY, GRUNT_RADIUS, GRUNT_RADIUS, 0.0f);
+	}
+}
+
+void UpdateGruntSpawner(std::vector<Grunt>& grunts,
+	std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap,
+	float dt)
+{
+	gruntSpawner.waveTimer += dt;
+	if (gruntSpawner.waveTimer < gruntSpawner.waveInterval)
+		return;
+
+	gruntSpawner.waveTimer = 0.0f;
+	// Don't spawn if at max capacity of 25.
+	if ((int)grunts.size() >= 25)
+		return;
+
+	// Find all tile-3 positions
+	struct SpawnTile { int row, col; };
+	std::vector<SpawnTile> spawnTiles;
+
+	for (int i = 0; i < MAP_HEIGHT; i++) {
+		for (int j = 0; j < MAP_WIDTH; j++) {
+			if (gameMap[i][j] == 3) {
+				spawnTiles.push_back({ i, j });
+			}
+		}
+	}
+
+	if (spawnTiles.empty()) return;
+
+	// Random count between 1 and 3
+	int spawnCount = 1 + (rand() % 3);
+
+	// Clamp to not exceed max
+	int maxNew = 25 - (int)grunts.size();
+	if (spawnCount > maxNew)
+		spawnCount = maxNew;
+
+	float radius = 3.0f * (float)TILE_SIZE;  // 3-tile radius in world units
+
+	for (int n = 0; n < spawnCount; n++) {
+		// Pick a random spawn tile
+		int idx = rand() % (int)spawnTiles.size();
+		int row = spawnTiles[idx].row;
+		int col = spawnTiles[idx].col;
+
+		// Convert tile to world position (same formula as Load_Map)
+		float tileWorldX = (col * TILE_SIZE) - 800.0f + 25.0f;
+		float tileWorldY = 450.0f - (row * TILE_SIZE) - 25.0f;
+
+		// Random offset within 3-tile radius
+		float angle = ((float)(rand() % 360)) * 3.14159f / 180.0f;
+		float dist = ((float)(rand() % (int)radius));
+		float spawnX = tileWorldX + dist * cosf(angle);
+		float spawnY = tileWorldY + dist * sinf(angle);
+
+		grunts.push_back(SpawnGrunt(spawnX, spawnY));
 	}
 }
 

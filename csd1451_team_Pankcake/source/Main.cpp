@@ -89,6 +89,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	//Init Player
 	Player player = InitPlayer();
+	//Init spawner
+	InitGruntSpawner();
 	// Initialize engine (1600x900 window, 60 FPS)
 	AESysInit(hInstance, nCmdShow, 1600, 900, 1, 60, false, NULL);
 	AESysSetWindowTitle("Game Test!");
@@ -284,6 +286,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			// ---------------------------------------------------------------------------
 			//Update Grunt to aim at player
 			UpdateGrunts(grunts, player, enemyBullets, dt, *gameMap);
+			UpdateGruntSpawner(grunts, *gameMap, dt);
 
 			// ---------------------------------------------------------------------------
 			// UPDATE BULLETS
@@ -398,6 +401,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	delete gameMap;
 	ClearBullets(playerBullets);
 	ClearBullets(enemyBullets);
+	ClearDamageNumbers();
 	AEGfxDestroyFont(fontID);
 	ParticleEmitterFree(&player.trailEmitter);
 	ParticleEmitterFree(&player.deathEmitter);
