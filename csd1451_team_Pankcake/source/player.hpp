@@ -18,7 +18,11 @@ struct Bullet {
 
 struct Player {
 	int gruntsKilled;
+	int flagCaptures;
 	int score;
+    int scoreMilestone;
+    float milestoneTimer;
+    
     float health;
     // Position
     float x;
@@ -50,6 +54,8 @@ struct Player {
     ParticleEmitter* dashTrailEmitter; 
     bool deathExplosionSpawned;
 
+
+
 };
 
 Bullet CreateBullet(float x, float y, float targetX, float targetY, float speed, float damage);
@@ -75,3 +81,6 @@ void CheckPlayerGruntBodyCollision(Player& player, std::vector<Grunt>& grunts);
 void killPlayer(Player& player);
 void LoadPlayer(Player& player, AEGfxVertexList* particleMesh);
 void UnloadPlayer(Player& player);
+
+void DrawScoreUI(Player& player, void* mesh, float dt);
+

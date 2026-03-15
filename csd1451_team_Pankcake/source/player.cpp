@@ -12,6 +12,9 @@ Player InitPlayer(void) {
     Player player = {
 		0,                          //gruntsKilled
 		0,                        // score
+		0,						// flagCaptures
+		0,						// scoreMilestone
+		0.0f,					// milestoneTimer
         100.0f,                  // health
         0.0f,                     // x
         0.0f,                     // y
@@ -500,33 +503,40 @@ void UpdatePlayer(Player* player, float dt, std::array<std::array<int, MAP_WIDTH
         player->y += player->velocityY * dt;
     }
 
-    // Wall collision
-    if (checkCollision(player->x, player->y, radius, gameMap) == 1) {
+    int collision = checkCollision(*player, radius, gameMap);
+    if (collision == 1) {
         player->x = oldX;
         player->y = oldY;
         player->dashTimer = 0.0f;
-        player->velocityX = 0.0f;  
-        player->velocityY = 0.0f;  
+        player->velocityX = 0.0f;
+        player->velocityY = 0.0f;
+    }
+    else if (collision == 4 && player->holdingFlag == false) {
+        player->holdingFlag = true;
+        if (player->health < 80.0f) {
+            player->health += 20.0f; // Heal player for picking up
+        }
+        else {
+			player->health = 100.0f; // Cap health at 100
+        }
 
     }
-    else if (checkCollision(player->x, player->y, radius, gameMap) == 4 && player->holdingFlag == false) {
-		//printf("Player reached the flag! You win!\n");
-		player->holdingFlag = true;
-    }
-    else if (checkCollision(player->x, player->y, radius, gameMap) == 2 && player->holdingFlag == true) {
-        printf("Player sent the flag! 100 pts!\n");
-
+    else if (collision == 2 && player->holdingFlag == true) {
         player->holdingFlag = false;
-		player->score += 100; // Award points for capturing the flag
+        player->score += 100;
+        Spawn_Flag(gameMap);
 
+        // Milestone animations
+        if (player->score == 300)
+            player->scoreMilestone = 1;  
+        else if (player->score == 500)
+            player->scoreMilestone = 2; 
+        else if (player->score == 1000)
+            player->scoreMilestone = 3;  
+
+        player->milestoneTimer = 2.0f;  // show for 2 seconds
     }
 
-
-
-    if (AEInputCheckCurr(AEVK_P) == TRUE) {
-        //printf("Dropped Flag!\n");
-		player->holdingFlag = false;
-    }
 
 
 	// Update dash state (in case dash just ended)
@@ -752,3 +762,93 @@ void UnloadPlayer(Player& player) {
     ParticleEmitterFree(&player.deathEmitter);
 }
 
+void DrawScoreUI(Player& player, void* mesh , float dt) {
+	//Set up UI render state
+    AEGfxSetRenderMode(AE_GFX_RM_COLOR);
+    AEGfxSetBlendMode(AE_GFX_BM_BLEND);
+    AEGfxSetTransparency(0.6f);
+    AEGfxSetColorToMultiply(0.0f, 0.05f, 0.0f, 1.0f);
+    AEMtx33 scale, translate, transform;
+
+    //
+    AEMtx33Scale(&scale, 220.0f, 140.0f);
+    AEMtx33Trans(&translate, 690.0f, 380.0f);
+    AEMtx33Concat(&transform, &translate, &scale);
+    AEGfxSetTransform(transform.m);
+    AEGfxMeshDraw((AEGfxVertexList*)mesh, AE_GFX_MDM_TRIANGLES);
+
+    AEGfxSetTransparency(1.0f);
+    AEGfxSetColorToMultiply(0.0f, 1.0f, 0.2f, 1.0f);
+    AEMtx33Scale(&scale, 3.0f, 140.0f);
+    AEMtx33Trans(&translate, 582.0f, 380.0f);
+    AEMtx33Concat(&transform, &translate, &scale);
+    AEGfxSetTransform(transform.m);
+    AEGfxMeshDraw((AEGfxVertexList*)mesh, AE_GFX_MDM_TRIANGLES);
+
+    float textX, textY;
+
+    GetNormalizedTextPosition(600.0f, 430.0f, &textX, &textY);
+    AEGfxPrint(fontID, "// SCORE //", textX, textY, 1.0f, 0.0f, 1.0f, 0.2f, 1.0f);
+
+    GetNormalizedTextPosition(600.0f, 400.0f, &textX, &textY);
+    AEGfxPrint(fontID, "----------------", textX, textY, 0.8f, 0.0f, 0.4f, 0.1f, 1.0f);
+
+    char scoreText[32];
+    sprintf_s(scoreText, 32, "PTS  %d", player.score);
+    GetNormalizedTextPosition(600.0f, 370.0f, &textX, &textY);
+    AEGfxPrint(fontID, scoreText, textX, textY, 1.2f, 1.0f, 1.0f, 1.0f, 1.0f);
+
+    char flagText[32];
+    sprintf_s(flagText, 32, "FLAGS  %d", player.score / 100);
+    GetNormalizedTextPosition(600.0f, 340.0f, &textX, &textY);
+    AEGfxPrint(fontID, flagText, textX, textY, 1.0f, 0.0f, 1.0f, 0.8f, 1.0f);
+
+    int captures = player.score / 100;
+    for (int i = 0; i < 10; i++) {
+        float dotX = 610.0f + i * 16.0f;
+        AEGfxSetTransparency(1.0f);
+        if (i < captures)
+            AEGfxSetColorToMultiply(0.0f, 1.0f, 0.8f, 1.0f);
+        else
+            AEGfxSetColorToMultiply(0.1f, 0.2f, 0.1f, 1.0f);
+
+        AEMtx33Scale(&scale, 10.0f, 10.0f);
+        AEMtx33Trans(&translate, dotX, 310.0f);
+        AEMtx33Concat(&transform, &translate, &scale);
+        AEGfxSetTransform(transform.m);
+        AEGfxMeshDraw((AEGfxVertexList*)mesh, AE_GFX_MDM_TRIANGLES);
+    }
+
+
+    // Milestone animation
+    if (player.milestoneTimer > 0.0f) {
+		//Decrease timer
+        player.milestoneTimer -= dt;
+
+        // Pulse scale based on timer
+        float pulse = 1.5f + 0.5f * sinf(player.milestoneTimer * 10.0f);
+        // Fade out near end
+        float alpha = player.milestoneTimer / 2.0f;
+
+        const char* milestoneText[] = { "", "NODES SEIZED", "SIGNAL BREACH", "GRID DOMINANT" };        
+        float colors[4][3] = {
+            {1,1,1},
+            {0.0f, 1.0f, 0.4f},   // green
+            {1.0f, 0.5f, 0.0f},   // orange
+            {1.0f, 0.8f, 0.0f},   // gold
+        };
+
+        GetNormalizedTextPosition(580.0f, 260.0f, &textX, &textY);
+        AEGfxPrint(fontID, milestoneText[player.scoreMilestone],
+            textX, textY, pulse,
+            colors[player.scoreMilestone][0],
+            colors[player.scoreMilestone][1],
+            colors[player.scoreMilestone][2],
+            alpha);
+
+        // Burst particles at player position
+        if (player.trailEmitter)
+            ParticleEmitterEmit(player.trailEmitter, player.x, player.y, 10);
+           }
+    AEGfxSetTransparency(1.0f);
+}

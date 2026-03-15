@@ -2,6 +2,7 @@
 #include "AEEngine.h"
 #include <array>
 #include "map.hpp"
+#include "player.hpp"
 
 int AreCirclesIntersecting(float circle_center1_x, float circle_center1_y, float radius_1, float circle_center2_x, float circle_center2_y, float radius_2) {
 
@@ -144,40 +145,54 @@ int checkCollision(float playerX, float playerY, float radius,
         return 1;
     }
 
+    return 0;
+}
 
-	//Flag tile collision check (4 = flag tile)
-    if (gameMap[topRow][leftCol] == 4) {
-        return 4;
-    }
-    if (gameMap[topRow][rightCol] == 4) {
-        return 4;
+int checkCollision(Player& player, float radius,
+    std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap) {
 
-    }
-    if (gameMap[bottomRow][leftCol] == 4) {
-        return 4;
+    float epsilon = 30.0f, epslion_less = 20.0f;
+    float leftEdge = player.x - (radius - epsilon);
+    float rightEdge = player.x + (radius + epslion_less);
+    float topEdge = player.y + (radius - epsilon);
+    float bottomEdge = player.y - (radius + epslion_less);
 
-    }
-    if (gameMap[bottomRow][rightCol] == 4) {
-        return 4;
+    int leftCol = (int)((leftEdge + 800.0f - 25.0f) / 50.0f);
+    int rightCol = (int)((rightEdge + 800.0f - 25.0f) / 50.0f);
+    int topRow = (int)((450.0f - topEdge - 25.0f) / 50.0f);
+    int bottomRow = (int)((450.0f - bottomEdge - 25.0f) / 50.0f);
 
-    }
+    if (leftCol < 0 || rightCol >= MAP_WIDTH || topRow < 0 || bottomRow >= MAP_HEIGHT)
+        return 1;
 
+    if (gameMap[topRow][leftCol] == 1) return 1;
+    if (gameMap[topRow][rightCol] == 1) return 1;
+    if (gameMap[bottomRow][leftCol] == 1) return 1;
+    if (gameMap[bottomRow][rightCol] == 1) return 1;
 
-    //Flag tile collision check (2 = flag point)
-    if (gameMap[topRow][leftCol] == 2) {
-        return 2;
-    }
-    if (gameMap[topRow][rightCol] == 2) {
-        return 2;
+	//Look for flag interactions in the same area. Player center must cross tile center to trigger
+    for (int row = topRow; row <= bottomRow; row++) {
+        for (int col = leftCol; col <= rightCol; col++) {
+            float tileCenterX = col * 50.0f - 800.0f + 25.0f;
+            float tileCenterY = 450.0f - row * 50.0f - 25.0f;
 
-    }
-    if (gameMap[bottomRow][leftCol] == 2) {
-        return 2;
+            // Player center must cross tile center to trigger
+            bool playerCenterInTile = (player.x >= tileCenterX - 25.0f && player.x <= tileCenterX + 25.0f &&
+                player.y >= tileCenterY - 25.0f && player.y <= tileCenterY + 25.0f);
 
-    }
-    if (gameMap[bottomRow][rightCol] == 2) {
-        return 2;
+            if (gameMap[row][col] == 1) return 1;
 
+            if (gameMap[row][col] == 4 && !player.holdingFlag && playerCenterInTile) {
+                gameMap[row][col] = 5;
+                printf("Flag picked up!\n");
+                return 4;
+            }
+
+            if (gameMap[row][col] == 2 && player.holdingFlag && playerCenterInTile) {
+                printf("Flag dropped !");
+                return 2;
+            }
+        }
     }
 
     return 0;

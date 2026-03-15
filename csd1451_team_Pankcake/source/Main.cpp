@@ -180,7 +180,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			Tutorial_RenderDebug(fontID, player);
 				
 			Range_Hacks(player);
-
+		
 			//Check what weapon the player is using once per frame
 			WeaponStats weapon = GetCurrentWeapon(player);
 
@@ -510,7 +510,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 			if (AEInputCheckTriggered(AEVK_Q))
 				currentState = STATE_MENU;
-				
+			DrawScoreUI(player, meshes.square , dt);
+
 		}
 
 		// ---------------------------------------------------------------------------
