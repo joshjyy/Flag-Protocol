@@ -14,6 +14,7 @@
 #include "screens.hpp"
 #include "tutorial.hpp"
 #include "editor.hpp"
+#include "damageNumbers.hpp"
 
 
 //Legend if needed later
@@ -289,6 +290,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			// ---------------------------------------------------------------------------
 			UpdateBullets(playerBullets, dt, *gameMap);
 			UpdateBullets(enemyBullets, dt, *gameMap);
+
+			// ---------------------------------------------------------------------------
+			// UPDATE DAMAGE NUMBERS
+			// ---------------------------------------------------------------------------
+			UpdateDamageNumbers(dt);
 	
 			// ---------------------------------------------------------------------------
 			// Collision Checks
@@ -311,6 +317,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			//Draw Health Bar UI
 			DrawPlayerUI(player, weapon, meshes.square, meshes.circle, cameraX, cameraY);
 			DrawCrosshair(meshes.square);
+			RenderDamageNumbers(cameraX, cameraY, fontID);
 			// *** CHECK WIN CONDITION ***
 			RemoveDeadGrunts(grunts);
 			CheckWinCondition(gameEvents, player);

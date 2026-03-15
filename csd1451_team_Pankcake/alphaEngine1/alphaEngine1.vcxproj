@@ -12,6 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\AI.cpp" />
+    <ClCompile Include="..\source\damageNumbers.cpp" />
     <ClCompile Include="..\source\editor.cpp" />
     <ClCompile Include="..\source\enemies.cpp" />
     <ClCompile Include="..\source\events.cpp" />
@@ -26,6 +27,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\AI.hpp" />
+    <ClInclude Include="..\source\damageNumbers.hpp" />
     <ClInclude Include="..\source\editor.hpp" />
     <ClInclude Include="..\source\enemies.hpp" />
     <ClInclude Include="..\source\events.hpp" />

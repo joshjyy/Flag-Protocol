@@ -3,6 +3,7 @@
 #include "gameConstants.hpp"
 #include "AEEngine.h"
 #include "utils.hpp"
+#include "damageNumbers.hpp"
 
 //Constructor for Grunts
 Grunt::Grunt(float x, float y)
@@ -84,6 +85,10 @@ void CheckBulletGruntCollisions(std::vector<Bullet>& playerBullets, std::vector<
 
 			if (collision > 0) {
 				grunt.health -= playerBullets[i].damage;
+
+				// Spawn damage number at grunt position
+				SpawnDamageNumber(grunt.movingX, grunt.movingY, playerBullets[i].damage, false);
+
 				printf("Grunt hit! Health: %.1f\n", grunt.health);
 
 				if (grunt.health <= 0.0f) {
