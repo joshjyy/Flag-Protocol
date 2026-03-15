@@ -171,6 +171,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			Load_Map(*gameMap, cameraX, cameraY);
 
 			Tutorial_RenderHints(fontID);
+			Tutorial_RenderDebug(fontID, player);
+				
 			Range_Hacks(player);
 
 			//Check what weapon the player is using once per frame

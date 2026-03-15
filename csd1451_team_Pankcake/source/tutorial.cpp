@@ -16,8 +16,8 @@ void Tutorial_RenderHints(s8 font)
         { "V: Unlimited Ammo", 0.4f, 0.8f, 1.0f },
         { "K: Die / Respawn",            1.0f, 0.4f, 0.4f },
         { "P: Drop Flag",      1.0f, 1.0f, 0.4f },
-        { "Step on Lime Tile to Obtain Flag Node!",          0.0f, 1.0f, 1.0f },  
-        { "Step on Purple Tile to Activate Flag Node!",      0.5f, 0.0f, 1.0f },
+        { "Look for the Lime Tile and Step On It to Obtain Flag Node!",          0.0f, 1.0f, 1.0f },  
+        { "Look for the Purple Tile and Step On It To Connect Flag Node for Points!",      0.5f, 0.0f, 1.0f },
 
 
     };
@@ -41,6 +41,15 @@ void Tutorial_RenderHints(s8 font)
     GetNormalizedTextPosition(xPos, startY - 5 * stepY - 20.0f, &textX, &textY);
     AEGfxPrint(font, hints[5].text, textX, textY, 0.7f,
         hints[5].r, hints[5].g, hints[5].b, 1.0f);
+
+    char fpsText[32];
+    sprintf_s(fpsText, 32, "FPS: %.0f | DT: %.4f",
+        AEFrameRateControllerGetFrameRate(),
+        AEFrameRateControllerGetFrameTime());
+
+    // Move FPS higher so it's on screen
+    GetNormalizedTextPosition(xPos, startY - 6 * stepY - 20.0f, &textX, &textY);
+    AEGfxPrint(font, fpsText, textX, textY, 0.7f, 1.0f, 1.0f, 1.0f, 1.0f);
 }
 
 void Range_Hacks(Player& player)
@@ -63,4 +72,53 @@ void Range_Hacks(Player& player)
 
     // Drop flag
     if (AEInputCheckTriggered(AEVK_P)) player.holdingFlag = false;
+}
+
+void Tutorial_RenderDebug(s8 font, const Player& player)
+{
+    char buf[64];
+    float textX, textY;
+    float xPos = 600.0f;   // right side
+    float startY = 390.0f;
+    float stepY = 28.0f;
+    int   i = 0;
+
+    // Position
+    sprintf_s(buf, 64, "X: %.1f  Y: %.1f", player.x, player.y);
+    GetNormalizedTextPosition(xPos, startY - i++ * stepY, &textX, &textY);
+    AEGfxPrint(font, buf, textX, textY, 0.7f, 1.0f, 1.0f, 1.0f, 1.0f);
+
+    // Health
+    sprintf_s(buf, 64, "HP: %.1f", player.health);
+    GetNormalizedTextPosition(xPos, startY - i++ * stepY, &textX, &textY);
+    AEGfxPrint(font, buf, textX, textY, 0.7f, 1.0f, 0.4f, 0.4f, 1.0f);
+
+    // Ammo
+    sprintf_s(buf, 64, "Pistol: %d/%d", player.pistol.currentAmmo, player.pistol.maxAmmo);
+    GetNormalizedTextPosition(xPos, startY - i++ * stepY, &textX, &textY);
+    AEGfxPrint(font, buf, textX, textY, 0.7f, 0.8f, 0.8f, 1.0f, 1.0f);
+
+    sprintf_s(buf, 64, "Rifle:  %d/%d", player.rifle.currentAmmo, player.rifle.maxAmmo);
+    GetNormalizedTextPosition(xPos, startY - i++ * stepY, &textX, &textY);
+    AEGfxPrint(font, buf, textX, textY, 0.7f, 0.8f, 0.8f, 1.0f, 1.0f);
+
+    // Velocity
+    sprintf_s(buf, 64, "VX: %.2f  VY: %.2f", player.velocityX, player.velocityY);
+    GetNormalizedTextPosition(xPos, startY - i++ * stepY, &textX, &textY);
+    AEGfxPrint(font, buf, textX, textY, 0.7f, 1.0f, 0.8f, 0.4f, 1.0f);
+
+    // Dash
+    sprintf_s(buf, 64, "Dash CD: %.2f  InDash: %s", player.dashCooldownTimer, player.inDash ? "YES" : "NO");
+    GetNormalizedTextPosition(xPos, startY - i++ * stepY, &textX, &textY);
+    AEGfxPrint(font, buf, textX, textY, 0.7f, 0.4f, 1.0f, 1.0f, 1.0f);
+
+    // Flag + score
+    sprintf_s(buf, 64, "Flag: %s  Score: %d", player.holdingFlag ? "HELD" : "NONE", player.score);
+    GetNormalizedTextPosition(xPos, startY - i++ * stepY, &textX, &textY);
+    AEGfxPrint(font, buf, textX, textY, 0.7f, 1.0f, 1.0f, 0.4f, 1.0f);
+
+    // Kills
+    sprintf_s(buf, 64, "Kills: %d", player.gruntsKilled);
+    GetNormalizedTextPosition(xPos, startY - i++ * stepY, &textX, &textY);
+    AEGfxPrint(font, buf, textX, textY, 0.7f, 1.0f, 0.4f, 1.0f, 1.0f);
 }
