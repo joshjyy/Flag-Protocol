@@ -108,8 +108,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	float cameraX = 0.0f;
 	float cameraY = 0.0f;
 	CameraPos camera;	
-	// In game loop - UPDATE section:
-	// Update camera to follow player
+
+	// Cutscene variables
+	CutsceneData cutscene;
+
 	
 
 	
@@ -143,6 +145,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			if (currentState == STATE_TUTORIAL) {
 				player.x = 15 * TILE_SIZE - 800.0f + 25.0f;
 				player.y = 450.0f - 31 * TILE_SIZE - 25.0f;
+			}
+
+			if (currentState == STATE_CUTSCENE) {
+				cutscene = CutsceneData{};  // reset
 			}
 
 			if (currentState == STATE_EDITOR) {
@@ -224,6 +230,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				currentState = STATE_MENU;
 				
 		}
+
+		else if (currentState == STATE_CUTSCENE)
+		{
+			Cutscene_Draw(cutscene, fontID, meshes.square);
+			if (Cutscene_Update(cutscene, dt))
+				currentState = STATE_GAME;
+		}   
 		// ---------------------------------------------------------------------------
 		// EDITOR STATE
 		// ---------------------------------------------------------------------------
@@ -419,6 +432,17 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			}
 		}
 
+		// ---------------------------------------------------------------------------
+		// STATE_CUTSCENE
+		// ---------------------------------------------------------------------------
+
+	
+		else if (currentState == STATE_CUTSCENE)
+		{
+			Cutscene_Draw(cutscene, fontID, meshes.square);
+			if (Cutscene_Update(cutscene, dt))
+				currentState = STATE_GAME;
+		}
 		// ---------------------------------------------------------------------------
 		// GAME STATE
 		// ---------------------------------------------------------------------------

@@ -74,7 +74,7 @@ GameState UpdateAndRenderMenu(AEGfxVertexList* mesh, s8 font, float dt) {
     DrawButton(editorBtn, mesh, font);
     DrawButton(quitBtn, mesh, font);
 
-    if (IsButtonClicked(playBtn))   return STATE_GAME;
+    if (IsButtonClicked(playBtn))   return STATE_CUTSCENE;
     if (IsButtonClicked(tutorialBtn))   return STATE_TUTORIAL;
     if (IsButtonClicked(loadBtn)) return STATE_LOAD;
     if (IsButtonClicked(editorBtn)) return STATE_EDITOR;

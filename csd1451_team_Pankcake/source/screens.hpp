@@ -4,7 +4,8 @@
 #include "map.hpp"
 
 //Game state enums for managing different screens
-enum GameState { STATE_MENU, STATE_GAME, STATE_EDITOR, STATE_LOAD, STATE_TUTORIAL, STATE_QUIT, STATE_PAUSE };
+enum GameState { STATE_MENU, STATE_GAME, STATE_EDITOR, STATE_LOAD, STATE_TUTORIAL, STATE_QUIT, STATE_PAUSE , STATE_CUTSCENE,
+};
 
 //button struct
 struct Button { float x, y, w, h; const char* label; };

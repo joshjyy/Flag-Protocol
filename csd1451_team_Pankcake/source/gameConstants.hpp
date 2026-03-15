@@ -29,3 +29,8 @@ const float AI_PATROL_SPEED = 50.0f;
 const float AI_CHASE_SPEED = 150.0f;
 const float AI_RETREAT_SPEED = 200.0f;
 const float AI_STRAFE_SPEED = 80.0f;
+
+//Screen Width and Height
+const int SCREEN_WIDTH = 1600;
+const int SCREEN_HEIGHT = 900;
+
