@@ -13,9 +13,9 @@
 
 std::random_device rd;
 std::mt19937 gen(rd());	
-int MAP_HEIGHT{};
-int MAP_WIDTH{};
-int TILE_SIZE{};
+float MAP_HEIGHT{};
+float MAP_WIDTH{};
+float TILE_SIZE{};
 std::vector<std::vector<int>> newMap;
 /* 
  * Loads a game level map from a text file into a 2D array.
@@ -34,8 +34,8 @@ int Load_Game_Level(const char* filename, std::vector<std::vector<int>>& arr) {
 	map_file >> token >> token >> TILE_SIZE;
 
 
-	arr.assign(MAP_HEIGHT, std::vector<int>(MAP_WIDTH, 0));
-	newMap.assign(MAP_HEIGHT + 2, std::vector<int>(MAP_WIDTH + 2, 0));
+	arr.assign((size_t)MAP_HEIGHT, std::vector<int>((size_t)MAP_WIDTH, 0));       
+	newMap.assign((size_t)(MAP_HEIGHT + 2), std::vector<int>((size_t)(MAP_WIDTH + 2), 0)); 
 
 	for (int i = 0; i < MAP_HEIGHT; i++)
 		for (int j = 0; j < MAP_WIDTH; j++)
@@ -99,7 +99,7 @@ void Save_Game_Level(const char* filename, std::vector<std::vector<int>>& arr) {
   */
 	void Load_Map(std::vector<std::vector<int>>& arr,
 	
-	float cameraX, float cameraY) {
+	CameraPos &camera) {
 	
 
 	for (int i = 0; i < MAP_HEIGHT; i++) {
@@ -107,8 +107,8 @@ void Save_Game_Level(const char* filename, std::vector<std::vector<int>>& arr) {
 			if (arr[i][j] != 0 && arr[i][j] != 5) {
 				float x = (j * TILE_SIZE) - 800.0f + 25.0f;
 				float y = 450.0f - (i * TILE_SIZE) - 25.0f;
-				float screenX = x - cameraX;
-				float screenY = y - cameraY;
+				float screenX = x - camera.x;
+				float screenY = y - camera.y;
 				PrintBlock(arr[i][j], 1.0f, screenX, screenY, meshes.square);
 			}
 		}
@@ -326,4 +326,23 @@ bool HasHole() {
 	if (hole) std::cout << "leak exists" << std::endl;
 	else std::cout << "no leak" << std::endl;
 	return hole;
+}
+
+void Update_CameraPosition(CameraPos& camera, float targetX, float targetY, float dt) {
+	camera.x += (targetX - camera.x) * camera.lerpSpeed * dt;
+	camera.y += (targetY - camera.y) * camera.lerpSpeed * dt;
+
+	float halfW = 800.0f;
+	float halfH = 450.0f;
+
+	float mapW = (float)MAP_WIDTH * (float)TILE_SIZE; // 3200
+	float mapH = (float)MAP_HEIGHT * (float)TILE_SIZE; // 3200
+
+	float minX = -halfW + halfW;          //    0
+	float maxX = mapW - halfW - halfW;   // 1600
+	float minY = -(mapH - halfH) + halfH; // -2300
+	float maxY = 0.0f;
+
+	camera.x = AEClamp(camera.x, minX, maxX);
+	camera.y = AEClamp(camera.y, minY, maxY);
 }

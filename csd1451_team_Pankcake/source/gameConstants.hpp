@@ -45,3 +45,9 @@ enum TileType {
     SPAWN,
     VISITED = -1
 };
+
+struct CameraPos {
+    float x = 0.0f;
+    float y = 0.0f;
+    float lerpSpeed = 8.0f;
+};

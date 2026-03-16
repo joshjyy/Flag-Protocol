@@ -16,6 +16,7 @@
 #include "editor.hpp"
 #include "damageNumbers.hpp"
 #include "gameMode.hpp"
+#include "gameConstants.hpp"
 
 
 //Legend if needed later
@@ -106,9 +107,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	// ---------------------------------------------------------------------------
 	bool editorPaintReady = false;
 	std::vector<std::vector<int>>* gameMap = new std::vector<std::vector<int>>;
-	//Camera variables(in main, with other game variables)
-	float cameraX = 0.0f;
-	float cameraY = 0.0f;
+	//Camera variables(in main, with other game variables)	
+
 	CameraPos camera;	
 
 	// Cutscene variables
@@ -147,6 +147,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			if (currentState == STATE_TUTORIAL) {
 				player.x = 15 * TILE_SIZE - 800.0f + 25.0f;
 				player.y = 450.0f - 31 * TILE_SIZE - 25.0f;
+				
+				camera.x = player.x;
+				camera.y = player.y;
 			}
 
 			if (currentState == STATE_CUTSCENE) {
@@ -176,13 +179,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		// ---------------------------------------------------------------------------
 		else if (currentState == STATE_TUTORIAL) {
 			ShowCursor(false);
-			Load_Map(*gameMap, cameraX, cameraY);
+			Update_CameraPosition(camera, player.x, player.y, dt);
+			Load_Map(*gameMap, camera);
 
 			Tutorial_RenderHints(fontID);
 			Tutorial_RenderDebug(fontID, player);
 				
 			Range_Hacks(player);
-			UpdateAndRenderTutorial(player, dt, gameMap, cameraX, cameraY, playerBullets, enemyBullets, grunts, gameEvents);
+			UpdateAndRenderTutorial(player, dt, gameMap, camera, playerBullets, enemyBullets, grunts, gameEvents);
 
 
 
@@ -195,7 +199,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		// STATE_LOAD
 		// ---------------------------------------------------------------------------
 		else if (currentState == STATE_LOAD) {
-			Load_Map(*gameMap, cameraX, cameraY);
+			Load_Map(*gameMap, camera);
 			if (AEInputCheckTriggered(AEVK_Q))
 				currentState = STATE_MENU;
 				
@@ -224,13 +228,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		// ---------------------------------------------------------------------------
 		else if (currentState == STATE_GAME)
 		{
+			
 			//Check for pause input
 			if (AEInputCheckTriggered(AEVK_P) || AEInputCheckTriggered(AEVK_ESCAPE)) {
 				currentState = STATE_PAUSE;
 				printf("Pause triggered!\n");
 			}
-
-			UpdateAndRenderGameplay(player, dt, gameMap, cameraX, cameraY, playerBullets, enemyBullets, grunts, gameEvents);
+			Update_CameraPosition(camera, player.x, player.y, dt);
+			UpdateAndRenderGameplay(player, dt, gameMap, camera, playerBullets, enemyBullets, grunts, gameEvents);
 
 
 			if (AEInputCheckTriggered(AEVK_Q))
@@ -244,25 +249,25 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		{
 			ShowCursor(true);
 
-			cameraX = player.x;
-			cameraY = player.y;
+			camera.x = player.x;
+			camera.y = player.y;
 
 			// Render the map
-			Load_Map(*gameMap, cameraX, cameraY);
+			Load_Map(*gameMap, camera);
 
 			// Render enemies
-			RenderGrunts(grunts, meshes.circle, cameraX, cameraY);
+			RenderGrunts(grunts, meshes.circle, camera);
 
 			// Render player
-			DrawPlayer(player, meshes.circle, cameraX, cameraY, 0.0f);
+			DrawPlayer(player, meshes.circle, camera, 0.0f);
 
 			// Render bullets
-			RenderBullets(playerBullets, meshes.circle, cameraX, cameraY);
-			RenderBullets(enemyBullets, meshes.circle, cameraX, cameraY);
+			RenderBullets(playerBullets, meshes.circle, camera);
+			RenderBullets(enemyBullets, meshes.circle, camera);
 
 			// Render UI
 			WeaponStats weapon = GetCurrentWeapon(player);
-			DrawPlayerUI(player, weapon, meshes.square, meshes.circle, cameraX, cameraY);
+			DrawPlayerUI(player, weapon, meshes.square, meshes.circle, camera);
 
 			// Pause menu on top
 			currentState = UpdateAndRenderPause(meshes.square, fontID, dt);
