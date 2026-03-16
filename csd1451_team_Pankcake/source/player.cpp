@@ -662,7 +662,11 @@ void CheckPlayerGruntBodyCollision(Player& player, std::vector<Grunt>& grunts) {
                 //printf("Dashed into grunt!\n");
                 grunt.health -= 50.0f; // dash damage
                 if (grunt.health <= 0.0f) {
-					player.health += 20; // heal player for 20 health on kill
+                    if(player.health < 80.0f) {
+                        player.health += 20.0f; // heal player for 20 health on kill
+                    }
+					else
+					player.health = 100.0f; // heal player for 20 health on kill
                     
                     grunt.isDead = true;
                     player.gruntsKilled++;
