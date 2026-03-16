@@ -107,8 +107,6 @@ void UpdateGruntSpawner(std::vector<Grunt>& grunts,
 	if (spawnCount > maxNew)
 		spawnCount = maxNew;
 
-	float radius = 3.0f * (float)TILE_SIZE;  // 3-tile radius in world units
-
 	for (int n = 0; n < spawnCount; n++) {
 		// Pick a random spawn tile
 		int idx = rand() % (int)spawnTiles.size();
