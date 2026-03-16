@@ -15,6 +15,7 @@
 #include "tutorial.hpp"
 #include "editor.hpp"
 #include "damageNumbers.hpp"
+#include "gameMode.hpp"
 
 
 //Legend if needed later
@@ -71,10 +72,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	std::vector<Bullet> playerBullets;
 	std::vector<Bullet> enemyBullets;
 
-	// Editor state variables
-	int currentTileType = 1;  // 1 = Walls (Green)
-	s32 mouseX = 0;
-	s32 mouseY = 0;
+
 
 	//Init Grunt Enemy type
 	std::vector<Grunt> grunts;
@@ -184,42 +182,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			Tutorial_RenderDebug(fontID, player);
 				
 			Range_Hacks(player);
-		
-			//Check what weapon the player is using once per frame
-			WeaponStats weapon = GetCurrentWeapon(player);
+			UpdateAndRenderTutorial(player, dt, gameMap, cameraX, cameraY, playerBullets, enemyBullets, grunts, gameEvents);
 
-			// ---------------------------------------------------------------------------
-			// MAP AND CAMERA
-			// ---------------------------------------------------------------------------
-			//Camera follows the player
-			cameraX = player.x;
-			cameraY = player.y;
 
-			// Update Timers CD
-			UpdatePlayer(&player, dt, *gameMap);
-			// Weapon controls
-			WeaponSwitchCheck(player);
-			ShootingCheck(player, playerBullets, weapon, cameraX, cameraY);
-			ReloadBullets(weapon, dt);
-	
-			// ---------------------------------------------------------------------------
-			// UPDATE BULLETS
-			// ---------------------------------------------------------------------------
-			UpdateBullets(playerBullets, dt, *gameMap);
-		
-			// ---------------------------------------------------------------------------
-			// RENDERING
-			// ---------------------------------------------------------------------------
-			//Player Circle (draw on top)
-			DrawPlayer(player, meshes.circle, cameraX, cameraY, dt);
-			// Draw bullets (use correct overload with camera)
-			RenderBullets(playerBullets, meshes.circle, cameraX, cameraY);
 
-			//Draw Health Bar UI
-			DrawPlayerUI(player, weapon, meshes.square, meshes.circle, cameraX, cameraY);
-			DrawCrosshair(meshes.square);
-
-			CheckWinCondition(gameEvents, player);
 			if (AEInputCheckTriggered(AEVK_Q))
 				currentState = STATE_MENU;
 				
@@ -264,71 +230,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				printf("Pause triggered!\n");
 			}
 
-			//Check what weapon the player is using once per frame
-			WeaponStats weapon = GetCurrentWeapon(player);
-			
-			// ---------------------------------------------------------------------------
-			// MAP AND CAMERA
-			// ---------------------------------------------------------------------------
-			//Camera follows the player
-			cameraX = player.x;
-			cameraY = player.y;
-			Load_Map(*gameMap, cameraX, cameraY);
-			
-			// Update Timers CD
-			UpdatePlayer(&player, dt, *gameMap);
-			// Weapon controls
-			WeaponSwitchCheck(player);
-			ShootingCheck(player, playerBullets, weapon, cameraX, cameraY);
-			ReloadBullets(weapon, dt);
-			// ---------------------------------------------------------------------------
-			// UPDATE ENEMIES
-			// ---------------------------------------------------------------------------
-			//Update Grunt to aim at player
-			UpdateGrunts(grunts, player, enemyBullets, dt, *gameMap);
-			UpdateGruntSpawner(grunts, *gameMap, dt);
+			UpdateAndRenderGameplay(player, dt, gameMap, cameraX, cameraY, playerBullets, enemyBullets, grunts, gameEvents);
 
-			// ---------------------------------------------------------------------------
-			// UPDATE BULLETS
-			// ---------------------------------------------------------------------------
-			UpdateBullets(playerBullets, dt, *gameMap);
-			UpdateBullets(enemyBullets, dt, *gameMap);
-
-			// ---------------------------------------------------------------------------
-			// UPDATE DAMAGE NUMBERS
-			// ---------------------------------------------------------------------------
-			UpdateDamageNumbers(dt);
-	
-			// ---------------------------------------------------------------------------
-			// Collision Checks
-			// ---------------------------------------------------------------------------
-			// CHECK COLLISIONS 
-			CheckBulletGruntCollisions(playerBullets, grunts, player);
-			CheckEnemyBulletPlayerCollision(enemyBullets, player);
-			CheckPlayerGruntBodyCollision(player,grunts);
-
-			// ---------------------------------------------------------------------------
-			// RENDERING
-			// ---------------------------------------------------------------------------
-			//Enemy Circle (draw first - bottom layer)
-			RenderGrunts(grunts, meshes.circle, cameraX, cameraY);
-			//Player Circle (draw on top)
-			DrawPlayer(player, meshes.circle, cameraX, cameraY, dt);
-			// Draw bullets (use correct overload with camera)
-			RenderBullets(playerBullets, meshes.circle, cameraX, cameraY);
-			RenderBullets(enemyBullets, meshes.circle, cameraX, cameraY);
-			//Draw Health Bar UI
-			DrawPlayerUI(player, weapon, meshes.square, meshes.circle, cameraX, cameraY);
-			DrawCrosshair(meshes.square);
-			RenderDamageNumbers(cameraX, cameraY, fontID);
-			// *** CHECK WIN CONDITION ***
-			RemoveDeadGrunts(grunts);
-			CheckWinCondition(gameEvents, player);
 
 			if (AEInputCheckTriggered(AEVK_Q))
 				currentState = STATE_MENU;
-			DrawScoreUI(player, meshes.square , dt);
-
 		}
 
 		// ---------------------------------------------------------------------------
@@ -377,7 +283,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				editorLoaded = true;
 			}
 
-			UpdateAndRenderEditor(editor, *gameMap, meshes.square, fontID, gGameRunning);
+			UpdateAndRenderEditor(editor, *gameMap, meshes.square);
 
 			if (AEInputCheckTriggered(AEVK_Q)) {
 				currentState = STATE_MENU;

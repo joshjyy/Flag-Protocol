@@ -17,7 +17,7 @@ struct DamageNumber {
 // Damage number management
 void SpawnDamageNumber(float x, float y, float damage, bool isCritical = false);
 void UpdateDamageNumbers(float dt);
-void RenderDamageNumbers(float cameraX, float cameraY, s8 fontID);
+void RenderDamageNumbers(float cameraX, float cameraY);
 void ClearDamageNumbers();
 
 // Global damage number storage

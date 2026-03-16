@@ -1,7 +1,13 @@
-#pragma once
-#include "AEEngine.h"
-#include "player.hpp"
+#include "gameMode.hpp"
 #include "utils.hpp"
+#include "enemies.hpp"
+#include "player.hpp"
+#include "damageNumbers.hpp"
+#include "AI.hpp"
+#include "weapon.hpp"
+#include "events.hpp"
+#include "map.hpp"
+#include "tutorial.hpp"
 #include <vector>
 
 void Tutorial_RenderHints(s8 font)
@@ -121,4 +127,38 @@ void Tutorial_RenderDebug(s8 font, const Player& player)
     sprintf_s(buf, 64, "Kills: %d", player.gruntsKilled);
     GetNormalizedTextPosition(xPos, startY - i++ * stepY, &textX, &textY);
     AEGfxPrint(font, buf, textX, textY, 0.7f, 1.0f, 0.4f, 1.0f, 1.0f);
+}
+
+void UpdateAndRenderTutorial(
+    Player& player,
+    float dt,
+    std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>* gameMap,
+    float& cameraX, float& cameraY,
+    std::vector<Bullet>& playerBullets,
+    std::vector<Bullet>& enemyBullets,
+    std::vector<Grunt>& grunts,
+    EventManager& events)
+{
+	(void)enemyBullets;
+	(void)grunts;
+
+
+    WeaponStats weapon = GetCurrentWeapon(player);
+
+    cameraX = player.x;
+    cameraY = player.y;
+
+    UpdatePlayer(&player, dt, *gameMap);
+    WeaponSwitchCheck(player);
+    ShootingCheck(player, playerBullets, weapon, cameraX, cameraY);
+    ReloadBullets(weapon, dt);
+
+    UpdateBullets(playerBullets, dt, *gameMap);
+
+    DrawPlayer(player, meshes.circle, cameraX, cameraY, dt);
+    RenderBullets(playerBullets, meshes.circle, cameraX, cameraY);
+    DrawPlayerUI(player, weapon, meshes.square, meshes.circle, cameraX, cameraY);
+    DrawCrosshair(meshes.square);
+
+    CheckWinCondition(events, player);
 }

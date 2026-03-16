@@ -4,7 +4,7 @@
 std::vector<DamageNumber> damageNumbers;
 
 void SpawnDamageNumber(float x, float y, float damage, bool isCritical) {
-    DamageNumber dmg;
+    DamageNumber dmg{};
     dmg.x = x;
     dmg.y = y;
     dmg.damage = damage;
@@ -36,7 +36,7 @@ void UpdateDamageNumbers(float dt) {
     );
 }
 
-void RenderDamageNumbers(float cameraX, float cameraY, s8 fontID) {
+void RenderDamageNumbers(float cameraX, float cameraY) {
     for (const auto& dmg : damageNumbers) {
         if (!dmg.active) continue;
 

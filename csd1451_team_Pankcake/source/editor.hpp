@@ -2,6 +2,7 @@
 
 #include "AEEngine.h"
 #include "map.hpp"
+#include "utils.hpp"
 
 struct EditorState {
     int currentTileType;    
@@ -15,9 +16,7 @@ EditorState InitEditor(void);
 
 void UpdateAndRenderEditor(EditorState& editor,
     std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap,
-    AEGfxVertexList* squareMesh,
-    s8 fontID,
-    int& gGameRunning);
+    AEGfxVertexList* squareMesh);
 
 // Input handling
 void HandleEditorInput(EditorState& editor,
@@ -25,8 +24,7 @@ void HandleEditorInput(EditorState& editor,
 
 // UI rendering
 void RenderEditorUI(const EditorState& editor,
-    AEGfxVertexList* squareMesh,
-    s8 fontID);
+    AEGfxVertexList* squareMesh);
 
 void DrawEditorHover(const EditorState& editor,
     std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap,

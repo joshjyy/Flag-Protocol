@@ -1,7 +1,6 @@
 #pragma once
 #include "pch.hpp"
 
-#include "pch.hpp"
 void ResetShootCooldown(Player& player, float dt);
 void ShootingCheck(Player& player, std::vector<Bullet>& type, WeaponStats weapon,
     float cameraX, float cameraY);

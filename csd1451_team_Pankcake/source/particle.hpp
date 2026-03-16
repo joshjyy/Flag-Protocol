@@ -1,8 +1,7 @@
 #pragma once
 #include "AEEngine.h"
 
-#define MAX_PARTICLES 200
-
+constexpr int MAX_PARTICLES = 200;
 
 typedef struct Particle {
     float x, y;

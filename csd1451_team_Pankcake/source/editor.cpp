@@ -17,9 +17,8 @@ EditorState InitEditor(void) {
 
 void UpdateAndRenderEditor(EditorState& editor,
     std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap,
-    AEGfxVertexList* squareMesh,
-    s8 fontID,
-    int& gGameRunning) {
+    AEGfxVertexList* squareMesh
+    ) {
 
     AEGfxSetBackgroundColor(0.05f, 0.05f, 0.1f);
 
@@ -36,7 +35,7 @@ void UpdateAndRenderEditor(EditorState& editor,
     DrawEditorHover(editor, gameMap, squareMesh);
 
     // Render UI
-    RenderEditorUI(editor, squareMesh, fontID);
+    RenderEditorUI(editor, squareMesh);
 }
 
 // Saves custom map
@@ -181,8 +180,8 @@ void DrawEditorHover(const EditorState& editor,
 }
 
 void RenderEditorUI(const EditorState& editor,
-    AEGfxVertexList* squareMesh,
-    s8 fontID) {
+    AEGfxVertexList* squareMesh) {
+    (void)squareMesh;
 
     float uiY = 350.0f;
     float textX, textY;

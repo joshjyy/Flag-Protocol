@@ -1,8 +1,7 @@
 #include "screens.hpp"
 #include "utils.hpp"
 #include <string.h>
-#include "AEEngine.h"
-#include "utils.hpp"  
+#include "AEEngine.h" 
 #include "player.hpp"
 #include "gunTypes.hpp"
 #include "enemies.hpp"
