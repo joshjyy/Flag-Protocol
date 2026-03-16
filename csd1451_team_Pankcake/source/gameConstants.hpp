@@ -34,3 +34,14 @@ const float AI_STRAFE_SPEED = 80.0f;
 const int SCREEN_WIDTH = 1600;
 const int SCREEN_HEIGHT = 900;
 
+
+//Tile Types
+enum TileType {
+    EMPTY = 0,
+    WALL,
+    GOAL,
+    ENEMY_SPAWN,
+    FLAG,
+    SPAWN,
+    VISITED = -1
+};

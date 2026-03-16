@@ -278,7 +278,7 @@ Bullet CreateBullet(float x, float y, float targetX, float targetY, float speed,
 }
 
 void UpdateBullets(std::vector<Bullet>& bullets, float dt,
-    std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap) {
+    std::vector<std::vector<int>>& gameMap) {
 
 
     // Backward loop to safely remove bullets
@@ -397,7 +397,7 @@ WeaponStats GetCurrentWeapon(Player& player) {
 
 
 
-void UpdatePlayer(Player* player, float dt, std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap) {
+void UpdatePlayer(Player* player, float dt, std::vector<std::vector<int>>& gameMap) {
 	if (player->health > 0.0f)
 	player->health -= dt * 2.0f;  // Passive health drain over time
     if(player->health <= 0.0f && !player->isDead) {

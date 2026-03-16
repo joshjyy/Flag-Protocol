@@ -15,10 +15,10 @@ int AreBoxesIntersecting(float box1_center_x, float box1_center_y, float box1_wi
 void DrawSprite(AEGfxVertexList* mesh, float x, float y, float scaleX, float scaleY, float rotation);
 
 int checkCollision(float playerX, float playerY, float radius,
-    std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap);
+    std::vector<std::vector<int>>& gameMap);
 //Overload for Player Flag System
 int checkCollision(Player& player, float radius,
-    std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap);
+    std::vector<std::vector<int>>& gameMap);
 
 void GetNormalizedTextPosition(float pixelX, float pixelY, float* outNormalizedX, float* outNormalizedY);
 void NormalizeVector(float* x, float* y);

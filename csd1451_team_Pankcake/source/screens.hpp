@@ -15,9 +15,9 @@ void DrawButton(const Button& btn, AEGfxVertexList* mesh, s8 font);
 GameState UpdateAndRenderMenu(AEGfxVertexList* mesh, s8 font, float dt);
 GameState UpdateAndRenderPause(AEGfxVertexList* mesh, s8 font, float dt);
 
-void CurrGamestate(GameState state, int& gGameRunning, std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap);
-void GameStateLoad(int& gGameRunning, std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap);
-void GameStateLoad(int& gGameRunning, std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap);
-void GameStateLoadTutorial(int& gGameRunning, std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap);
-void GameStateLoadCustom(int& gGameRunning, std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap);
-void GameStateLoadEditor(int& gGameRunning, std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap);
+void CurrGamestate(GameState state, int& gGameRunning, std::vector<std::vector<int>>& gameMap);
+void GameStateLoad(int& gGameRunning, std::vector<std::vector<int>>& gameMap);
+void GameStateLoad(int& gGameRunning, std::vector<std::vector<int>>& gameMap);
+void GameStateLoadTutorial(int& gGameRunning, std::vector<std::vector<int>>& gameMap);
+void GameStateLoadCustom(int& gGameRunning, std::vector<std::vector<int>>& gameMap);
+void GameStateLoadEditor(int& gGameRunning, std::vector<std::vector<int>>& gameMap);

@@ -65,13 +65,13 @@ void InitPlayerParticles(Player* player, void* mesh, void* mesh2);
 void DrawPlayer(Player& player, void* mesh, float cameraX, float cameraY, float dt);
 void DrawPlayerUI(Player& player, WeaponStats& weapon, void* mesh, void* mesh2, float cameraX, float cameraY);  
 void PlayerDashStaminaBar(Player& player, void* mesh, float cameraX, float cameraY);
-void UpdateBullets(std::vector<Bullet>& bullets, float dt, std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap);
+void UpdateBullets(std::vector<Bullet>& bullets, float dt, std::vector<std::vector<int>>& gameMap);
 void UpdateBullets(std::vector<Bullet>& bullets, float dt); // Overload for enemie bullets
 void RenderBullets(const std::vector<Bullet>& bullets, void* mesh, float cameraX, float cameraY);
 void ClearBullets(std::vector<Bullet>& bullets);  
 int GetBulletCount(const std::vector<Bullet>& bullets);
 WeaponStats GetCurrentWeapon(Player& player);
-void UpdatePlayer(Player* player, float dt, std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap);
+void UpdatePlayer(Player* player, float dt, std::vector<std::vector<int>>& gameMap);
 void DrawCrosshair(void* mesh);
 
 

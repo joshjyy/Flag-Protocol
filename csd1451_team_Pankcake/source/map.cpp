@@ -8,11 +8,15 @@
 #include "utils.hpp"  
 #include <stack>
 #include <utility>
+#include "gameConstants.hpp"
+#include <vector>
 
 std::random_device rd;
 std::mt19937 gen(rd());	
-int TILE_SIZE = 50;
-std::array<std::array<int, MAP_WIDTH+2>, MAP_HEIGHT+2> newMap{};
+int MAP_HEIGHT{};
+int MAP_WIDTH{};
+int TILE_SIZE{};
+std::vector<std::vector<int>> newMap;
 /* 
  * Loads a game level map from a text file into a 2D array.
  * Opens the specified file and reads MAP_HEIGHT x MAP_WIDTH integers.
@@ -20,33 +24,24 @@ std::array<std::array<int, MAP_WIDTH+2>, MAP_HEIGHT+2> newMap{};
  * Returns 1 on success, 0 on failure (file not found or invalid format).
  * Prints error messages if file cannot be opened or data is incomplete.
  */
-int Load_Game_Level(const char* filename, std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& arr) {
-	// Create input file stream and attempt to open the file
+int Load_Game_Level(const char* filename, std::vector<std::vector<int>>& arr) {
 	std::ifstream map_file(filename);
+	if (!map_file.is_open()) return 0;
 
-	// Check if file opened successfully
-	if (!map_file.is_open()) {
-		std::cout << "Error: Could not open file " << filename << std::endl;
-		return 0; // Return failure
-	}
+	std::string token;
+	map_file >> token >> token >> MAP_HEIGHT;
+	map_file >> token >> token >> MAP_WIDTH;
+	map_file >> token >> token >> TILE_SIZE;
 
-	// Loop through each row of the map
-	for (int i = 0; i < MAP_HEIGHT; i++) {
-		// Loop through each column of the map
-		for (int j = 0; j < MAP_WIDTH; j++) {
-			// Read integer from file into array, check for read errors
-			if (!(map_file >> arr[i][j])) {
-				std::cout << "Error: Failed to read at [" << i << "][" << j << "]" << std::endl;
-				map_file.close(); // Close file before returning
-				return 0; // Return failure
-			}
-		}
-	}
 
-	// Close the file after successful read
-	map_file.close();
-	std::cout << "Map loaded successfully!" << std::endl;
-	return 1; // Return success
+	arr.assign(MAP_HEIGHT, std::vector<int>(MAP_WIDTH, 0));
+	newMap.assign(MAP_HEIGHT + 2, std::vector<int>(MAP_WIDTH + 2, 0));
+
+	for (int i = 0; i < MAP_HEIGHT; i++)
+		for (int j = 0; j < MAP_WIDTH; j++)
+			if (!(map_file >> arr[i][j])) return 0;
+
+	return 1;
 }
 
 /**
@@ -54,7 +49,7 @@ int Load_Game_Level(const char* filename, std::array<std::array<int, MAP_WIDTH>,
  * Opens the specified file and writes MAP_HEIGHT x MAP_WIDTH integers.
  * Each integer represents a tile type (0 = empty, 1-5 = different tiles).
  **/
-void Save_Game_Level(const char* filename, std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& arr) {
+void Save_Game_Level(const char* filename, std::vector<std::vector<int>>& arr) {
 	// Create output file stream
 	std::ofstream map_file(filename);
 
@@ -96,13 +91,13 @@ void Save_Game_Level(const char* filename, std::array<std::array<int, MAP_WIDTH>
   * Renders the game map by drawing colored squares for each tile.
   * Different tile values are rendered with different colors:
   * 0 = empty (not drawn)
-  * 1 = red (walls/obstacles)
+  * 1 = red (walls/obstacl	es)
   * 2 = blue (water)
   * 3 = green (grass)
   * 4 = yellow (sand)
   * 5 = purple (special tiles)
   */
-	void Load_Map(std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& arr,
+	void Load_Map(std::vector<std::vector<int>>& arr,
 	
 	float cameraX, float cameraY) {
 	
@@ -123,10 +118,10 @@ void Save_Game_Level(const char* filename, std::array<std::array<int, MAP_WIDTH>
 
 void PrintBlock(int choice, float d, float screenX, float screenY, AEGfxVertexList* mesh) {
 	float r = 0.0f, g = 0.0f, b = 0.0f;
-	if (choice == 1) { r = 0.0f; g = 1.0f; b = 0.0f; }  // green blocks
-	else if (choice == 2) { r = 0.5f; g = 0.0f; b = 1.0f; }  // purple goal
-	else if (choice == 3) { r = 1.0f; g = 0.0f; b = 0.0f; }  // red
-	else if (choice == 4) { r = 0.0f; g = 1.0f; b = 1.0f; }  // lime flag
+	if (choice == WALL) { r = 0.0f; g = 1.0f; b = 0.0f; }  // green blocks
+	else if (choice == GOAL) { r = 0.5f; g = 0.0f; b = 1.0f; }  // purple goal
+	else if (choice == ENEMY_SPAWN) { r = 1.0f; g = 0.0f; b = 0.0f; }  // red
+	else if (choice == FLAG) { r = 0.0f; g = 1.0f; b = 1.0f; }  // lime flag
 	AEGfxSetRenderMode(AE_GFX_RM_COLOR);
 	AEGfxSetTransparency(1.0f);
 	AEMtx33 scale, translate, transform;
@@ -156,7 +151,7 @@ void PrintBlock(int choice, float d, float screenX, float screenY, AEGfxVertexLi
 	AEGfxMeshDraw(mesh, AE_GFX_MDM_TRIANGLES);
 }
 
-void Spawn_Flag(std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& arr) {
+void Spawn_Flag(std::vector<std::vector<int>>& arr) {
 	struct Tile { int row, col; };
 	
 	int count = 0;
@@ -232,7 +227,7 @@ CameraPos moving_cursor(CameraPos camera) {
 	return camera;
 }
 
-void hover(std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& arr, float cameraX, float cameraY, AEGfxVertexList* mesh,int current_tile) {
+void hover(std::vector<std::vector<int>>& arr, float cameraX, float cameraY, AEGfxVertexList* mesh,int current_tile) {
 
 	AEGfxSetRenderMode(AE_GFX_RM_COLOR);
 	AEGfxSetTransparency(0.5f);
@@ -280,10 +275,12 @@ void zoom() {
 
 }
 
-void floodfill(std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& arr, int x, int y)
+void floodfill(std::vector<std::vector<int>>& arr, int x, int y)
 {
 	std::stack<std::pair<int, int>> stack;
-	newMap = {};
+	for (int i = 0; i < MAP_HEIGHT + 2; i++)
+		for (int j = 0; j < MAP_WIDTH + 2; j++)
+			newMap[i][j] = 0;
 	
 	for (int i = 0; i < MAP_HEIGHT; i++) {
 		for (int j = 0; j < MAP_WIDTH; j++) {
@@ -309,7 +306,7 @@ void floodfill(std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& arr, int x, i
 			stack.push({ cx + 1, cy });
 			stack.push({ cx - 1, cy });
 		}
-		else if (newMap[cx][cy] == 1 || newMap[cx][cy] == -1 || newMap[cx][cy] == -1 || newMap[cx][cy] == 2 || newMap[cx][cy] == 3 || newMap[cx][cy] == 4 || newMap[cx][cy] == 5) {
+		else if (newMap[cx][cy] == 1 || newMap[cx][cy] == -1 || newMap[cx][cy] == 2 || newMap[cx][cy] == 3 || newMap[cx][cy] == 4 || newMap[cx][cy] == 5) {
 			continue;
 		}
 

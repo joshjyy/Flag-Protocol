@@ -72,10 +72,10 @@ extern GruntSpawner gruntSpawner;
 // Function declarations
 void InitGruntSpawner();
 Grunt SpawnGrunt(float startX, float startY);
-void UpdateGrunts(std::vector<Grunt>& grunts, Player& player, std::vector<Bullet>& enemyBullets, float dt, std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap);
+void UpdateGrunts(std::vector<Grunt>& grunts, Player& player, std::vector<Bullet>& enemyBullets, float dt, std::vector<std::vector<int>>& gameMap);
 void RenderGrunts(std::vector<Grunt>& grunts, void* mesh, float cameraX, float cameraY);
 void UpdateGruntSpawner(std::vector<Grunt>& grunts,
-    std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap,
+    std::vector<std::vector<int>>& gameMap,
     float dt);
 void RemoveDeadGrunts(std::vector<Grunt>& grunts);
 void CheckBulletGruntCollisions(std::vector<Bullet>& playerBullets, std::vector<Grunt>& grunts, Player& player);

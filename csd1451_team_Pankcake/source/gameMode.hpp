@@ -11,7 +11,7 @@
 void UpdateAndRenderGameplay(
     Player& player,
     float dt,
-    std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>* gameMap,
+    std::vector<std::vector<int>>* gameMap,
     float& cameraX, float& cameraY,
     std::vector<Bullet>& playerBullets,
     std::vector<Bullet>& enemyBullets,

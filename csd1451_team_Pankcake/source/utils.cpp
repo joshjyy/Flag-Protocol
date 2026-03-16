@@ -108,7 +108,7 @@ void FreeCommonMeshes(void) {
 }
 
 int checkCollision(float playerX, float playerY, float radius,
-    std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap) {
+    std::vector<std::vector<int>>& gameMap) {
 
     // Shrink the collision box slightly inward from all sides
     float epsilon = 30.0f;  // Adjust this value as needed
@@ -149,7 +149,7 @@ int checkCollision(float playerX, float playerY, float radius,
 }
 
 int checkCollision(Player& player, float radius,
-    std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap) {
+    std::vector<std::vector<int>>& gameMap) {
 
     float epsilon = 30.0f, epslion_less = 20.0f;
     float leftEdge = player.x - (radius - epsilon);

@@ -143,7 +143,7 @@ GameState UpdateAndRenderPause(AEGfxVertexList* mesh, s8 font, float dt) {
     return STATE_PAUSE;
 }
 
-void CurrGamestate(GameState state, int& gGameRunning, std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap) {
+void CurrGamestate(GameState state, int& gGameRunning, std::vector<std::vector<int>>& gameMap) {
     if (state == STATE_MENU)
         while (ShowCursor(true) < 0);
     else if (state == STATE_GAME) {
@@ -159,7 +159,7 @@ void CurrGamestate(GameState state, int& gGameRunning, std::array<std::array<int
     
 }
 
-void GameStateLoad(int& gGameRunning, std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap) {
+void GameStateLoad(int& gGameRunning, std::vector<std::vector<int>>& gameMap) {
     if (!Load_Game_Level("Assets/Level_1_Map.txt", gameMap)) {
         printf("Failed to load map! Exiting...\n");
         gGameRunning = 0;
@@ -170,7 +170,7 @@ void GameStateLoad(int& gGameRunning, std::array<std::array<int, MAP_WIDTH>, MAP
     Spawn_Flag(gameMap);
 }
 
-void GameStateLoadTutorial(int& gGameRunning, std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap) {
+void GameStateLoadTutorial(int& gGameRunning, std::vector<std::vector<int>>& gameMap) {
     if (!Load_Game_Level("Assets/Tutorial.txt", gameMap)) {
         printf("Failed to load tutorial map! Exiting...\n");
         gGameRunning = 0;
@@ -181,7 +181,7 @@ void GameStateLoadTutorial(int& gGameRunning, std::array<std::array<int, MAP_WID
     Spawn_Flag(gameMap);
 }
 
-void GameStateLoadCustom(int& gGameRunning, std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap) {
+void GameStateLoadCustom(int& gGameRunning, std::vector<std::vector<int>>& gameMap) {
     if (!Load_Game_Level("Assets/My_Custom_Map.txt", gameMap)) {
         printf("Failed to load custom map! Exiting...\n");
         gGameRunning = 0;
@@ -191,11 +191,11 @@ void GameStateLoadCustom(int& gGameRunning, std::array<std::array<int, MAP_WIDTH
     }
     Spawn_Flag(gameMap);
 }
-void GameStateLoadEditor(int& gGameRunning, std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap) {
+void GameStateLoadEditor(int& gGameRunning, std::vector<std::vector<int>>& gameMap) {
     static bool loaded = false;
     if (loaded) return;
 
-    if (!Load_Game_Level("Assets/Test_Map.txt", gameMap)) {
+    if (!Load_Game_Level("Assets/My_Custom_Map.txt", gameMap)) {
         printf("Failed to load editor map! Exiting...\n");
         gGameRunning = 0;
     }

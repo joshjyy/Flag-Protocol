@@ -2,7 +2,7 @@
 #include "utils.hpp"
 #include <cstdio>
 
-std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT> g_initialEditorMap;
+std::vector<std::vector<int>> g_initialEditorMap;
 
 EditorState InitEditor(void) {
     EditorState editor;
@@ -16,7 +16,7 @@ EditorState InitEditor(void) {
 }
 
 void UpdateAndRenderEditor(EditorState& editor,
-    std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap,
+    std::vector<std::vector<int>>& gameMap,
     AEGfxVertexList* squareMesh
     ) {
 
@@ -39,7 +39,7 @@ void UpdateAndRenderEditor(EditorState& editor,
 }
 
 // Saves custom map
-void SaveCustomMap(std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap) {
+void SaveCustomMap(std::vector<std::vector<int>>& gameMap) {
     floodfill(gameMap, 0, 0);
     if (!HasHole()) {
         Save_Game_Level("Assets/My_Custom_Map.txt", gameMap);
@@ -51,7 +51,7 @@ void SaveCustomMap(std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap) 
 }
 
 // Loads custom map
-void LoadCustomMap(std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap) {
+void LoadCustomMap(std::vector<std::vector<int>>& gameMap) {
     if (Load_Game_Level("Assets/My_Custom_Map.txt", gameMap)) {
         printf("Custom map loaded from Assets/My_Custom_Map.txt!\n");
     }
@@ -61,21 +61,21 @@ void LoadCustomMap(std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap) 
 }
 
 // Loads initial map layout
-void ResetToInitialEditorMap(std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap) {
+void ResetToInitialEditorMap(std::vector<std::vector<int>>& gameMap) {
     gameMap = g_initialEditorMap;
     printf("Reset to initial editor map!\n");
 
 }
 
 // Save the initial editor map (called when editor first loads)
-void SaveInitialEditorMap(std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap) {
+void SaveInitialEditorMap(std::vector<std::vector<int>>& gameMap) {
     g_initialEditorMap = gameMap;
     printf("Initial editor state saved!\n");
 }
 
 // Input handling
 void HandleEditorInput(EditorState& editor,
-    std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap) {
+    std::vector<std::vector<int>>& gameMap) {
 
     // Get mouse position
     AEInputGetCursorPosition(&editor.mouseX, &editor.mouseY);
@@ -141,7 +141,7 @@ void HandleEditorInput(EditorState& editor,
 }
 
 void DrawEditorHover(const EditorState& editor,
-    std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap,
+    std::vector<std::vector<int>>& gameMap,
     AEGfxVertexList* squareMesh) {
 
     int gridX = (int)((editor.mouseX + editor.camera.x - 25) / TILE_SIZE);

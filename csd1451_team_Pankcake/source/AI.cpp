@@ -11,7 +11,7 @@ float DistanceToPlayer(Grunt& grunt, Player& player) {
     return sqrtf(dx * dx + dy * dy);
 }
 
-bool HasLineOfSight(Grunt& grunt, Player& player, std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap) {
+bool HasLineOfSight(Grunt& grunt, Player& player, std::vector<std::vector<int>>& gameMap) {
     // Cast a ray from grunt to player
     float dx = player.x - grunt.movingX;
     float dy = player.y - grunt.movingY;
@@ -67,13 +67,13 @@ bool IsReloading(Grunt& grunt) {
     return grunt.pistol.inReload;
 }
 
-bool IsPlayerVisible(Grunt& grunt, Player& player, std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap) {
+bool IsPlayerVisible(Grunt& grunt, Player& player, std::vector<std::vector<int>>& gameMap) {
     float distance = DistanceToPlayer(grunt, player);
     return (distance < grunt.detectionRange) && HasLineOfSight(grunt, player, gameMap);
 }
 
 //Standard behaviours
-void AI_Patrol(Grunt& grunt, float dt, std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap) {
+void AI_Patrol(Grunt& grunt, float dt, std::vector<std::vector<int>>& gameMap) {
     // Save old position
     float oldX = grunt.movingX;
     float oldY = grunt.movingY;
@@ -146,7 +146,7 @@ void AI_Patrol(Grunt& grunt, float dt, std::array<std::array<int, MAP_WIDTH>, MA
     }
 }
 
-void AI_Chase(Grunt& grunt, Player& player, float dt, std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap) {
+void AI_Chase(Grunt& grunt, Player& player, float dt, std::vector<std::vector<int>>& gameMap) {
     // Save old position
     float oldX = grunt.movingX;
     float oldY = grunt.movingY;
@@ -190,7 +190,7 @@ void AI_Chase(Grunt& grunt, Player& player, float dt, std::array<std::array<int,
     grunt.lastSeenPlayerY = player.y;
 }
 
-void AI_Attack(Grunt& grunt, Player& player, std::vector<Bullet>& enemyBullets, float dt, std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap) {
+void AI_Attack(Grunt& grunt, Player& player, std::vector<Bullet>& enemyBullets, float dt, std::vector<std::vector<int>>& gameMap) {
     if (grunt.shootCooldown <= 0.0f && grunt.pistol.currentAmmo > 0 && !grunt.pistol.inReload) {
         Bullet newBullet = CreateBullet(
             grunt.movingX,
@@ -229,7 +229,7 @@ void AI_Attack(Grunt& grunt, Player& player, std::vector<Bullet>& enemyBullets, 
     }
 }
 
-void AI_Retreat(Grunt& grunt, Player& player, float dt, std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap) {
+void AI_Retreat(Grunt& grunt, Player& player, float dt, std::vector<std::vector<int>>& gameMap) {
     // Save old position
     float oldX = grunt.movingX;
     float oldY = grunt.movingY;
@@ -265,7 +265,7 @@ void AI_Retreat(Grunt& grunt, Player& player, float dt, std::array<std::array<in
 }
 
 //Update Decision Tree based on Boolean Flags above
-GruntAIState EvaluateDecisionTree(Grunt& grunt, Player& player, std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap) {
+GruntAIState EvaluateDecisionTree(Grunt& grunt, Player& player, std::vector<std::vector<int>>& gameMap) {
     // Dead check (highest priority)
     if (grunt.isDead || grunt.health <= 0) {
         return AI_DEAD;
@@ -303,7 +303,7 @@ GruntAIState EvaluateDecisionTree(Grunt& grunt, Player& player, std::array<std::
 }
 
 //Main AI Update function for Grunts
-void UpdateGruntAI(Grunt& grunt, Player& player, std::vector<Bullet>& enemyBullets, float dt, std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap) {
+void UpdateGruntAI(Grunt& grunt, Player& player, std::vector<Bullet>& enemyBullets, float dt, std::vector<std::vector<int>>& gameMap) {
     // Update state timer
     grunt.stateTimer += dt;
 

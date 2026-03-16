@@ -42,7 +42,7 @@ Grunt SpawnGrunt(float startX, float startY) {
 
 //UPDATING GRUNT
 // Update all grunts - shooting logic
-void UpdateGrunts(std::vector<Grunt>& grunts, Player& player, std::vector<Bullet>& enemyBullets, float dt, std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap) {
+void UpdateGrunts(std::vector<Grunt>& grunts, Player& player, std::vector<Bullet>& enemyBullets, float dt, std::vector<std::vector<int>>& gameMap) {
 	for (auto& grunt : grunts) {
 		if (!grunt.isDead) {
 			UpdateGruntAI(grunt, player, enemyBullets, dt, gameMap);
@@ -73,7 +73,7 @@ void RenderGrunts(std::vector<Grunt>& grunts, void* mesh, float cameraX, float c
 }
 
 void UpdateGruntSpawner(std::vector<Grunt>& grunts,
-	std::array<std::array<int, MAP_WIDTH>, MAP_HEIGHT>& gameMap,
+	std::vector<std::vector<int>>& gameMap,
 	float dt)
 {
 	gruntSpawner.waveTimer += dt;
