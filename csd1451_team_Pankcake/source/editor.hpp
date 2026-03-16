@@ -3,6 +3,7 @@
 #include "AEEngine.h"
 #include "map.hpp"
 #include "utils.hpp"
+#include "gameConstants.hpp"
 
 struct EditorState {
     int currentTileType;    

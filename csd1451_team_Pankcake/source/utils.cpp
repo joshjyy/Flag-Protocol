@@ -3,6 +3,7 @@
 #include <array>
 #include "map.hpp"
 #include "player.hpp"
+#include "gameConstants.hpp"
 
 int AreCirclesIntersecting(float circle_center1_x, float circle_center1_y, float radius_1, float circle_center2_x, float circle_center2_y, float radius_2) {
 
@@ -201,8 +202,6 @@ int checkCollision(Player& player, float radius,
 
 
 void GetNormalizedTextPosition(float pixelX, float pixelY, float* outNormalizedX, float* outNormalizedY) {
-    const float SCREEN_WIDTH = 1600.0f;
-    const float SCREEN_HEIGHT = 900.0f;
 
     *outNormalizedX = pixelX / (SCREEN_WIDTH / 2.0f);
     *outNormalizedY = pixelY / (SCREEN_HEIGHT / 2.0f);

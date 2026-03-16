@@ -62,12 +62,12 @@ Bullet CreateBullet(float x, float y, float targetX, float targetY, float speed,
 Player InitPlayer(void);
 void InitPlayerParticles(Player* player, void* mesh, void* mesh2);
 
-void DrawPlayer(Player& player, void* mesh, float cameraX, float cameraY, float dt);
-void DrawPlayerUI(Player& player, WeaponStats& weapon, void* mesh, void* mesh2, float cameraX, float cameraY);  
-void PlayerDashStaminaBar(Player& player, void* mesh, float cameraX, float cameraY);
+void DrawPlayer(Player& player, void* mesh, CameraPos& camera, float dt);
+void DrawPlayerUI(Player& player, WeaponStats& weapon, void* mesh, void* mesh2, CameraPos camera);
+void PlayerDashStaminaBar(Player& player, void* mesh, CameraPos& camera);
 void UpdateBullets(std::vector<Bullet>& bullets, float dt, std::vector<std::vector<int>>& gameMap);
 void UpdateBullets(std::vector<Bullet>& bullets, float dt); // Overload for enemie bullets
-void RenderBullets(const std::vector<Bullet>& bullets, void* mesh, float cameraX, float cameraY);
+void RenderBullets(const std::vector<Bullet>& bullets, void* mesh, CameraPos camera);
 void ClearBullets(std::vector<Bullet>& bullets);  
 int GetBulletCount(const std::vector<Bullet>& bullets);
 WeaponStats GetCurrentWeapon(Player& player);

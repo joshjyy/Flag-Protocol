@@ -133,7 +133,7 @@ void UpdateAndRenderTutorial(
     Player& player,
     float dt,
     std::vector<std::vector<int>>* gameMap,
-    float& cameraX, float& cameraY,
+    CameraPos& camera,
     std::vector<Bullet>& playerBullets,
     std::vector<Bullet>& enemyBullets,
     std::vector<Grunt>& grunts,
@@ -145,19 +145,16 @@ void UpdateAndRenderTutorial(
 
     WeaponStats weapon = GetCurrentWeapon(player);
 
-    cameraX = player.x;
-    cameraY = player.y;
-
     UpdatePlayer(&player, dt, *gameMap);
     WeaponSwitchCheck(player);
-    ShootingCheck(player, playerBullets, weapon, cameraX, cameraY);
+    ShootingCheck(player, playerBullets, weapon, camera);
     ReloadBullets(weapon, dt);
 
     UpdateBullets(playerBullets, dt, *gameMap);
 
-    DrawPlayer(player, meshes.circle, cameraX, cameraY, dt);
-    RenderBullets(playerBullets, meshes.circle, cameraX, cameraY);
-    DrawPlayerUI(player, weapon, meshes.square, meshes.circle, cameraX, cameraY);
+    DrawPlayer(player, meshes.circle, camera, dt);
+    RenderBullets(playerBullets, meshes.circle, camera);
+    DrawPlayerUI(player, weapon, meshes.square, meshes.circle, camera);
     DrawCrosshair(meshes.square);
 
     CheckWinCondition(events, player);

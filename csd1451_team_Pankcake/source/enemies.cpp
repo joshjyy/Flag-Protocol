@@ -58,15 +58,15 @@ void InitGruntSpawner() {
 
 //RENDERING
 // Render all grunts
-void RenderGrunts(std::vector<Grunt>& grunts, void* mesh, float cameraX, float cameraY) {
+void RenderGrunts(std::vector<Grunt>& grunts, void* mesh, CameraPos& camera) {
 	AEGfxSetColorToMultiply(1.0f, 0.0f, 0.0f, 1.0f);
 
 	for (const auto& grunt : grunts) {
 		if (grunt.isDead) continue;
 
 		// Convert world position to screen position
-		float screenX = grunt.movingX - cameraX;
-		float screenY = grunt.movingY - cameraY;
+		float screenX = grunt.movingX - camera.x;
+		float screenY = grunt.movingY - camera.y;
 
 		DrawSprite((AEGfxVertexList*)mesh, screenX, screenY, GRUNT_RADIUS, GRUNT_RADIUS, 0.0f);
 	}

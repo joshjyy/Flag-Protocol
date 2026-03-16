@@ -13,7 +13,7 @@ void UpdateAndRenderTutorial(
     Player& player,
     float dt,
     std::vector<std::vector<int>>* gameMap,
-    float& cameraX, float& cameraY,
+    CameraPos& camera, 
     std::vector<Bullet>& playerBullets,
     std::vector<Bullet>& enemyBullets,
     std::vector<Grunt>& grunts,

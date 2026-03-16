@@ -73,7 +73,7 @@ extern GruntSpawner gruntSpawner;
 void InitGruntSpawner();
 Grunt SpawnGrunt(float startX, float startY);
 void UpdateGrunts(std::vector<Grunt>& grunts, Player& player, std::vector<Bullet>& enemyBullets, float dt, std::vector<std::vector<int>>& gameMap);
-void RenderGrunts(std::vector<Grunt>& grunts, void* mesh, float cameraX, float cameraY);
+void RenderGrunts(std::vector<Grunt>& grunts, void* mesh, CameraPos& camera);
 void UpdateGruntSpawner(std::vector<Grunt>& grunts,
     std::vector<std::vector<int>>& gameMap,
     float dt);

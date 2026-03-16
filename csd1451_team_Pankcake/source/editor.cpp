@@ -29,7 +29,7 @@ void UpdateAndRenderEditor(EditorState& editor,
     editor.camera = moving_cursor(editor.camera);
 
     // Load and render the map
-    Load_Map(gameMap, editor.camera.x, editor.camera.y);
+    Load_Map(gameMap, editor.camera);
 
     // Draw hover preview
     DrawEditorHover(editor, gameMap, squareMesh);

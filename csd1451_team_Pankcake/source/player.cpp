@@ -86,7 +86,7 @@ void InitPlayerParticles(Player* player, void* mesh, void*mesh2) {
 
 
 
-void DrawPlayer(Player& player, void* mesh, float cameraX, float cameraY, float dt)
+void DrawPlayer(Player& player, void* mesh, CameraPos &camera, float dt)
 {
 	// Lamda  to offset particles for camera movement 
     //returns particles to world space for correct position, then back to screen space after drawing
@@ -111,9 +111,9 @@ void DrawPlayer(Player& player, void* mesh, float cameraX, float cameraY, float 
 			// If emitter is null, just skip drawing
             if (!emitter) return;
 			// offset particles to screen space for correct rendering, then offset back
-            offsetParticles(emitter, -cameraX, -cameraY);
+            offsetParticles(emitter, -camera.x, -camera.y);
             ParticleEmitterDraw(emitter);
-            offsetParticles(emitter, cameraX, cameraY);
+            offsetParticles(emitter, camera.x, camera.y);
         };
 
 	// Set render mode to color for player drawing
@@ -126,8 +126,8 @@ void DrawPlayer(Player& player, void* mesh, float cameraX, float cameraY, float 
         return;
     }
 
-    float screenX = player.x - cameraX;
-    float screenY = player.y - cameraY;
+    float screenX = player.x - camera.x;
+    float screenY = player.y - camera.y;
 
     // --- Trail & dash particles ---
     drawEmitter(player.trailEmitter);
@@ -174,7 +174,7 @@ void DrawPlayer(Player& player, void* mesh, float cameraX, float cameraY, float 
 }
 
 void DrawPlayerUI(Player& player, WeaponStats& weapon, void* mesh, void* mesh2,
-    float cameraX, float cameraY) {
+    CameraPos camera) {
     float uiX = -600.0f;
     float uiY = -380.0f;
     float barWidth = 300.0f;
@@ -222,16 +222,16 @@ void DrawPlayerUI(Player& player, WeaponStats& weapon, void* mesh, void* mesh2,
     float circleX = uiX + barWidth / 2.0f + 30.0f;
     float circleSize = 25.0f;
     DrawSprite((AEGfxVertexList*)mesh2, circleX, ammoY, circleSize, circleSize, 0.0f);
-    PlayerDashStaminaBar(player, meshes.square, cameraX, cameraY);
+    PlayerDashStaminaBar(player, meshes.square, camera);
 }
 
-void PlayerDashStaminaBar(Player& player, void* mesh, float cameraX, float cameraY) {
+void PlayerDashStaminaBar(Player& player, void* mesh, CameraPos& camera) {
     if (player.dashCooldownTimer > 0.0f && player.isDead == false) {
         float dashBarOffsetX = 50.0f;
         float dashBarOffsetY = 0.0f;
 
-        float dashX = player.x - cameraX + dashBarOffsetX;
-        float dashY = player.y - cameraY + dashBarOffsetY;
+        float dashX = player.x - camera.x + dashBarOffsetX;
+        float dashY = player.y - camera.y + dashBarOffsetY;
 
         float dashBarWidth = 10.0f;
         float dashBarHeight = 55.0f;
@@ -313,14 +313,14 @@ void UpdateBullets(std::vector<Bullet>& bullets, float dt) {
 
 
 void RenderBullets(const std::vector<Bullet>& bullets, void* mesh,
-    float cameraX, float cameraY) {  
+    CameraPos camera) {  
     // Loop through each bullet
 
     for (const Bullet& bullet : bullets) {
         //  Convert world position to screen position
 		// minus camera position to ensure bullets are drawn in the correct place relative to the player
-        float screenX = bullet.x - cameraX;
-        float screenY = bullet.y - cameraY;
+        float screenX = bullet.x - camera.x;
+        float screenY = bullet.y - camera.y;
 
         // Outer glow 
         AEGfxSetColorToMultiply(1.0f, 1.0f, 0.0f, 0.3f);

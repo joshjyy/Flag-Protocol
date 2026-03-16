@@ -36,13 +36,13 @@ void UpdateDamageNumbers(float dt) {
     );
 }
 
-void RenderDamageNumbers(float cameraX, float cameraY) {
+void RenderDamageNumbers(CameraPos& camera) {
     for (const auto& dmg : damageNumbers) {
         if (!dmg.active) continue;
 
         // Convert to screen space
-        float screenX = dmg.x - cameraX;
-        float screenY = dmg.y - cameraY;
+        float screenX = dmg.x - camera.x;
+        float screenY = dmg.y - camera.y;
 
         // Convert to normalized coordinates for AEGfxPrint
         float textX, textY;

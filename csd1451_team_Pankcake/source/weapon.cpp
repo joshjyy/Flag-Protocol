@@ -21,7 +21,7 @@ void ResetShootCooldown(Player &player, float dt) {
 	}
 }
 
-void ShootingCheck(Player& player, std::vector<Bullet>& type, WeaponStats weapon, float cameraX, float cameraY) {
+void ShootingCheck(Player& player, std::vector<Bullet>& type, WeaponStats weapon, CameraPos& camera) {
 	if (AEInputCheckCurr(AEVK_LBUTTON) && player.shootCooldown <= 0.0f &&
 		player.inDash == false && !(*weapon.inReload) && !player.isDead) {
 
@@ -32,8 +32,8 @@ void ShootingCheck(Player& player, std::vector<Bullet>& type, WeaponStats weapon
 			float screenX = (float)mouseX - 800.0f;
 			float screenY = 450.0f - (float)mouseY;
 
-			float worldMouseX = screenX + cameraX;
-			float worldMouseY = screenY + cameraY;
+			float worldMouseX = screenX + camera.x;
+			float worldMouseY = screenY + camera.y;
 
 			Bullet newBullet = CreateBullet(player.x, player.y, worldMouseX, worldMouseY,
 				weapon.bulletSpeed, weapon.bulletDamage);
