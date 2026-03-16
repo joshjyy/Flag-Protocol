@@ -85,7 +85,7 @@ void UpdateGruntSpawner(std::vector<Grunt>& grunts,
 	if ((int)grunts.size() >= 25)
 		return;
 
-	// Find all tile-3 positions
+	// Find all spawner positions
 	struct SpawnTile { int row, col; };
 	std::vector<SpawnTile> spawnTiles;
 
@@ -115,17 +115,43 @@ void UpdateGruntSpawner(std::vector<Grunt>& grunts,
 		int row = spawnTiles[idx].row;
 		int col = spawnTiles[idx].col;
 
-		// Convert tile to world position (same formula as Load_Map)
+		// Convert tile to world position
 		float tileWorldX = (col * TILE_SIZE) - 800.0f + 25.0f;
 		float tileWorldY = 450.0f - (row * TILE_SIZE) - 25.0f;
 
-		// Random offset within 3-tile radius
-		float angle = ((float)(rand() % 360)) * 3.14159f / 180.0f;
-		float dist = ((float)(rand() % (int)radius));
-		float spawnX = tileWorldX + dist * cosf(angle);
-		float spawnY = tileWorldY + dist * sinf(angle);
+		float radius = 3.0f * (float)TILE_SIZE;
 
-		grunts.push_back(SpawnGrunt(spawnX, spawnY));
+		// Try up to 5 times to find a valid position
+		bool validSpawn = false;
+		float spawnX = tileWorldX;
+		float spawnY = tileWorldY;
+
+		for (int attempt = 0; attempt < 5; attempt++) {
+			float angle = ((float)(rand() % 360)) * 3.14159f / 180.0f;
+			float dist = ((float)(rand() % (int)radius));
+			float tryX = tileWorldX + dist * cosf(angle);
+			float tryY = tileWorldY + dist * sinf(angle);
+
+			// Convert back to tile indices
+			int tileCol = (int)((tryX + 800.0f - 25.0f) / TILE_SIZE);
+			int tileRow = (int)((450.0f - tryY - 25.0f) / TILE_SIZE);
+
+			// Bounds check
+			if (tileCol < 0 || tileCol >= MAP_WIDTH || tileRow < 0 || tileRow >= MAP_HEIGHT)
+				continue;
+
+			// Only spawn on empty tiles (0)
+			if (gameMap[tileRow][tileCol] == 0) {
+				spawnX = tryX;
+				spawnY = tryY;
+				validSpawn = true;
+				break;
+			}
+		}
+
+		if (validSpawn) {
+			grunts.push_back(SpawnGrunt(spawnX, spawnY));
+		}
 	}
 }
 
