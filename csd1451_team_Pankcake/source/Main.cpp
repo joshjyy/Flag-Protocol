@@ -175,6 +175,18 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		}
 
 		// ---------------------------------------------------------------------------
+		// STATE_NAVIGATION
+		// ---------------------------------------------------------------------------
+		else if (currentState == STATE_NAVIGATION)
+		{
+			ShowCursor(true);
+			currentState = UpdateAndRenderNavigation(meshes.square, fontID, dt);
+
+			if (AEInputCheckTriggered(AEVK_Q))
+				currentState = STATE_MENU;
+		}
+
+		// ---------------------------------------------------------------------------
 		// STATE_TUTORIAL
 		// ---------------------------------------------------------------------------
 		else if (currentState == STATE_TUTORIAL) {

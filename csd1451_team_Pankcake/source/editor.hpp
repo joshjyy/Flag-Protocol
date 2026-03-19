@@ -33,6 +33,5 @@ void DrawEditorHover(const EditorState& editor,
 
 void SaveCustomMap(std::vector<std::vector<int>>& gameMap);
 void LoadCustomMap(std::vector<std::vector<int>>& gameMap);
-void ReloadInitialMap(std::vector<std::vector<int>>& gameMap);
 void SaveInitialEditorMap(std::vector<std::vector<int>>& gameMap);
 void ResetToInitialEditorMap(std::vector<std::vector<int>>& gameMap);

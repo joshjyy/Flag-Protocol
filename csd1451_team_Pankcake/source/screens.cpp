@@ -45,7 +45,7 @@ void DrawButton(const Button& btn, AEGfxVertexList* mesh, s8 font) {
     ny -= textHeight / 2;
 
     // Green text
-    AEGfxPrint(font, const_cast<char*>(btn.label), nx, ny, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f);
+    AEGfxPrint(font, const_cast<char*>(btn.label), nx, ny, textScale, 0.0f, 1.0f, 0.0f, 1.0f);
 }
 
 GameState UpdateAndRenderMenu(AEGfxVertexList* mesh, s8 font, float dt) {
@@ -73,7 +73,7 @@ GameState UpdateAndRenderMenu(AEGfxVertexList* mesh, s8 font, float dt) {
     DrawButton(editorBtn, mesh, font);
     DrawButton(quitBtn, mesh, font);
 
-    if (IsButtonClicked(playBtn))   return STATE_CUTSCENE;
+    if (IsButtonClicked(playBtn))   return STATE_NAVIGATION;
     if (IsButtonClicked(tutorialBtn))   return STATE_TUTORIAL;
     if (IsButtonClicked(loadBtn)) return STATE_LOAD;
     if (IsButtonClicked(editorBtn)) return STATE_EDITOR;
@@ -143,20 +143,69 @@ GameState UpdateAndRenderPause(AEGfxVertexList* mesh, s8 font, float dt) {
     return STATE_PAUSE;
 }
 
+GameState UpdateAndRenderNavigation(AEGfxVertexList* mesh, s8 font, float dt) {
+    (void)dt;
+
+    AEGfxSetBackgroundColor(0.05f, 0.05f, 0.1f);
+    AEGfxSetRenderMode(AE_GFX_RM_COLOR);
+    AEGfxSetBlendMode(AE_GFX_BM_BLEND);
+    AEGfxSetTransparency(1.0f);
+
+    float tx, ty;
+
+    // Title
+    GetNormalizedTextPosition(-110.0f, 350.0f, &tx, &ty);
+    AEGfxPrint(font, const_cast<char*>("SELECT GAME MODE"), tx, ty, 1.5f, 0.0f, 1.0f, 0.0f, 1.0f);
+
+    // Navigation buttons
+    Button playBtn = { 0.0f,  200.0f, 250.0f, 60.0f, "PLAY GAME" };
+    Button levelSelectBtn = { 0.0f,   50.0f, 250.0f, 60.0f, "LEVEL SELECT" };
+    Button customBtn = { 0.0f,  -100.0f, 250.0f, 60.0f, "CUSTOM LEVEL" };
+    Button backBtn = { 0.0f, -300.0f, 280.0f, 60.0f, "BACK TO MAIN MENU" };
+
+    DrawButton(playBtn, mesh, font);
+    DrawButton(levelSelectBtn, mesh, font);
+    DrawButton(customBtn, mesh, font);
+    DrawButton(backBtn, mesh, font);
+
+    // Button interactions
+    if (IsButtonClicked(playBtn)) return STATE_CUTSCENE;
+    if (IsButtonClicked(levelSelectBtn)) return STATE_LOAD; //Placeholder
+    if (IsButtonClicked(customBtn)) return STATE_LOAD; // Placeholder
+    if (IsButtonClicked(backBtn)) return STATE_MENU;
+
+    return STATE_NAVIGATION;
+}
+
 void CurrGamestate(GameState state, int& gGameRunning, std::vector<std::vector<int>>& gameMap) {
-    if (state == STATE_MENU)
+    if (state == STATE_MENU) {
         while (ShowCursor(true) < 0);
+    }
+    else if (state == STATE_NAVIGATION) {
+        ShowCursor(true);
+    }
     else if (state == STATE_GAME) {
         GameStateLoad(gGameRunning, gameMap);
         ShowCursor(false);
     }
-    else if (state == STATE_TUTORIAL)
+    else if (state == STATE_TUTORIAL) {
         GameStateLoadTutorial(gGameRunning, gameMap);
-    else if (state == STATE_LOAD)
+        ShowCursor(false);
+    }
+    else if (state == STATE_LOAD) {
         GameStateLoadCustom(gGameRunning, gameMap);
-    else if (state == STATE_EDITOR)
+        ShowCursor(false);
+    }
+    else if (state == STATE_EDITOR) {
         GameStateLoadCustom(gGameRunning, gameMap);
-    
+        ShowCursor(true);
+    }
+    else if (state == STATE_CUTSCENE) {
+        ShowCursor(false);
+    }
+    else if (state == STATE_PAUSE) {
+        ShowCursor(true);
+    }
 }
 
 void GameStateLoad(int& gGameRunning, std::vector<std::vector<int>>& gameMap) {
