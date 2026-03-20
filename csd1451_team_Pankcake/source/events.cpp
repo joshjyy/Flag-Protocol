@@ -5,7 +5,9 @@
 
 EventManager InitEventManager(void) {
     EventManager events = {
-        false  // winTriggered
+        false,  // winTriggered
+		false   // playerDied
+
     };
     return events;
 }
@@ -16,6 +18,18 @@ void CheckWinCondition(EventManager& events, Player& player) {
         events.winTriggered = true;
         printf("=== YOU WIN! ===\n");
     }
+
+    if (player.isDead && player.deathExplosionSpawned) {
+        bool allDead = true;
+        for (int i = 0; i < MAX_PARTICLES; i++) {
+            if (player.deathEmitter->particles[i].active) {
+                allDead = false;
+                break;
+            }
+        }
+        if (allDead) events.playerDied = true;
+    }
+
 
   //  if (events.winTriggered) {
 		//events.winTriggered = false; // Reset for potential future use
@@ -75,6 +89,8 @@ bool Cutscene_Update(CutsceneData& cut, float dt)
 
 void Cutscene_Draw(const CutsceneData& cut, s8 font, AEGfxVertexList* squareMesh)
 {
+    AEGfxSetBackgroundColor(0.05f, 0.05f, 0.1f);
+
     float textAlpha = 1.0f - cut.alpha;
 
     const char* lines[] = {

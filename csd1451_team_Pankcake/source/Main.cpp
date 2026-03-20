@@ -271,6 +271,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				gameEvents.winTriggered = false; // Reset for potential future use
 			}
 
+			if (gameEvents.playerDied)
+			{
+				currentState = STATE_LOSE;
+				gameEvents.playerDied = false; // Reset for potential future use
+			}
 			if (AEInputCheckTriggered(AEVK_Q))
 				currentState = STATE_MENU;
 		}
@@ -331,11 +336,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		else if(currentState == STATE_WIN)
 		{
-			printf("Won Not Implemented Yet!\n");
+			currentState = UpdateAndRenderWinScreen(meshes.square, fontID, dt, player);
+		
 		}
 		else if(currentState == STATE_LOSE)
 		{
-			printf("Lose Not Implemented Yet!\n");
+			currentState = UpdateAndRenderLoseScreen(meshes.square, fontID, dt, player);
 		}
 
 		else if(currentState == STATE_CREDITS)

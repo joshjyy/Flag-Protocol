@@ -7,6 +7,7 @@
 // ---------------------------------------------------------------------------
 struct EventManager {
     bool winTriggered;
+	bool playerDied;
 };
 
 EventManager InitEventManager(void);

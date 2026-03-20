@@ -177,13 +177,92 @@ GameState UpdateAndRenderNavigation(AEGfxVertexList* mesh, s8 font, float dt) {
     return STATE_NAVIGATION;
 }
 
-//GameState UpdateAndRenderWinScreen(AEGfxVertexList* mesh, s8 font, float dt) {
-//
-//}
+GameState UpdateAndRenderWinScreen(AEGfxVertexList* mesh, s8 font, float dt,  Player& player) {
+    (void)dt;
 
-//GameState UpdateAndRenderDeathScreen(AEGfxVertexList* mesh, s8 font, float dt) {
-//
-//}
+    AEGfxSetBackgroundColor(0.05f, 0.05f, 0.1f);
+    AEGfxSetRenderMode(AE_GFX_RM_COLOR);
+    AEGfxSetBlendMode(AE_GFX_BM_BLEND);
+    AEGfxSetTransparency(1.0f);
+
+
+    float tw, th;
+    // Title
+    AEGfxGetPrintSize(font, "YOU WIN!", 2.5f, &tw, &th);
+    AEGfxPrint(font, const_cast<char*>("YOU WIN!"), -tw / 2, 0.75f, 2.5f, 0.0f, 1.0f, 0.0f, 1.0f);
+
+    // Stats - build strings
+    char scoreStr[64], gruntsStr[64], flagStr[64];
+    sprintf_s(scoreStr, "SCORE: %d", player.score);
+    sprintf_s(gruntsStr, "VIRUSES KILLED: %d", player.gruntsKilled);
+    sprintf_s(flagStr, "FLAGS CAPTURED: %d", player.flagCaptures);
+    AEGfxGetPrintSize(font, scoreStr, 1.2f, &tw, &th);
+    AEGfxPrint(font, scoreStr, -tw / 2, 0.35f, 1.2f, 1.0f, 1.0f, 1.0f, 1.0f);
+
+    AEGfxGetPrintSize(font, gruntsStr, 1.2f, &tw, &th);
+    AEGfxPrint(font, gruntsStr, -tw / 2, 0.15f, 1.2f, 1.0f, 1.0f, 1.0f, 1.0f);
+
+    AEGfxGetPrintSize(font, flagStr, 1.2f, &tw, &th);
+    AEGfxPrint(font, flagStr, -tw / 2, -0.05f, 1.2f, 1.0f, 1.0f, 1.0f, 1.0f);
+
+    // Buttons
+    Button menuBtn = { 0.0f, -150.0f, 200.0f, 50.0f, "MAIN MENU" };
+    Button creditsBtn = { 0.0f, -250.0f, 200.0f, 50.0f, "CREDITS" };
+
+    DrawButton(menuBtn, mesh, font);
+    DrawButton(creditsBtn, mesh, font);
+
+    if (IsButtonClicked(menuBtn)) return STATE_MENU;
+    if (IsButtonClicked(creditsBtn)) return STATE_CREDITS;
+
+    return STATE_WIN;
+}
+
+
+
+GameState UpdateAndRenderLoseScreen(AEGfxVertexList* mesh, s8 font, float dt,
+    Player& player) {
+    (void)dt;
+
+    ShowCursor(true);
+    AEGfxSetBackgroundColor(0.1f, 0.05f, 0.05f);
+    AEGfxSetRenderMode(AE_GFX_RM_COLOR);
+    AEGfxSetBlendMode(AE_GFX_BM_BLEND);
+    AEGfxSetTransparency(1.0f);
+
+    float tw, th;
+
+    // Title
+    AEGfxGetPrintSize(font, "YOU DIED!", 2.5f, &tw, &th);
+    AEGfxPrint(font, const_cast<char*>("YOU DIED!"), -tw / 2, 0.75f, 2.5f, 1.0f, 0.0f, 0.0f, 1.0f);
+
+    // Stats
+    char scoreStr[64], gruntsStr[64], flagStr[64];
+    sprintf_s(scoreStr, "SCORE: %d", player.score);
+    sprintf_s(gruntsStr, "GRUNTS KILLED: %d", player.gruntsKilled);
+    sprintf_s(flagStr, "FLAGS CAPTURED: %d", player.flagCaptures);
+
+    AEGfxGetPrintSize(font, scoreStr, 1.2f, &tw, &th);
+    AEGfxPrint(font, scoreStr, -tw / 2, 0.35f, 1.2f, 1.0f, 1.0f, 1.0f, 1.0f);
+
+    AEGfxGetPrintSize(font, gruntsStr, 1.2f, &tw, &th);
+    AEGfxPrint(font, gruntsStr, -tw / 2, 0.15f, 1.2f, 1.0f, 1.0f, 1.0f, 1.0f);
+
+    AEGfxGetPrintSize(font, flagStr, 1.2f, &tw, &th);
+    AEGfxPrint(font, flagStr, -tw / 2, -0.05f, 1.2f, 1.0f, 1.0f, 1.0f, 1.0f);
+
+    // Buttons
+    Button retryBtn = { 0.0f, -150.0f, 200.0f, 50.0f, "RETRY" };
+    Button menuBtn = { 0.0f, -250.0f, 200.0f, 50.0f, "MAIN MENU" };
+
+    DrawButton(retryBtn, mesh, font);
+    DrawButton(menuBtn, mesh, font);
+
+    if (IsButtonClicked(retryBtn)) return STATE_CUTSCENE;
+    if (IsButtonClicked(menuBtn))  return STATE_MENU;
+
+    return STATE_LOSE;
+}
 
 
 
