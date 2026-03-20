@@ -219,8 +219,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		// ---------------------------------------------------------------------------
 		else if (currentState == STATE_CUSTOM) {
 
-
-
 			Load_Map(*gameMap, camera);
 			if (AEInputCheckTriggered(AEVK_Q))
 				currentState = STATE_MENU;

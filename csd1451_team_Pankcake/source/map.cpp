@@ -50,32 +50,25 @@ int Load_Game_Level(const char* filename, std::vector<std::vector<int>>& arr) {
  * Each integer represents a tile type (0 = empty, 1-5 = different tiles).
  **/
 void Save_Game_Level(const char* filename, std::vector<std::vector<int>>& arr) {
-	// Create output file stream
 	std::ofstream map_file(filename);
-
-	// Check if file opened successfully
 	if (!map_file.is_open()) {
 		std::cout << "Error: Could not save file " << filename << std::endl;
 		return;
 	}
 
-	// Loop through each row of the map
-	for (int i = 0; i < MAP_HEIGHT; i++) {
-		// Loop through each column of the map
-		for (int j = 0; j < MAP_WIDTH; j++) {
-			// Write each integer to file
-			map_file << arr[i][j];
+	// Add the headers that Load_Game_Level expects
+	map_file << "MAP_HEIGHT = " << MAP_HEIGHT << std::endl;
+	map_file << "MAP_WIDTH = " << MAP_WIDTH << std::endl;
+	map_file << "TILE_SIZE = " << TILE_SIZE << std::endl;
 
-			// Add space between numbers, but not at the end of row
-			if (j < MAP_WIDTH - 1) {
-				map_file << " ";
-			}
+	for (int i = 0; i < MAP_HEIGHT; i++) {
+		for (int j = 0; j < MAP_WIDTH; j++) {
+			map_file << arr[i][j];
+			if (j < MAP_WIDTH - 1) map_file << " ";
 		}
-		// New line at the end of each row
 		map_file << std::endl;
 	}
 
-	// Close the file
 	map_file.close();
 	std::cout << "Map saved successfully to " << filename << "!" << std::endl;
 }
