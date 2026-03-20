@@ -5,6 +5,7 @@
 #include "weapon.hpp"
 #include "gameConstants.hpp"
 #include "enemies.hpp"
+#include <fstream>
 
 
 
@@ -843,4 +844,13 @@ void DrawScoreUI(Player& player, void* mesh , float dt) {
             ParticleEmitterEmit(player.trailEmitter, player.x, player.y, 10);
            }
     AEGfxSetTransparency(1.0f);
+}
+void SavePlayerScore(int score)
+{
+    std::ofstream file("Score/score.txt");
+    if (file.is_open())
+    {
+        file << score;
+        file.close();
+    }
 }

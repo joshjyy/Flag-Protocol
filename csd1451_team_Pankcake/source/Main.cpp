@@ -142,8 +142,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		if (currentState != previousState) {
 			CurrGamestate(currentState, gGameRunning, *gameMap, player, previousState);
-			previousState = currentState;
 
+			if ((previousState == STATE_GAME || previousState == STATE_PAUSE) && currentState == STATE_MENU){
+				//Save player score
+				printf("Score saved: %d\n", player.score);
+				SavePlayerScore(player.score);
+			}
 			// Force spawn when entering tutorial temporary fix
 			if (currentState == STATE_TUTORIAL) {
 				player.x = 15 * TILE_SIZE - 800.0f + 25.0f;
@@ -160,6 +164,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			if (currentState == STATE_EDITOR) {
 				editorPaintReady = false;
 			}
+
+			previousState = currentState;
+
 		}
 
 		if (currentState == STATE_QUIT) {

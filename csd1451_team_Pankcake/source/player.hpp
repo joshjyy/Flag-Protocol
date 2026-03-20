@@ -83,4 +83,5 @@ void LoadPlayer(Player& player);
 void FreePlayer(Player& player);
 
 void DrawScoreUI(Player& player, void* mesh, float dt);
+void SavePlayerScore(int score);
 
