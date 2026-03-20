@@ -184,7 +184,6 @@ void CheckBulletGruntCollisions(std::vector<Bullet>& playerBullets, std::vector<
 				if (grunt.health <= 0.0f && !grunt.isDead){
 					playerInfo.gruntsKilled++;
 					// Add ammo, capped at maxMagazine
-					printf("Before: pistol=%d, maxAmmo=%d\n", playerInfo.pistol.currentAmmo, playerInfo.pistol.maxAmmo);
 
 					playerInfo.pistol.currentAmmo += 5;
 					if (playerInfo.pistol.currentAmmo > playerInfo.pistol.maxAmmo)
@@ -193,7 +192,10 @@ void CheckBulletGruntCollisions(std::vector<Bullet>& playerBullets, std::vector<
 					playerInfo.rifle.currentAmmo += 10;
 					if (playerInfo.rifle.currentAmmo > playerInfo.rifle.maxAmmo)
 						playerInfo.rifle.currentAmmo = playerInfo.rifle.maxAmmo;
-					printf("After: pistol=%d\n", playerInfo.pistol.currentAmmo);
+
+					playerInfo.shotgun.currentAmmo += 2;
+					if (playerInfo.shotgun.currentAmmo > playerInfo.shotgun.maxAmmo)
+						playerInfo.shotgun.currentAmmo = playerInfo.shotgun.maxAmmo;
 
 					playerInfo.score += 10;  
 					if (playerInfo.health < 96.0f) playerInfo.health += 15.0f;
