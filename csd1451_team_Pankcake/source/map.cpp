@@ -59,7 +59,7 @@ void Save_Game_Level(const char* filename, std::vector<std::vector<int>>& arr) {
 	// Add the headers that Load_Game_Level expects
 	map_file << "MAP_HEIGHT = " << MAP_HEIGHT << std::endl;
 	map_file << "MAP_WIDTH = " << MAP_WIDTH << std::endl;
-	map_file << "TILE_SIZE = " << TILE_SIZE << std::endl;
+	map_file << "TILE_SIZE = " << 50 << std::endl;
 
 	for (int i = 0; i < MAP_HEIGHT; i++) {
 		for (int j = 0; j < MAP_WIDTH; j++) {
