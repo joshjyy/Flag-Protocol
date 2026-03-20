@@ -11,21 +11,23 @@ EventManager InitEventManager(void) {
 }
 
 void CheckWinCondition(EventManager& events, Player& player) {
-    if (player.gruntsKilled >= 3 && !events.winTriggered) {
+
+    if (player.flagCaptures == 10 && !events.winTriggered) {
         events.winTriggered = true;
         printf("=== YOU WIN! ===\n");
     }
 
-    if (events.winTriggered) {
-        float textX, textY;
-        GetNormalizedTextPosition(-100.0f, -150.0f, &textX, &textY);
-        AEGfxPrint(fontID, "YOU WIN!", textX, textY, 3.0f, 0.0f, 1.0f, 0.0f, 1.0f);
+  //  if (events.winTriggered) {
+		//events.winTriggered = false; // Reset for potential future use
+  //      float textX, textY;
+  //      GetNormalizedTextPosition(-100.0f, -150.0f, &textX, &textY);
+  //      AEGfxPrint(fontID, "YOU WIN!", textX, textY, 3.0f, 0.0f, 1.0f, 0.0f, 1.0f);
 
-        char scoreText[64];
-        sprintf_s(scoreText, 64, "Grunts Killed: %d", player.gruntsKilled);
-        GetNormalizedTextPosition(-75.0f, -200.0f, &textX, &textY);
-        AEGfxPrint(fontID, scoreText, textX, textY, 1.5f, 1.0f, 1.0f, 1.0f, 1.0f);
-    }
+  //      char scoreText[64];
+  //      sprintf_s(scoreText, 64, "Grunts Killed: %d", player.gruntsKilled);
+  //      GetNormalizedTextPosition(-75.0f, -200.0f, &textX, &textY);
+  //      AEGfxPrint(fontID, scoreText, textX, textY, 1.5f, 1.0f, 1.0f, 1.0f, 1.0f);
+  //  }
 }
 
 // ---------------------------------------------------------------------------
@@ -77,7 +79,7 @@ void Cutscene_Draw(const CutsceneData& cut, s8 font, AEGfxVertexList* squareMesh
 
     const char* lines[] = {
         "MISSION BRIEFING",
-        "Obtain as many Flag Nodes as you can.",
+        "Obtain 10 Flag Nodes to Clear.",
         "Your health depletes every second.",
         "Recover health by retrieving flags and killing enemies.",
         "Stay alive. Score as high as you can.",
