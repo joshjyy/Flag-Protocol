@@ -50,5 +50,8 @@ void UpdateAndRenderGameplay(
 
     RemoveDeadGrunts(grunts);
     CheckWinCondition(events, player);
+
+
+
     DrawScoreUI(player, meshes.square, dt);
 }

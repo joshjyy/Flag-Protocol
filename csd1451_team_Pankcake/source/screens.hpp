@@ -6,7 +6,7 @@
 
 //Game state enums for managing different screens
 enum GameState { STATE_MENU, STATE_GAME, STATE_CUSTOM, STATE_CONTROLS,  STATE_EDITOR, STATE_LOAD, STATE_TUTORIAL, STATE_QUIT, STATE_PAUSE , STATE_CUTSCENE, STATE_NAVIGATION,
-};
+STATE_LOSE, STATE_WIN, STATE_CREDITS , STATE_DIGIPENLOGO};
 
 //button struct
 struct Button { float x, y, w, h; const char* label; };

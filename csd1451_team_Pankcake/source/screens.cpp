@@ -63,18 +63,19 @@ GameState UpdateAndRenderMenu(AEGfxVertexList* mesh, s8 font, float dt) {
 
     Button playBtn = { 0.0f,  150.0f, 200.0f, 50.0f, "PLAY" };
     Button controlsBtn = { 0.0f,   50.0f, 200.0f, 50.0f, "CONTROLS" };
-    Button editorBtn = { 0.0f,  -50.0f, 200.0f, 50.0f, "EDITOR" };
-    Button quitBtn = { 0.0f, -150.0f, 200.0f, 50.0f, "QUIT" };
+    Button creditBtn = { 0.0f,  -50.0f, 200.0f, 50.0f, "CREDITS" };
+    Button editorBtn = { 0.0f,  -150.0f, 200.0f, 50.0f, "EDITOR" };
+    Button quitBtn = { 0.0f, -300.0f, 200.0f, 50.0f, "QUIT" };
 
     DrawButton(playBtn, mesh, font);
-    //DrawButton(tutorialBtn, mesh, font);
     DrawButton(controlsBtn, mesh, font);
+    DrawButton(creditBtn, mesh, font);
     DrawButton(editorBtn, mesh, font);
     DrawButton(quitBtn, mesh, font);
 
     if (IsButtonClicked(playBtn))   return STATE_NAVIGATION;
-    //if (IsButtonClicked(tutorialBtn))   return STATE_TUTORIAL;
     if (IsButtonClicked(controlsBtn)) return STATE_CONTROLS;
+    if (IsButtonClicked(creditBtn)) return STATE_CREDITS;
     if (IsButtonClicked(editorBtn)) return STATE_EDITOR;
     if (IsButtonClicked(quitBtn))   return STATE_QUIT;
 
@@ -157,7 +158,7 @@ GameState UpdateAndRenderNavigation(AEGfxVertexList* mesh, s8 font, float dt) {
     AEGfxPrint(font, const_cast<char*>("SELECT GAME MODE"), tx, ty, 1.5f, 0.0f, 1.0f, 0.0f, 1.0f);
 
     // Navigation buttons
-    Button playBtn = { 0.0f,  200.0f, 250.0f, 60.0f, "PLAY GAME" };
+    Button playBtn = { 0.0f,  200.0f, 250.0f, 60.0f, "MAIN GAME" };
     Button trainingBtn = { 0.0f,   50.0f, 250.0f, 60.0f, "TRAINING" };
     Button customBtn = { 0.0f,  -100.0f, 250.0f, 60.0f, "CUSTOM LEVEL" };
     Button backBtn = { 0.0f, -300.0f, 280.0f, 60.0f, "BACK TO MAIN MENU" };
@@ -175,6 +176,19 @@ GameState UpdateAndRenderNavigation(AEGfxVertexList* mesh, s8 font, float dt) {
 
     return STATE_NAVIGATION;
 }
+
+//GameState UpdateAndRenderWinScreen(AEGfxVertexList* mesh, s8 font, float dt) {
+//
+//}
+
+//GameState UpdateAndRenderDeathScreen(AEGfxVertexList* mesh, s8 font, float dt) {
+//
+//}
+
+
+
+
+
 
 void CurrGamestate(GameState state, int& gGameRunning, std::vector<std::vector<int>>& gameMap, Player& player, GameState previousState) {
     if (state == STATE_MENU) {

@@ -146,7 +146,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			if ((previousState == STATE_GAME || previousState == STATE_PAUSE) && currentState == STATE_MENU){
 				//Save player score
 				printf("Score saved: %d\n", player.score);
-				SavePlayerScore(player.score);
+				SavePlayerScore(player);
 			}
 			// Force spawn when entering tutorial temporary fix
 			if (currentState == STATE_TUTORIAL) {
@@ -264,7 +264,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			Update_CameraPosition(camera, player.x, player.y, dt);
 			UpdateAndRenderGameplay(player, dt, gameMap, camera, playerBullets, enemyBullets, grunts, gameEvents);
 			
-			
+		
+			if(gameEvents.winTriggered)
+			{
+				currentState = STATE_WIN;
+				gameEvents.winTriggered = false; // Reset for potential future use
+			}
 
 			if (AEInputCheckTriggered(AEVK_Q))
 				currentState = STATE_MENU;
@@ -300,7 +305,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			// Pause menu on top
 			currentState = UpdateAndRenderPause(meshes.square, fontID, dt);
 
-			}
+		}
 
 		// ---------------------------------------------------------------------------
 		// EDITOR STATE
@@ -322,6 +327,20 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				currentState = STATE_MENU;
 				editorLoaded = false;
 			}
+		}
+
+		else if(currentState == STATE_WIN)
+		{
+			printf("Won Not Implemented Yet!\n");
+		}
+		else if(currentState == STATE_LOSE)
+		{
+			printf("Lose Not Implemented Yet!\n");
+		}
+
+		else if(currentState == STATE_CREDITS)
+		{
+			printf("Credits Not Implemented Yet!\n");
 		}
 		
 		// ---------------------------------------------------------------------------
