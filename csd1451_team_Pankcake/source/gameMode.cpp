@@ -7,7 +7,7 @@
 #include "weapon.hpp"
 #include "events.hpp"
 #include "map.hpp"
-
+#include "debris.hpp"
 
 void UpdateAndRenderGameplay(
     Player& player,
@@ -21,7 +21,7 @@ void UpdateAndRenderGameplay(
 {
 	WeaponStats weapon = GetCurrentWeapon(player);
 
-    
+    Background_Draw(camera);
     Load_Map(*gameMap,camera);
 
     UpdatePlayer(&player, dt, *gameMap);

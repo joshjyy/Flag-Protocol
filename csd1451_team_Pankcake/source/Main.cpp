@@ -17,7 +17,7 @@
 #include "damageNumbers.hpp"
 #include "gameMode.hpp"
 #include "gameConstants.hpp"
-
+#include "debris.hpp"
 
 //Legend if needed later
 /*
@@ -113,7 +113,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	// Cutscene variables
 	CutsceneData cutscene;
-
+	Background_Load();
+	Background_Init();
 	
 
 	
@@ -135,7 +136,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	{
 		AESysFrameStart();
 		float dt = (float)AEFrameRateControllerGetFrameTime();
-
+		
 		if (AEInputCheckTriggered(AEVK_ESCAPE) || 0 == AESysDoesWindowExist())
 			gGameRunning = 0;
 
@@ -246,9 +247,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				currentState = STATE_PAUSE;
 				printf("Pause triggered!\n");
 			}
+			printf("IN GAME STATE\n");
+			Background_Update(dt);
 			Update_CameraPosition(camera, player.x, player.y, dt);
 			UpdateAndRenderGameplay(player, dt, gameMap, camera, playerBullets, enemyBullets, grunts, gameEvents);
-
+			
+			
 
 			if (AEInputCheckTriggered(AEVK_Q))
 				currentState = STATE_MENU;
@@ -325,6 +329,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	ClearBullets(playerBullets);
 	ClearBullets(enemyBullets);
 	ClearDamageNumbers();
+	Background_Free();
 	AEGfxDestroyFont(fontID);
 	ParticleEmitterFree(&player.trailEmitter);
 	ParticleEmitterFree(&player.deathEmitter);

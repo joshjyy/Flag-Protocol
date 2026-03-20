@@ -217,6 +217,7 @@ void GameStateLoad(int& gGameRunning, std::vector<std::vector<int>>& gameMap) {
         printf("Map loaded successfully!\n");
     }
     Spawn_Flag(gameMap);
+    floodfill(gameMap, 0, 0);
 }
 
 void GameStateLoadTutorial(int& gGameRunning, std::vector<std::vector<int>>& gameMap) {
