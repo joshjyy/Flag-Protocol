@@ -62,20 +62,19 @@ GameState UpdateAndRenderMenu(AEGfxVertexList* mesh, s8 font, float dt) {
     AEGfxPrint(font, const_cast<char*>("Flag Protocol"), tx, ty, 2.0f, 0.0f, 1.0f, 0.0f, 1.0f);
 
     Button playBtn = { 0.0f,  150.0f, 200.0f, 50.0f, "PLAY" };
-    Button tutorialBtn = { 0.0f,   50.0f, 200.0f, 50.0f, "TRAINING" };
-    Button loadBtn = { 0.0f,  -50.0f, 200.0f, 50.0f, "CUSTOM" };
-    Button editorBtn = { 0.0f,  -150.0f, 200.0f, 50.0f, "EDITOR" };
-    Button quitBtn = { 0.0f, -300.0f, 200.0f, 50.0f, "QUIT" };
+    Button controlsBtn = { 0.0f,   50.0f, 200.0f, 50.0f, "CONTROLS" };
+    Button editorBtn = { 0.0f,  -50.0f, 200.0f, 50.0f, "EDITOR" };
+    Button quitBtn = { 0.0f, -150.0f, 200.0f, 50.0f, "QUIT" };
 
     DrawButton(playBtn, mesh, font);
-    DrawButton(tutorialBtn, mesh, font);
-    DrawButton(loadBtn, mesh, font);
+    //DrawButton(tutorialBtn, mesh, font);
+    DrawButton(controlsBtn, mesh, font);
     DrawButton(editorBtn, mesh, font);
     DrawButton(quitBtn, mesh, font);
 
     if (IsButtonClicked(playBtn))   return STATE_NAVIGATION;
-    if (IsButtonClicked(tutorialBtn))   return STATE_TUTORIAL;
-    if (IsButtonClicked(loadBtn)) return STATE_LOAD;
+    //if (IsButtonClicked(tutorialBtn))   return STATE_TUTORIAL;
+    if (IsButtonClicked(controlsBtn)) return STATE_CONTROLS;
     if (IsButtonClicked(editorBtn)) return STATE_EDITOR;
     if (IsButtonClicked(quitBtn))   return STATE_QUIT;
 
@@ -159,25 +158,25 @@ GameState UpdateAndRenderNavigation(AEGfxVertexList* mesh, s8 font, float dt) {
 
     // Navigation buttons
     Button playBtn = { 0.0f,  200.0f, 250.0f, 60.0f, "PLAY GAME" };
-    Button levelSelectBtn = { 0.0f,   50.0f, 250.0f, 60.0f, "LEVEL SELECT" };
+    Button trainingBtn = { 0.0f,   50.0f, 250.0f, 60.0f, "TRAINING" };
     Button customBtn = { 0.0f,  -100.0f, 250.0f, 60.0f, "CUSTOM LEVEL" };
     Button backBtn = { 0.0f, -300.0f, 280.0f, 60.0f, "BACK TO MAIN MENU" };
 
     DrawButton(playBtn, mesh, font);
-    DrawButton(levelSelectBtn, mesh, font);
+    DrawButton(trainingBtn, mesh, font);
     DrawButton(customBtn, mesh, font);
     DrawButton(backBtn, mesh, font);
 
     // Button interactions
     if (IsButtonClicked(playBtn)) return STATE_CUTSCENE;
-    if (IsButtonClicked(levelSelectBtn)) return STATE_LOAD; //Placeholder
-    if (IsButtonClicked(customBtn)) return STATE_LOAD; // Placeholder
+    if (IsButtonClicked(trainingBtn)) return STATE_TUTORIAL; //Placeholder
+    if (IsButtonClicked(customBtn)) return STATE_CUSTOM; // Placeholder
     if (IsButtonClicked(backBtn)) return STATE_MENU;
 
     return STATE_NAVIGATION;
 }
 
-void CurrGamestate(GameState state, int& gGameRunning, std::vector<std::vector<int>>& gameMap) {
+void CurrGamestate(GameState state, int& gGameRunning, std::vector<std::vector<int>>& gameMap, Player& player, GameState previousState) {
     if (state == STATE_MENU) {
         while (ShowCursor(true) < 0);
     }
@@ -187,14 +186,31 @@ void CurrGamestate(GameState state, int& gGameRunning, std::vector<std::vector<i
     else if (state == STATE_GAME) {
         GameStateLoad(gGameRunning, gameMap);
         ShowCursor(false);
+        
+        if (previousState != STATE_PAUSE) {
+            LoadPlayer(player);
+            printf("Player loaded with health: %.0f\n", player.health);
+        }
+
     }
     else if (state == STATE_TUTORIAL) {
         GameStateLoadTutorial(gGameRunning, gameMap);
         ShowCursor(false);
+        if (previousState != STATE_PAUSE) {
+            LoadPlayer(player);
+            printf("Player loaded with health: %.0f\n", player.health);
+        }
+
     }
-    else if (state == STATE_LOAD) {
+    else if (state == STATE_CUSTOM) {
         GameStateLoadCustom(gGameRunning, gameMap);
         ShowCursor(false);
+        if (previousState != STATE_PAUSE) {
+            LoadPlayer(player);
+            printf("Player loaded with health: %.0f\n", player.health);
+        }
+
+
     }
     else if (state == STATE_EDITOR) {
         GameStateLoadCustom(gGameRunning, gameMap);

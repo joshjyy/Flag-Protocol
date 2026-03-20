@@ -79,8 +79,8 @@ void CheckEnemyBulletPlayerCollision(std::vector<Bullet>& enemyBullets, Player& 
 
 void CheckPlayerGruntBodyCollision(Player& player, std::vector<Grunt>& grunts);
 void killPlayer(Player& player);
-void LoadPlayer(Player& player, AEGfxVertexList* particleMesh);
-void UnloadPlayer(Player& player);
+void LoadPlayer(Player& player);
+void FreePlayer(Player& player);
 
 void DrawScoreUI(Player& player, void* mesh, float dt);
 

@@ -140,7 +140,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			gGameRunning = 0;
 
 		if (currentState != previousState) {
-			CurrGamestate(currentState, gGameRunning, *gameMap);
+			CurrGamestate(currentState, gGameRunning, *gameMap, player, previousState);
 			previousState = currentState;
 
 			// Force spawn when entering tutorial temporary fix
@@ -186,10 +186,16 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				currentState = STATE_MENU;
 		}
 
+		else if(currentState == STATE_CONTROLS)
+		{
+			printf("Not Implemented Yet!\n");
+		}
 		// ---------------------------------------------------------------------------
 		// STATE_TUTORIAL
 		// ---------------------------------------------------------------------------
 		else if (currentState == STATE_TUTORIAL) {
+
+
 			ShowCursor(false);
 			Update_CameraPosition(camera, player.x, player.y, dt);
 			Load_Map(*gameMap, camera);
@@ -210,20 +216,19 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		// ---------------------------------------------------------------------------
 		// STATE_LOAD
 		// ---------------------------------------------------------------------------
-		else if (currentState == STATE_LOAD) {
+		else if (currentState == STATE_CUSTOM) {
+
+
+
 			Load_Map(*gameMap, camera);
 			if (AEInputCheckTriggered(AEVK_Q))
 				currentState = STATE_MENU;
+
+			Update_CameraPosition(camera, player.x, player.y, dt);
+			UpdateAndRenderGameplay(player, dt, gameMap, camera, playerBullets, enemyBullets, grunts, gameEvents);
 				
 		}
 
-		else if (currentState == STATE_CUTSCENE)
-		{
-			Cutscene_Draw(cutscene, fontID, meshes.square);
-			if (Cutscene_Update(cutscene, dt))
-				currentState = STATE_GAME;
-		}   
-	
 		// ---------------------------------------------------------------------------
 		// STATE_CUTSCENE
 		// ---------------------------------------------------------------------------
