@@ -142,8 +142,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		if (currentState != previousState) {
 			CurrGamestate(currentState, gGameRunning, *gameMap, player, previousState);
-			previousState = currentState;
 
+			if ((previousState == STATE_GAME || previousState == STATE_PAUSE) && currentState == STATE_MENU){
+				//Save player score
+				printf("Score saved: %d\n", player.score);
+				SavePlayerScore(player);
+			}
 			// Force spawn when entering tutorial temporary fix
 			if (currentState == STATE_TUTORIAL) {
 				player.x = 15 * TILE_SIZE - 800.0f + 25.0f;
@@ -160,6 +164,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			if (currentState == STATE_EDITOR) {
 				editorPaintReady = false;
 			}
+
+			previousState = currentState;
+
 		}
 
 		if (currentState == STATE_QUIT) {
@@ -255,7 +262,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			Update_CameraPosition(camera, player.x, player.y, dt);
 			UpdateAndRenderGameplay(player, dt, gameMap, camera, playerBullets, enemyBullets, grunts, gameEvents);
 			
-			
+		
+			if(gameEvents.winTriggered)
+			{
+				currentState = STATE_WIN;
+				gameEvents.winTriggered = false; // Reset for potential future use
+			}
 
 			if (AEInputCheckTriggered(AEVK_Q))
 				currentState = STATE_MENU;
@@ -291,7 +303,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			// Pause menu on top
 			currentState = UpdateAndRenderPause(meshes.square, fontID, dt);
 
-			}
+		}
 
 		// ---------------------------------------------------------------------------
 		// EDITOR STATE
@@ -314,6 +326,20 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				editorLoaded = false;
 				Quit_Editor(editor);
 			}
+		}
+
+		else if(currentState == STATE_WIN)
+		{
+			printf("Won Not Implemented Yet!\n");
+		}
+		else if(currentState == STATE_LOSE)
+		{
+			printf("Lose Not Implemented Yet!\n");
+		}
+
+		else if(currentState == STATE_CREDITS)
+		{
+			printf("Credits Not Implemented Yet!\n");
 		}
 		
 		// ---------------------------------------------------------------------------

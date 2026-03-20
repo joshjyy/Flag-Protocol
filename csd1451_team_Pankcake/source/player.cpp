@@ -5,6 +5,7 @@
 #include "weapon.hpp"
 #include "gameConstants.hpp"
 #include "enemies.hpp"
+#include <fstream>
 
 
 
@@ -524,6 +525,7 @@ void UpdatePlayer(Player* player, float dt, std::vector<std::vector<int>>& gameM
     else if (collision == 2 && player->holdingFlag == true) {
         player->holdingFlag = false;
         player->score += 100;
+		player->flagCaptures += 1;
         Spawn_Flag(gameMap);
 
         // Milestone animations
@@ -719,6 +721,7 @@ void killPlayer(Player& player) {
 void LoadPlayer(Player& player) {
     // Initialize player stats
     player.gruntsKilled = 0;
+	player.flagCaptures = 0;
     player.score = 0;
     player.health = 100.0f;
     player.x = 0.0f;
@@ -791,11 +794,11 @@ void DrawScoreUI(Player& player, void* mesh , float dt) {
     AEGfxPrint(fontID, scoreText, textX, textY, 1.2f, 1.0f, 1.0f, 1.0f, 1.0f);
 
     char flagText[32];
-    sprintf_s(flagText, 32, "FLAGS  %d", player.score / 100);
+    sprintf_s(flagText, 32, "FLAGS  %d", player.flagCaptures);
     GetNormalizedTextPosition(600.0f, 340.0f, &textX, &textY);
     AEGfxPrint(fontID, flagText, textX, textY, 1.0f, 0.0f, 1.0f, 0.8f, 1.0f);
 
-    int captures = player.score / 100;
+    int captures = player.flagCaptures;
     for (int i = 0; i < 10; i++) {
         float dotX = 610.0f + i * 16.0f;
         AEGfxSetTransparency(1.0f);
@@ -843,4 +846,14 @@ void DrawScoreUI(Player& player, void* mesh , float dt) {
             ParticleEmitterEmit(player.trailEmitter, player.x, player.y, 10);
            }
     AEGfxSetTransparency(1.0f);
+}
+void SavePlayerScore(Player& player)
+{
+    std::ofstream file("Score/score.txt");
+    if (file.is_open())
+    {
+        file << "Previous Score: " << player.score << std::endl;
+		file << "Previous Grunts Killed: " << player.gruntsKilled << std::endl;
+        file.close();
+    }
 }
