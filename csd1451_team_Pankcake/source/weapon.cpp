@@ -13,6 +13,10 @@ void WeaponSwitchCheck(Player& player) {
 		player.currentWeaponIndex = 1;
 		printf("%s Switched!\n", GetCurrentWeapon(player).weaponName);
 	}
+	if (AEInputCheckTriggered(AEVK_3)) {
+    player.currentWeaponIndex = 2;
+    printf("%s Switched!\n", GetCurrentWeapon(player).weaponName);
+}
 }
 
 void ResetShootCooldown(Player &player, float dt) {
@@ -67,6 +71,46 @@ void ReloadBullets(WeaponStats weapon, float dt) {
 	}
 }
 
+
+// Spread shooting for shotgun, creates multiple bullets with a spread angle
+void SpreadShootingCheck(Player& player, std::vector<Bullet>& type, WeaponStats weapon,
+	CameraPos& camera, int pellets, float spreadAngle) {
+
+	if (AEInputCheckCurr(AEVK_LBUTTON) && player.shootCooldown <= 0.0f &&
+		player.inDash == false && !(*weapon.inReload) && !player.isDead) {
+
+		if (*weapon.currentAmmo > 0) {
+			s32 mouseX, mouseY;
+			AEInputGetCursorPosition(&mouseX, &mouseY);
+
+			float screenX = (float)mouseX - 800.0f;
+			float screenY = 450.0f - (float)mouseY;
+
+			float worldMouseX = screenX + camera.x;
+			float worldMouseY = screenY + camera.y;
+
+			// Base angle to mouse
+			float baseAngle = atan2f(worldMouseY - player.y, worldMouseX - player.x);
+
+			// Convert spread to radians
+			float halfSpread = AEDegToRad(spreadAngle / 2.0f);
+			float angleStep = (pellets > 1) ? (AEDegToRad(spreadAngle) / (pellets - 1)) : 0.0f;
+
+			for (int i = 0; i < pellets; i++) {
+				float angle = baseAngle - halfSpread + angleStep * i;
+				float targetX = player.x + AECos(angle) * 100.0f;
+				float targetY = player.y + AESin(angle) * 100.0f;
+
+				Bullet newBullet = CreateBullet(player.x, player.y, targetX, targetY,
+					weapon.bulletSpeed, weapon.bulletDamage);
+				type.push_back(newBullet);
+			}
+
+			(*weapon.currentAmmo)--;
+			player.shootCooldown = weapon.fireRate;
+		}
+	}
+}
 
 void SetWeaponColor(int weaponIndex) {
 	if (weaponIndex == 0) {

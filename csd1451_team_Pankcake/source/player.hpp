@@ -37,6 +37,7 @@ struct Player {
     // Weapon system
     Pistol pistol;
     AssaultRifle rifle;
+    Shotgun shotgun;
     int currentWeaponIndex;  // 0 = pistol, 1 = rifle
     float shootCooldown;
 

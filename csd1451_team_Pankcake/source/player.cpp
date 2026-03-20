@@ -25,6 +25,7 @@ Player InitPlayer(void) {
         0.0f,                     // dashDirY
         Pistol(),                 // pistol constructor
         AssaultRifle(),           // rifle constructor
+		Shotgun(),               // shotgun constructor
         0,                        // currentWeaponIndex (start with pistol)
         0.0f,                    // shootCooldown
 		false,                     // inDash
@@ -365,9 +366,9 @@ WeaponStats GetCurrentWeapon(Player& player) {
     }
 
     else if (player.currentWeaponIndex == 1) {
-		// Assault Rifle
+        // Assault Rifle
         return {
-          player.rifle.weaponName, 
+          player.rifle.weaponName,
           &player.rifle.currentAmmo,
           &player.rifle.maxMagazine,
           &player.rifle.maxAmmo,
@@ -379,7 +380,21 @@ WeaponStats GetCurrentWeapon(Player& player) {
           &player.rifle.inReload
         };
     }
-    else {
+
+    else if (player.currentWeaponIndex == 2) {
+        return{
+        player.shotgun.weaponName,
+        &player.shotgun.currentAmmo,
+        &player.shotgun.maxMagazine,
+        &player.shotgun.maxAmmo,
+        player.shotgun.bulletSpeed,
+        player.shotgun.bulletDamage,
+        player.shotgun.fireRate,
+        player.shotgun.reloadSpeed,
+        &player.shotgun.reloadTimer,
+        &player.shotgun.inReload,
+        };
+    } else {
 		// Default to pistol if index is invalid
         return {
             player.pistol.weaponName,
