@@ -721,7 +721,7 @@ void killPlayer(Player& player) {
 void LoadPlayer(Player& player) {
     // Initialize player stats
     player.gruntsKilled = 0;
-	player.flagCaptures = 0;
+	player.flagCaptures = 9;
     player.score = 0;
     player.health = 100.0f;
     player.x = 0.0f;
