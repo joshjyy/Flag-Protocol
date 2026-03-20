@@ -668,6 +668,17 @@ void CheckPlayerGruntBodyCollision(Player& player, std::vector<Grunt>& grunts) {
 					else
 					player.health = 100.0f; // heal player for 20 health on kill
                     
+
+                    player.pistol.currentAmmo += 5;
+                    if (player.pistol.currentAmmo > player.pistol.maxAmmo)
+                        player.pistol.currentAmmo = player.pistol.maxAmmo;
+
+                    player.rifle.currentAmmo += 10;
+                    if (player.rifle.currentAmmo > player.rifle.maxAmmo)
+                        player.rifle.currentAmmo = player.rifle.maxAmmo;
+                    printf("After: pistol=%d\n", player.pistol.currentAmmo);
+
+                    player.score += 10;
                     grunt.isDead = true;
                     player.gruntsKilled++;
                     //printf("Grunt killed by dash! Total kills: %d\n", player.gruntsKilled);
