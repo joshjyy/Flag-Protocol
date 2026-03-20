@@ -2,7 +2,7 @@
 #include "AEEngine.h"
 
 
-#define ASTEROID_COUNT 100
+#define ASTEROID_COUNT 400
 extern float MAP_WIDTH;
 extern float MAP_HEIGHT;
 extern float TILE_SIZE;
@@ -25,8 +25,8 @@ void Background_Load() {
 
 void Background_Init() {
     for (int i = 0; i < ASTEROID_COUNT; i++) {
-        asteroids[i].pos.x = AERandFloat() * MAP_WIDTH * TILE_SIZE;
-        asteroids[i].pos.y = -(AERandFloat() * MAP_HEIGHT * TILE_SIZE);
+        asteroids[i].pos.x = (i % 10) * (MAP_WIDTH * TILE_SIZE / 10.0f) + AERandFloat() * 100.0f;
+        asteroids[i].pos.y = -(i / 10) * (MAP_HEIGHT * TILE_SIZE / 10.0f) - AERandFloat() * 100.0f;
         asteroids[i].vel.x = (AERandFloat() - 0.5f) * 100.0f;
         asteroids[i].vel.y = (AERandFloat() - 0.5f) * 100.0f;
         asteroids[i].scale = 80.0f + AERandFloat() * 120.0f;

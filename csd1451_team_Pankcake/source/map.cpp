@@ -335,14 +335,14 @@ void Update_CameraPosition(CameraPos& camera, float targetX, float targetY, floa
 	float halfW = 800.0f;
 	float halfH = 450.0f;
 
-	float mapW = (float)MAP_WIDTH * (float)TILE_SIZE; // 3200
-	float mapH = (float)MAP_HEIGHT * (float)TILE_SIZE; // 3200
+	float mapW = (float)MAP_WIDTH * (float)TILE_SIZE; 
+	float mapH = (float)MAP_HEIGHT * (float)TILE_SIZE; 
 
-	float minX = -halfW + halfW;          //    0
-	float maxX = mapW - halfW - halfW;   // 1600
-	float minY = -(mapH - halfH) + halfH; // -2300
+	float minX = -halfW + halfW;          
+	float maxX = mapW - halfW - halfW;   
+	float minY = -(mapH - halfH) + halfH; 
 	float maxY = 0.0f;
 
-	camera.x = AEClamp(camera.x, minX, maxX);
-	camera.y = AEClamp(camera.y, minY, maxY);
+	camera.x = AEClamp(camera.x, minX - 200.0f, maxX + 200.0f);
+	camera.y = AEClamp(camera.y, minY - 200.0f, maxY + 200.0f);
 }
