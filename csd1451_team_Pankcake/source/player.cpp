@@ -705,7 +705,7 @@ void killPlayer(Player& player) {
     }
 }
 
-void LoadPlayer(Player& player, AEGfxVertexList* particleMesh) {
+void LoadPlayer(Player& player) {
     // Initialize player stats
     player.gruntsKilled = 0;
     player.score = 0;
@@ -733,34 +733,11 @@ void LoadPlayer(Player& player, AEGfxVertexList* particleMesh) {
     player.holdingFlag = false;
     player.deathExplosionSpawned = false;
 
-    // Store mesh reference
-    player.particleMesh = particleMesh;
 
-    // Create particle emitters
-    player.trailEmitter = ParticleEmitterCreate();
-    ParticleEmitterSetMesh(player.trailEmitter, particleMesh);
-    ParticleEmitterSetLifeTime(player.trailEmitter, 0.2f, 0.5f);
-    ParticleEmitterSetVelocity(player.trailEmitter, -50.0f, 50.0f, -50.0f, 50.0f);
-    ParticleEmitterSetScale(player.trailEmitter, 8.0f, 15.0f);
-    ParticleEmitterSetColor(player.trailEmitter, 0.0f, 1.0f, 0.0f, 0.8f);
-
-    player.dashTrailEmitter = ParticleEmitterCreate();
-    ParticleEmitterSetMesh(player.dashTrailEmitter, particleMesh);
-    ParticleEmitterSetLifeTime(player.dashTrailEmitter, 0.3f, 0.6f);
-    ParticleEmitterSetVelocity(player.dashTrailEmitter, -100.0f, 100.0f, -100.0f, 100.0f);
-    ParticleEmitterSetScale(player.dashTrailEmitter, 10.0f, 20.0f);
-    ParticleEmitterSetColor(player.dashTrailEmitter, 0.0f, 1.0f, 1.0f, 0.9f);
-
-    player.deathEmitter = ParticleEmitterCreate();
-    ParticleEmitterSetMesh(player.deathEmitter, particleMesh);
-    ParticleEmitterSetLifeTime(player.deathEmitter, 0.5f, 1.5f);
-    ParticleEmitterSetVelocity(player.deathEmitter, -200.0f, 200.0f, -200.0f, 200.0f);
-    ParticleEmitterSetScale(player.deathEmitter, 15.0f, 30.0f);
-    ParticleEmitterSetColor(player.deathEmitter, 1.0f, 0.3f, 0.0f, 1.0f);
 
 }
 
-void UnloadPlayer(Player& player) {
+void FreePlayer(Player& player) {
     ParticleEmitterFree(&player.trailEmitter);
     ParticleEmitterFree(&player.dashTrailEmitter);
     ParticleEmitterFree(&player.deathEmitter);
