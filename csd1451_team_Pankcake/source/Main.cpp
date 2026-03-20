@@ -312,6 +312,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			if (AEInputCheckTriggered(AEVK_Q)) {
 				currentState = STATE_MENU;
 				editorLoaded = false;
+				Quit_Editor(editor);
 			}
 		}
 		

@@ -290,3 +290,6 @@ void RenderEditorUI(const EditorState& editor,
         AEGfxPrint(fontID, commands[i].desc, textX, textY, 1.0f, 0.7f, 0.7f, 0.7f, 1.0f);
     }
 }
+void Quit_Editor(EditorState& editor) {
+    editor.editorPaintReady = false;
+}
