@@ -252,7 +252,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				currentState = STATE_PAUSE;
 				printf("Pause triggered!\n");
 			}
-			printf("IN GAME STATE\n");
+			
 			Background_Update(dt);
 			Update_CameraPosition(camera, player.x, player.y, dt);
 			UpdateAndRenderGameplay(player, dt, gameMap, camera, playerBullets, enemyBullets, grunts, gameEvents);

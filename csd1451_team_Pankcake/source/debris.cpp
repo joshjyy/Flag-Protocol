@@ -24,9 +24,15 @@ void Background_Load() {
 }
 
 void Background_Init() {
+    int cols = (int)sqrt((float)ASTEROID_COUNT);
+    int rows = (ASTEROID_COUNT + cols - 1) / cols;
+
     for (int i = 0; i < ASTEROID_COUNT; i++) {
-        asteroids[i].pos.x = (i % 10) * (MAP_WIDTH * TILE_SIZE / 10.0f) + AERandFloat() * 100.0f;
-        asteroids[i].pos.y = -(i / 10) * (MAP_HEIGHT * TILE_SIZE / 10.0f) - AERandFloat() * 100.0f;
+        int col = i % cols;
+        int row = i / cols;
+
+        asteroids[i].pos.x = col * (MAP_WIDTH * TILE_SIZE / cols) + AERandFloat() * 50.0f;
+        asteroids[i].pos.y = -(row * (MAP_HEIGHT * TILE_SIZE / rows)) - AERandFloat() * 50.0f;
         asteroids[i].vel.x = (AERandFloat() - 0.5f) * 100.0f;
         asteroids[i].vel.y = (AERandFloat() - 0.5f) * 100.0f;
         asteroids[i].scale = 80.0f + AERandFloat() * 120.0f;
