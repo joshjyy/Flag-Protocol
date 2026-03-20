@@ -147,7 +147,10 @@ void UpdateAndRenderTutorial(
 
     UpdatePlayer(&player, dt, *gameMap);
     WeaponSwitchCheck(player);
-    ShootingCheck(player, playerBullets, weapon, camera);
+    if (player.currentWeaponIndex == 2)
+        SpreadShootingCheck(player, playerBullets, weapon, camera, 5, 30.0f);
+    else
+        ShootingCheck(player, playerBullets, weapon, camera);  
     ReloadBullets(weapon, dt);
 
     UpdateBullets(playerBullets, dt, *gameMap);

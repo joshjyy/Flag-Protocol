@@ -55,6 +55,34 @@ struct AssaultRifle {
 
 };
 
+
+struct Shotgun {
+	const char* weaponName;
+	int currentAmmo;
+	int maxMagazine;
+	int maxAmmo;
+	float bulletSpeed;
+	float bulletDamage;
+	float fireRate;
+	float reloadSpeed;
+	float reloadTimer;
+	bool inReload;
+
+	Shotgun() :
+		weaponName("Shotgun"),
+		currentAmmo(10),
+		maxMagazine(30),
+		maxAmmo(10),
+		bulletSpeed(1000.0f),
+		bulletDamage(50.0f),  // per pellet, 5 pellets = 75 total
+		fireRate(0.8f),
+		reloadSpeed(2.5f),
+		reloadTimer(0.0f),
+		inReload(false)
+	{
+	}
+};
+
 struct WeaponStats {
 	const char* weaponName;
 	int* currentAmmo;
