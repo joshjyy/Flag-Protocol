@@ -24,6 +24,7 @@ Player InitPlayer(void) {
         0.0f,                     // dashCooldownTimer
         0.0f,                     // dashDirX
         0.0f,                     // dashDirY
+        false,                    //true
         Pistol(),                 // pistol constructor
         AssaultRifle(),           // rifle constructor
 		Shotgun(),               // shotgun constructor
@@ -457,6 +458,7 @@ WeaponStats GetCurrentWeapon(Player& player) {
 
 
 void UpdatePlayer(Player* player, float dt, std::vector<std::vector<int>>& gameMap) {
+   
 	if (player->health > 0.0f)
 	player->health -= dt * 2.0f;  // Passive health drain over time
     if(player->health <= 0.0f && !player->isDead) {
@@ -794,7 +796,7 @@ void killPlayer(Player& player) {
 void LoadPlayer(Player& player) {
     // Initialize player stats
     player.gruntsKilled = 0;
-	player.flagCaptures = 9;
+	player.flagCaptures = 0;
     player.score = 0;
     player.health = 100.0f;
     player.x = 0.0f;
@@ -814,13 +816,16 @@ void LoadPlayer(Player& player) {
     // Weapon system
     player.currentWeaponIndex = 0;
     player.shootCooldown = 0.0f;
+    player.pistol.currentAmmo = player.pistol.maxAmmo;
+    player.rifle.currentAmmo = player.rifle.maxAmmo;
+    player.shotgun.currentAmmo = player.shotgun.maxAmmo;
+
 
     // State flags
     player.isDead = false;
     player.holdingFlag = false;
     player.deathExplosionSpawned = false;
-
-
+    player.canshoot = false;
 
 }
 
@@ -929,4 +934,11 @@ void SavePlayerScore(Player& player)
 		file << "Previous Grunts Killed: " << player.gruntsKilled << std::endl;
         file.close();
     }
+}
+
+bool CanShoot(Player& player){
+    if (!AEInputCheckCurr(AEVK_LBUTTON)) {
+        player.canshoot = true;
+    }
+    return player.canshoot;
 }

@@ -127,10 +127,12 @@ GameState UpdateAndRenderPause(AEGfxVertexList* mesh, s8 font, float dt, GameSta
         return previous;
     }
     if (IsButtonClicked(menuBtn)) {
+        
         return STATE_MENU;
     }
     if (IsButtonClicked(menuBtn)) {
         return STATE_MENU;
+       
     }
     if (IsButtonClicked(quitBtn)) {
         return STATE_QUIT;
@@ -217,7 +219,7 @@ GameState UpdateAndRenderWinScreen(AEGfxVertexList* mesh, s8 font, float dt,  Pl
 
 
 GameState UpdateAndRenderLoseScreen(AEGfxVertexList* mesh, s8 font, float dt,
-    Player& player) {
+    Player& player, GameState previous) {
     (void)dt;
 
     ShowCursor(true);
@@ -254,7 +256,10 @@ GameState UpdateAndRenderLoseScreen(AEGfxVertexList* mesh, s8 font, float dt,
     DrawButton(retryBtn, mesh, font);
     DrawButton(menuBtn, mesh, font);
 
-    if (IsButtonClicked(retryBtn)) return STATE_CUTSCENE;
+    if (IsButtonClicked(retryBtn)) {
+        LoadPlayer(player);
+        return previous;
+    }
     if (IsButtonClicked(menuBtn))  return STATE_MENU;
 
     return STATE_LOSE;
@@ -286,6 +291,7 @@ void CurrGamestate(GameState state, int& gGameRunning, std::vector<std::vector<i
         if (previousState != STATE_PAUSE) {
 			ShowCursor(false);
             LoadPlayer(player);
+
             AEAudioPlay(GameBGM1, GameBGMGroup, 1.0f, 1.0f, 1);
         }
 
