@@ -15,8 +15,9 @@ EventManager InitEventManager(void) {
 void CheckWinCondition(EventManager& events, Player& player) {
 
     if (player.flagCaptures == 10 && !events.winTriggered) {
+        ShowCursor(true);
+
         events.winTriggered = true;
-        printf("=== YOU WIN! ===\n");
     }
 
     if (player.isDead && player.deathExplosionSpawned) {
@@ -27,6 +28,8 @@ void CheckWinCondition(EventManager& events, Player& player) {
                 break;
             }
         }
+        ShowCursor(true);
+
         if (allDead) events.playerDied = true;
     }
 
@@ -94,29 +97,35 @@ void Cutscene_Draw(const CutsceneData& cut, s8 font, AEGfxVertexList* squareMesh
     float textAlpha = 1.0f - cut.alpha;
 
     const char* lines[] = {
-        "MISSION BRIEFING",
-        "Obtain 10 Flag Nodes to Clear.",
-        "Your health depletes every second.",
-        "Recover health by retrieving flags and killing enemies.",
-        "Stay alive. Score as high as you can.",
-        "",
-        "[ ENTER to skip ]"
-    };
-    float colours[][3] = {
-        { 1.0f, 0.8f, 0.2f },
-        { 1.0f, 1.0f, 1.0f },
-        { 1.0f, 0.4f, 0.4f },
-        { 0.4f, 1.0f, 0.4f },
-        { 1.0f, 1.0f, 1.0f },
-        { 1.0f, 1.0f, 1.0f },
-        { 0.5f, 0.5f, 0.5f },
+        "DEBUGGER.EXE",
+        "You are a Debugger program injected into a corrupted system.",
+        "Rogue processes swarm the network. They will drain your integrity.",
+        "Locate FLAG NODES scattered across the system and retrieve them.",
+        "Deliver 10 FLAG NODES to the PURPLE ZONES to purge the corruption.",
+        "Kill enemies to restore integrity and resupply ammunition.",
+        "CYAN zones = FLAG NODE pickup   |   PURPLE zones = FLAG delivery",
+        "[ WASD ] Move   [ RMB ] Sprint   [ SPACE ] Dash (costs health)",
+        "[ LMB ] Shoot   [ R ] Reload   [ 1/2/3 ] Switch Weapon Types",
+        "[ ENTER to begin ]"
     };
 
+    float colours[][3] = {
+        { 0.0f, 1.0f, 0.4f },    // title
+        { 0.8f, 0.8f, 1.0f },    // lore
+        { 1.0f, 0.4f, 0.4f },    // threat
+        { 1.0f, 1.0f, 1.0f },    // objective
+        { 1.0f, 1.0f, 1.0f },    // objective
+        { 0.4f, 1.0f, 0.4f },    // reward
+        { 0.0f, 1.0f, 1.0f },    // cyan for flag hint
+        { 1.0f, 0.9f, 0.3f },    // controls
+        { 1.0f, 0.9f, 0.3f },    // controls
+        { 0.5f, 0.5f, 0.5f },    // skip
+    };
     float startY = CUT_TEXT_START_Y;
     float stepY = CUT_TEXT_STEP_Y;
     float textX, textY;
 
-    for (int i = 0; i < 7; i++) {
+    for (int i = 0; i < 10; i++) {
         GetNormalizedTextPosition(CUT_TEXT_X, startY - i * stepY, &textX, &textY);
         float scale = (i == 0) ? CUT_TITLE_SCALE : CUT_TEXT_SCALE;
         AEGfxPrint(font, lines[i], textX, textY, scale,

@@ -232,7 +232,7 @@ void CheckBulletGruntCollisions(std::vector<Bullet>& playerBullets, std::vector<
 						playerInfo.shotgun.currentAmmo = playerInfo.shotgun.maxAmmo;
 
 					playerInfo.score += 10;  
-					if (playerInfo.health < 96.0f) playerInfo.health += 15.0f;
+					if (playerInfo.health < 85.0f) playerInfo.health += 15.0f;
 					else {
 						playerInfo.health = 100.0f;
 						

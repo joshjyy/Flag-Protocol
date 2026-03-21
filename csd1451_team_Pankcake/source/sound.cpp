@@ -5,19 +5,24 @@ AEAudio gDashSound;
 AEAudio gSprintSound;
 AEAudio gDeathSound;
 AEAudio gShoot1Sound;
+AEAudio StaticSound;
 AEAudio GameBGM1;
+AEAudio MainMenuBGM;
 
 
 AEAudioGroup gSFXGroup;
 AEAudioGroup gSprintGroup;
 AEAudioGroup GameBGMGroup;
+AEAudioGroup StaticBGMGroup;
+AEAudioGroup MainBGMGroup;
 
 void SoundInit()
 {
     gSFXGroup = AEAudioCreateGroup();
     GameBGMGroup = AEAudioCreateGroup();
 	gSprintGroup = AEAudioCreateGroup();
-
+	StaticBGMGroup = AEAudioCreateGroup();
+	MainBGMGroup = AEAudioCreateGroup();
     
 
     //Player Sound
@@ -26,8 +31,11 @@ void SoundInit()
     gDeathSound = AEAudioLoadSound("Assets/Sound/death.wav");
 	gShoot1Sound = AEAudioLoadSound("Assets/Sound/gun1.wav");
 
+	StaticSound = AEAudioLoadMusic("Assets/Sound/static.wav");
+
     //BGM
-	GameBGM1 = AEAudioLoadSound("Assets/Sound/BGM.wav");
+	GameBGM1 = AEAudioLoadMusic("Assets/Sound/gameOST.wav");
+    MainMenuBGM = AEAudioLoadMusic("Assets/Sound/mainOST.wav");
 }
 
 void SoundFree()
@@ -36,6 +44,9 @@ void SoundFree()
     AEAudioUnloadAudio(gSprintSound);
     AEAudioUnloadAudio(gDeathSound);
 	AEAudioUnloadAudio(gShoot1Sound);
+
+	AEAudioUnloadAudio(StaticSound);
+	AEAudioUnloadAudio(MainMenuBGM);
 
 
     AEAudioUnloadAudio(GameBGM1);

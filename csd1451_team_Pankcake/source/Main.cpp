@@ -135,6 +135,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	// Screen state
 	GameState currentState = STATE_MENU;
 	static GameState previousState = STATE_MENU;
+	ShowCursor(true);
+	AEAudioPlay(MainMenuBGM, MainBGMGroup, 1.0f, 1.0f, 1);
 	
 	while (gGameRunning)
 	{
@@ -144,14 +146,29 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		if (AEInputCheckTriggered(AEVK_ESCAPE) || 0 == AESysDoesWindowExist())
 			gGameRunning = 0;
 
+		//State Transition Stuff
 		if (currentState != previousState) {
 			CurrGamestate(currentState, gGameRunning, *gameMap, player, previousState);
 
+			// Stop BGM only when leaving game or pause
+			if (previousState == STATE_GAME && currentState != STATE_PAUSE)
+				AEAudioStopGroup(GameBGMGroup);
+
+			// Stop menu BGM when leaving menu or nav
+
+			if ((previousState == STATE_MENU || previousState == STATE_NAVIGATION)
+				&& currentState != STATE_MENU
+				&& currentState != STATE_NAVIGATION)
+				AEAudioStopGroup(MainBGMGroup);
+
+			if (previousState == STATE_PAUSE && currentState == STATE_GAME)
+				ShowCursor(false);
+
 			if ((previousState == STATE_GAME || previousState == STATE_PAUSE) && currentState == STATE_MENU){
 				//Save player score
-				printf("Score saved: %d\n", player.score);
 				SavePlayerScore(player);
 			}
+
 			// Force spawn when entering tutorial temporary fix
 			if (currentState == STATE_TUTORIAL) {
 				player.x = 15 * TILE_SIZE - 800.0f + 25.0f;
@@ -191,7 +208,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		// ---------------------------------------------------------------------------
 		else if (currentState == STATE_NAVIGATION)
 		{
-			ShowCursor(true);
 			currentState = UpdateAndRenderNavigation(meshes.square, fontID, dt);
 
 			if (AEInputCheckTriggered(AEVK_Q))
@@ -208,7 +224,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		else if (currentState == STATE_TUTORIAL) {
 
 
-			ShowCursor(false);
 			Update_CameraPosition(camera, player.x, player.y, dt);
 			Load_Map(*gameMap, camera);
 
@@ -259,6 +274,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			//Check for pause input
 			if (AEInputCheckTriggered(AEVK_P) || AEInputCheckTriggered(AEVK_ESCAPE)) {
 				currentState = STATE_PAUSE;
+				ShowCursor(true);
+
 				printf("Pause triggered!\n");
 			}
 			
@@ -287,7 +304,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		// ---------------------------------------------------------------------------
 		else if (currentState == STATE_PAUSE)
 		{
-			ShowCursor(true);
 
 			camera.x = player.x;
 			camera.y = player.y;

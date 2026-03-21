@@ -16,8 +16,8 @@ void CheckWinCondition(EventManager& events, Player& player);
 // ---------------------------------------------------------------------------
 // Cutscene constants
 // ---------------------------------------------------------------------------
-const float CUT_FADE_IN_DUR = 1.5f;
-const float CUT_HOLD_DUR = 5.0f;
+const float CUT_FADE_IN_DUR = 2.5f;
+const float CUT_HOLD_DUR = 20.0f;
 const float CUT_FADE_OUT_DUR = 1.5f;
 const int   CUT_DOT_COUNT = 800;
 const float CUT_DOT_SIZE = 4.0f;
