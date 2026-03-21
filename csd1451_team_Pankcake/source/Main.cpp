@@ -244,7 +244,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 			if (AEInputCheckTriggered(AEVK_Q))
 				currentState = STATE_MENU;
-				
+			if (AEInputCheckTriggered(AEVK_P) || AEInputCheckTriggered(AEVK_ESCAPE)) {
+				currentState = STATE_PAUSE;
+				ShowCursor(true);
+
+				printf("Pause triggered!\n");
+			}
 		}
 
 		// ---------------------------------------------------------------------------
