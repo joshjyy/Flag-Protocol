@@ -8,6 +8,7 @@ AEAudio gShoot1Sound;
 AEAudio StaticSound;
 AEAudio GameBGM1;
 AEAudio MainMenuBGM;
+AEAudio EditorBGM;
 
 
 AEAudioGroup gSFXGroup;
@@ -15,6 +16,8 @@ AEAudioGroup gSprintGroup;
 AEAudioGroup GameBGMGroup;
 AEAudioGroup StaticBGMGroup;
 AEAudioGroup MainBGMGroup;
+AEAudioGroup EditorBGMGroup;
+
 
 void SoundInit()
 {
@@ -23,6 +26,7 @@ void SoundInit()
 	gSprintGroup = AEAudioCreateGroup();
 	StaticBGMGroup = AEAudioCreateGroup();
 	MainBGMGroup = AEAudioCreateGroup();
+    EditorBGMGroup = AEAudioCreateGroup();
     
 
     //Player Sound
@@ -36,6 +40,7 @@ void SoundInit()
     //BGM
 	GameBGM1 = AEAudioLoadMusic("Assets/Sound/gameOST.wav");
     MainMenuBGM = AEAudioLoadMusic("Assets/Sound/mainOST.wav");
+    EditorBGM = AEAudioLoadMusic("Assets/Sound/editor.wav");
 }
 
 void SoundFree()
@@ -47,7 +52,7 @@ void SoundFree()
 
 	AEAudioUnloadAudio(StaticSound);
 	AEAudioUnloadAudio(MainMenuBGM);
-
+    AEAudioUnloadAudio(EditorBGM);
 
     AEAudioUnloadAudio(GameBGM1);
 }

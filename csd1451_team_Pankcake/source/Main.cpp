@@ -183,6 +183,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			}
 
 			if (currentState == STATE_EDITOR) {
+				AEAudioStopGroup(MainBGMGroup);
+				AEAudioPlay(EditorBGM, EditorBGMGroup, 1.0f, 1.0f, 1);
 				editorPaintReady = false;
 			}
 

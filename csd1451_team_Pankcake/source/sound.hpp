@@ -7,12 +7,15 @@ extern AEAudio gShoot1Sound;
 extern AEAudio StaticSound;
 extern AEAudio GameBGM1;
 extern AEAudio MainMenuBGM;
+extern AEAudio EditorBGM;
 
 extern AEAudioGroup gSFXGroup;
 extern AEAudioGroup GameBGMGroup;
 extern AEAudioGroup gSprintGroup;
 extern AEAudioGroup StaticBGMGroup;
 extern AEAudioGroup MainBGMGroup;
+extern AEAudioGroup EditorBGMGroup;
+
 
 void SoundInit();
 void SoundFree();

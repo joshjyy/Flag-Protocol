@@ -1,7 +1,7 @@
 #include "editor.hpp"
 #include "utils.hpp"
 #include <cstdio>
-
+#include "sound.hpp"
 std::vector<std::vector<int>> g_initialEditorMap;
 
 EditorState InitEditor(void) {
@@ -292,4 +292,5 @@ void RenderEditorUI(const EditorState& editor,
 }
 void Quit_Editor(EditorState& editor) {
     editor.editorPaintReady = false;
+    AEAudioStopGroup(EditorBGMGroup);
 }
