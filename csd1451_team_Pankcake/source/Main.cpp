@@ -190,7 +190,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			if (currentState == STATE_GAME) {
 				Background_Init();  
 			}
-			previousState = currentState;
+			if (currentState != STATE_PAUSE) {
+				previousState = currentState;
+			}
+			
 
 		}
 
@@ -248,14 +251,19 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		// STATE_LOAD
 		// ---------------------------------------------------------------------------
 		else if (currentState == STATE_CUSTOM) {
-
+			previousState = currentState;
 			Load_Map(*gameMap, camera);
 			if (AEInputCheckTriggered(AEVK_Q))
 				currentState = STATE_MENU;
 
 			Update_CameraPosition(camera, player.x, player.y, dt);
 			UpdateAndRenderGameplay(player, dt, gameMap, camera, playerBullets, enemyBullets, grunts, gameEvents);
-				
+			if (AEInputCheckTriggered(AEVK_P) || AEInputCheckTriggered(AEVK_ESCAPE)) {
+				currentState = STATE_PAUSE;
+				ShowCursor(true);
+
+				printf("Pause triggered!\n");
+			}
 		}
 
 		// ---------------------------------------------------------------------------
@@ -330,7 +338,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			DrawPlayerUI(player, weapon, meshes.square, meshes.circle, camera);
 
 			// Pause menu on top
-			currentState = UpdateAndRenderPause(meshes.square, fontID, dt);
+			currentState = UpdateAndRenderPause(meshes.square, fontID, dt, previousState);
+			printf("%d", previousState);
 
 		}
 

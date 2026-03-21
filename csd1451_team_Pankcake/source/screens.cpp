@@ -84,7 +84,7 @@ GameState UpdateAndRenderMenu(AEGfxVertexList* mesh, s8 font, float dt) {
     return STATE_MENU;
 }
 
-GameState UpdateAndRenderPause(AEGfxVertexList* mesh, s8 font, float dt) {
+GameState UpdateAndRenderPause(AEGfxVertexList* mesh, s8 font, float dt, GameState previous) {
     (void)dt;
 
   
@@ -124,7 +124,7 @@ GameState UpdateAndRenderPause(AEGfxVertexList* mesh, s8 font, float dt) {
 
     // Button interactions
     if (IsButtonClicked(resumeBtn)) {
-        return STATE_GAME;
+        return previous;
     }
     if (IsButtonClicked(menuBtn)) {
         return STATE_MENU;
