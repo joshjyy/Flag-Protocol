@@ -2,6 +2,7 @@
 #include "player.hpp"
 #include "gunTypes.hpp"
 #include "weapon.hpp"
+#include "sound.hpp"
 
 
 void WeaponSwitchCheck(Player& player) {
@@ -30,6 +31,8 @@ void ShootingCheck(Player& player, std::vector<Bullet>& type, WeaponStats weapon
 		player.inDash == false && !(*weapon.inReload) && !player.isDead) {
 
 		if (*weapon.currentAmmo > 0) {
+			AEAudioPlay(gShoot1Sound, gSFXGroup, 0.6f, 1.0f, 0);  
+
 			s32 mouseX, mouseY;
 			AEInputGetCursorPosition(&mouseX, &mouseY);
 
@@ -97,6 +100,8 @@ void SpreadShootingCheck(Player& player, std::vector<Bullet>& type, WeaponStats 
 			float angleStep = (pellets > 1) ? (AEDegToRad(spreadAngle) / (pellets - 1)) : 0.0f;
 
 			for (int i = 0; i < pellets; i++) {
+				AEAudioPlay(gShoot1Sound, gSFXGroup, 0.6f, 1.0f, 0);
+
 				float angle = baseAngle - halfSpread + angleStep * i;
 				float targetX = player.x + AECos(angle) * 100.0f;
 				float targetY = player.y + AESin(angle) * 100.0f;

@@ -51,8 +51,8 @@ void UpdateAndRenderGameplay(
     DrawCrosshair(meshes.square);
     RenderDamageNumbers(camera);
 
-    RemoveDeadGrunts(grunts);
     CheckWinCondition(events, player);
+    RemoveDeadGrunts(grunts);
 
 
 

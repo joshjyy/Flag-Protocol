@@ -30,20 +30,33 @@ Grunt::Grunt(float x, float y)
 	patrolRadius(100.0f),
 	patrolAngle(0.0f),
 	patrolSpeed(AI_PATROL_SPEED),
-	investigateTimer(0.0f)
+	investigateTimer(0.0f),
+	deathExplosionSpawned(false),
+	deathEmitter(nullptr)
 {
+
 }
 
 //SPAWNING
 //spawning grunt at whatever x and y
 Grunt SpawnGrunt(float startX, float startY) {
-	return Grunt(startX, startY);
+	Grunt g(startX, startY);
+	InitGruntParticles(&g, (AEGfxVertexList*)meshes.square);
+	return g;
 }
 
 //UPDATING GRUNT
 // Update all grunts - shooting logic
 void UpdateGrunts(std::vector<Grunt>& grunts, Player& player, std::vector<Bullet>& enemyBullets, float dt, std::vector<std::vector<int>>& gameMap) {
 	for (auto& grunt : grunts) {
+		if (grunt.isDead) {  
+			// Spawn death explosion particles if not already spawned
+			if (!grunt.deathExplosionSpawned) {
+				ParticleEmitterEmit(grunt.deathEmitter, grunt.movingX, grunt.movingY, 64);
+				grunt.deathExplosionSpawned = true;
+			}
+			ParticleEmitterUpdate(grunt.deathEmitter, dt);
+		}
 		if (!grunt.isDead) {
 			UpdateGruntAI(grunt, player, enemyBullets, dt, gameMap);
 		}
@@ -59,10 +72,30 @@ void InitGruntSpawner() {
 //RENDERING
 // Render all grunts
 void RenderGrunts(std::vector<Grunt>& grunts, void* mesh, CameraPos& camera) {
+	//Lamda  to offset particles for camera movement
+	auto offsetParticles = [&](ParticleEmitter* emitter, float dx, float dy) {
+		for (int i = 0; i < MAX_PARTICLES; i++) {
+			auto& p = emitter->particles[i];
+			if (p.active) {
+				p.x += dx;
+				p.y += dy;
+			}
+		}
+		};
+	auto drawEmitter = [&](ParticleEmitter* emitter) {
+		if (!emitter) return;
+		offsetParticles(emitter, -camera.x, -camera.y);
+		ParticleEmitterDraw(emitter);
+		offsetParticles(emitter, camera.x, camera.y);
+		};
+
 	AEGfxSetColorToMultiply(1.0f, 0.0f, 0.0f, 1.0f);
 
 	for (const auto& grunt : grunts) {
-		if (grunt.isDead) continue;
+		if (grunt.isDead) {
+			drawEmitter(grunt.deathEmitter);
+			continue;
+		}
 
 		// Convert world position to screen position
 		float screenX = grunt.movingX - camera.x;
@@ -93,6 +126,7 @@ void UpdateGruntSpawner(std::vector<Grunt>& grunts,
 		for (int j = 0; j < MAP_WIDTH; j++) {
 			if (gameMap[i][j] == 3) {
 				spawnTiles.push_back({ i, j });
+
 			}
 		}
 	}
@@ -218,8 +252,40 @@ void CheckBulletGruntCollisions(std::vector<Bullet>& playerBullets, std::vector<
 //REMOVING
 void RemoveDeadGrunts(std::vector<Grunt>& grunts) {
 	for (int i = static_cast<int>(grunts.size()) - 1; i >= 0; i--) {
-		if (grunts[i].isDead) {
+		if (!grunts[i].isDead) continue;
+
+		// Wait until explosion has been spawned first
+		if (!grunts[i].deathExplosionSpawned) continue;
+
+		// Then wait for all particles to finish
+		bool allDone = true;
+		for (int j = 0; j < MAX_PARTICLES; j++) {
+			if (grunts[i].deathEmitter->particles[j].active) {
+				allDone = false;
+				break;
+			}
+		}
+		//Once explosion is done, free emitter and remove grunt from vector
+		if (allDone) {
+			ParticleEmitterFree(&grunts[i].deathEmitter);
 			grunts.erase(grunts.begin() + i);
 		}
 	}
+}
+
+
+void InitGruntParticles(Grunt* grunt, void* mesh) {
+	grunt->deathEmitter = ParticleEmitterCreate();
+	ParticleEmitterSetMesh(grunt->deathEmitter, (AEGfxVertexList*)mesh);
+	ParticleEmitterSetColor(grunt->deathEmitter, 1.0f, 0.0f, 0.0f, 1.0f);
+	ParticleEmitterSetVelocity(grunt->deathEmitter, -150.0f, 150.0f, -150.0f, 150.0f);
+	ParticleEmitterSetLifeTime(grunt->deathEmitter, 0.3f, 0.8f);
+	ParticleEmitterSetScale(grunt->deathEmitter, 4.0f, 12.0f);
+}
+
+void FreeGrunts(std::vector<Grunt>& grunts) {
+	for (auto& grunt : grunts) {
+		ParticleEmitterFree(&grunt.deathEmitter);
+	}
+	grunts.clear();
 }

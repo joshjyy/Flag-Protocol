@@ -44,6 +44,7 @@ struct Player {
     bool inDash;
 	bool isDead;
 	bool holdingFlag;
+    bool wasSprinting;
 
     float velocityX;
     float velocityY;

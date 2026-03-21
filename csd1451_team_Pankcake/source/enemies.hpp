@@ -4,6 +4,9 @@
 #include "gunTypes.hpp"
 #include "player.hpp"
 #include "map.hpp"
+#include "particle.hpp"
+#include "utils.hpp"
+
 #include <vector>
 
 enum GruntAIState :int;
@@ -41,6 +44,8 @@ struct Grunt {
     float patrolSpeed;
     float investigateTimer;
 
+    ParticleEmitter* deathEmitter;
+    bool deathExplosionSpawned;
     // Constructor with member initializer list
     Grunt(float x, float y);
 
@@ -79,5 +84,7 @@ void UpdateGruntSpawner(std::vector<Grunt>& grunts,
     float dt);
 void RemoveDeadGrunts(std::vector<Grunt>& grunts);
 void CheckBulletGruntCollisions(std::vector<Bullet>& playerBullets, std::vector<Grunt>& grunts, Player& player);
+void FreeGrunts(std::vector<Grunt>& grunts);
+void InitGruntParticles(Grunt* grunt, void* mesh);
 
 #endif

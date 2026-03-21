@@ -18,6 +18,7 @@
 #include "gameMode.hpp"
 #include "gameConstants.hpp"
 #include "debris.hpp"
+#include "sound.hpp"
 
 //Legend if needed later
 /*
@@ -82,9 +83,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	gameEvents = InitEventManager();
 
 	//Spawning of Grunts
-	grunts.push_back(SpawnGrunt(300.0f, 200.0f));
-	grunts.push_back(SpawnGrunt(-300.0f, -200.0f));
-	grunts.push_back(SpawnGrunt(0.0f, 300.0f));
+	//grunts.push_back(SpawnGrunt(300.0f, 200.0f));
+	//grunts.push_back(SpawnGrunt(-300.0f, -200.0f));
+	//grunts.push_back(SpawnGrunt(0.0f, 300.0f));
 
 	//Init Player
 	Player player = InitPlayer();
@@ -115,6 +116,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	CutsceneData cutscene;
 	Background_Load();
 	Background_Init();
+
+	//Sound Load
+	SoundInit();
 	
 
 	
@@ -370,9 +374,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	ParticleEmitterFree(&player.trailEmitter);
 	ParticleEmitterFree(&player.deathEmitter);
 	ParticleEmitterFree(&player.dashTrailEmitter);
-
 	FreeCommonMeshes();
-
+	FreeGrunts(grunts);
+	SoundFree();
 
 	AESysExit();
 

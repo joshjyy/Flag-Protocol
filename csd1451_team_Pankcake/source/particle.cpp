@@ -10,7 +10,7 @@ float RandFloat(float min, float max) {
 ParticleEmitter* ParticleEmitterCreate(void) {
     ParticleEmitter* emitter = new ParticleEmitter();
     //printf("emiiter: allocated at %p, size = %zu bytes\n", emitter, sizeof(ParticleEmitter));
-
+    emitter->mesh = meshes.square;  // set it here
     emitter->emissionRate = 10.0f;
     emitter->minLifeTime = 1.0f;
     emitter->maxLifeTime = 2.0f;

@@ -5,6 +5,7 @@
 #include "weapon.hpp"
 #include "gameConstants.hpp"
 #include "enemies.hpp"
+#include "sound.hpp"
 #include <fstream>
 
 
@@ -31,6 +32,7 @@ Player InitPlayer(void) {
 		false,                     // inDash
         false,                    // isDead
         false,                      //holdingFlag
+        false,
 
 		 0.0f,                    // velocityX
          0.0f,                    // velocityY
@@ -90,6 +92,7 @@ void InitPlayerParticles(Player* player, void* mesh, void*mesh2) {
 
 void DrawPlayer(Player& player, void* mesh, CameraPos &camera, float dt)
 {
+
 	// Lamda  to offset particles for camera movement 
     //returns particles to world space for correct position, then back to screen space after drawing
 	//note - [&] captures all local variables by reference, allowing access to cameraX and cameraY
@@ -426,6 +429,8 @@ void UpdatePlayer(Player* player, float dt, std::vector<std::vector<int>>& gameM
         if (!player->deathExplosionSpawned) {
 			// Spawn a burst of particles at the player's position for the death explosion
             ParticleEmitterEmit(player->deathEmitter, player->x, player->y, 64);
+            AEAudioPlay(gDeathSound, gSFXGroup, 1.0f, 1.0f, 0);  
+
             player->deathExplosionSpawned = true;
         }
         ParticleEmitterUpdate(player->deathEmitter, dt);
@@ -459,6 +464,9 @@ void UpdatePlayer(Player* player, float dt, std::vector<std::vector<int>>& gameM
     // Dash input
 	// Only trigger if space is pressed, dash is not on cooldown, and there is some movement input (can't dash in place)
     if (AEInputCheckTriggered(AEVK_SPACE) && player->dashCooldownTimer <= 0.0f && (inputX != 0.0f || inputY != 0.0f)) {
+		printf("Dash!\n");
+        AEAudioPlay(gDashSound, gSFXGroup, 0.7f, 1.0f, 0); 
+
 		// Start dash in input direction (
         player->dashDirX = inputX;
         player->dashDirY = inputY;
@@ -485,6 +493,16 @@ void UpdatePlayer(Player* player, float dt, std::vector<std::vector<int>>& gameM
         player->y += player->dashDirY * PLAYER_DASH_SPEED * dt;
     }
     else {
+        // --- SPRINT SOUND ---
+        //bool isSprinting = AEInputCheckCurr(AEVK_RBUTTON) && (inputX != 0.0f || inputY != 0.0f);
+        //if (isSprinting && !player->wasSprinting)
+        //    AEAudioPlay(gSprintSound, gSprintGroup, 0.3f, 1.0f, 1);  // loop
+        //if (!isSprinting && player->wasSprinting)
+        //    AEAudioStopGroup(gSprintGroup);
+        //player->wasSprinting = isSprinting;
+
+
+
         // Sprint cap when holding shift, otherwise walk speed
         float currentMaxSpeed = AEInputCheckCurr(AEVK_RBUTTON) ? PLAYER_WALK_SPEED * 2.0f : PLAYER_WALK_SPEED;
 
