@@ -24,6 +24,8 @@ struct Player {
     float milestoneTimer;
     
     float health;
+
+    bool canshoot;
     // Position
     float x;
     float y;
@@ -90,3 +92,4 @@ void FreePlayer(Player& player);
 void DrawScoreUI(Player& player, void* mesh, float dt);
 void SavePlayerScore(Player& player);
 
+bool CanShoot(Player& player);

@@ -27,29 +27,31 @@ void ResetShootCooldown(Player &player, float dt) {
 }
 
 void ShootingCheck(Player& player, std::vector<Bullet>& type, WeaponStats weapon, CameraPos& camera) {
-	if (AEInputCheckCurr(AEVK_LBUTTON) && player.shootCooldown <= 0.0f &&
-		player.inDash == false && !(*weapon.inReload) && !player.isDead) {
+	if (CanShoot(player)){
+		if (AEInputCheckCurr(AEVK_LBUTTON) && player.shootCooldown <= 0.0f &&
+			player.inDash == false && !(*weapon.inReload) && !player.isDead) {
 
-		if (*weapon.currentAmmo > 0) {
-			AEAudioPlay(gShoot1Sound, gSFXGroup, 0.6f, 1.0f, 0);  
+			if (*weapon.currentAmmo > 0) {
+				AEAudioPlay(gShoot1Sound, gSFXGroup, 0.6f, 1.0f, 0);
 
-			s32 mouseX, mouseY;
-			AEInputGetCursorPosition(&mouseX, &mouseY);
+				s32 mouseX, mouseY;
+				AEInputGetCursorPosition(&mouseX, &mouseY);
 
-			float screenX = (float)mouseX - 800.0f;
-			float screenY = 450.0f - (float)mouseY;
+				float screenX = (float)mouseX - 800.0f;
+				float screenY = 450.0f - (float)mouseY;
 
-			float worldMouseX = screenX + camera.x;
-			float worldMouseY = screenY + camera.y;
+				float worldMouseX = screenX + camera.x;
+				float worldMouseY = screenY + camera.y;
 
-			Bullet newBullet = CreateBullet(player.x, player.y, worldMouseX, worldMouseY,
-				weapon.bulletSpeed, weapon.bulletDamage);
-			type.push_back(newBullet);
+				Bullet newBullet = CreateBullet(player.x, player.y, worldMouseX, worldMouseY,
+					weapon.bulletSpeed, weapon.bulletDamage);
+				type.push_back(newBullet);
 
-			(*weapon.currentAmmo)--;
-			printf("Ammo: %d/%d\n", *weapon.currentAmmo, *weapon.maxAmmo);
+				(*weapon.currentAmmo)--;
+				printf("Ammo: %d/%d\n", *weapon.currentAmmo, *weapon.maxAmmo);
 
-			player.shootCooldown = weapon.fireRate;
+				player.shootCooldown = weapon.fireRate;
+			}
 		}
 	}
 }

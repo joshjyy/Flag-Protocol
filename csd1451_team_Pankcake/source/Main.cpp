@@ -190,7 +190,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			if (currentState == STATE_GAME) {
 				Background_Init();  
 			}
-			if (currentState != STATE_PAUSE) {
+			if (currentState != STATE_PAUSE  && currentState != STATE_LOSE) {
 				previousState = currentState;
 			}
 			
@@ -256,18 +256,31 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		// STATE_LOAD
 		// ---------------------------------------------------------------------------
 		else if (currentState == STATE_CUSTOM) {
-			previousState = currentState;
+			
 			Load_Map(*gameMap, camera);
 			if (AEInputCheckTriggered(AEVK_Q))
 				currentState = STATE_MENU;
 
-			Update_CameraPosition(camera, player.x, player.y, dt);
-			UpdateAndRenderGameplay(player, dt, gameMap, camera, playerBullets, enemyBullets, grunts, gameEvents);
+			
 			if (AEInputCheckTriggered(AEVK_P) || AEInputCheckTriggered(AEVK_ESCAPE)) {
 				currentState = STATE_PAUSE;
 				ShowCursor(true);
 
 				printf("Pause triggered!\n");
+			}
+			Update_CameraPosition(camera, player.x, player.y, dt);
+			UpdateAndRenderGameplay(player, dt, gameMap, camera, playerBullets, enemyBullets, grunts, gameEvents);
+
+			if (gameEvents.winTriggered)
+			{
+				currentState = STATE_WIN;
+				gameEvents.winTriggered = false; // Reset for potential future use
+			}
+
+			if (gameEvents.playerDied)
+			{
+				currentState = STATE_LOSE;
+				gameEvents.playerDied = false; // Reset for potential future use
 			}
 		}
 
@@ -287,7 +300,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		// ---------------------------------------------------------------------------
 		else if (currentState == STATE_GAME)
 		{
-			
 			//Check for pause input
 			if (AEInputCheckTriggered(AEVK_P) || AEInputCheckTriggered(AEVK_ESCAPE)) {
 				currentState = STATE_PAUSE;
@@ -344,7 +356,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 			// Pause menu on top
 			currentState = UpdateAndRenderPause(meshes.square, fontID, dt, previousState);
-			printf("%d", previousState);
+			
 
 		}
 
@@ -378,7 +390,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		}
 		else if(currentState == STATE_LOSE)
 		{
-			currentState = UpdateAndRenderLoseScreen(meshes.square, fontID, dt, player);
+			currentState = UpdateAndRenderLoseScreen(meshes.square, fontID, dt, player, previousState);
 		}
 
 		else if(currentState == STATE_CREDITS)
