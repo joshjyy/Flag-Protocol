@@ -123,7 +123,19 @@ void DrawPlayer(Player& player, void* mesh, CameraPos &camera, float dt)
 
 	// Set render mode to color for player drawing
     AEGfxSetRenderMode(AE_GFX_RM_COLOR);
+    float r, g, b;
+    GetWeaponColor(player.currentWeaponIndex, r, g, b);
+    player.trailEmitter->startR = r;
+    player.trailEmitter->startG = g;
+    player.trailEmitter->startB = b;
 
+    player.dashTrailEmitter->startR = r;
+    player.dashTrailEmitter->startG = g;
+    player.dashTrailEmitter->startB = b;
+
+	player.deathEmitter->startR = r;
+	player.deathEmitter->startG = g;
+	player.deathEmitter->startB = b;
     // --- Death state: draw explosion and skip player body ---
     if (player.isDead)
     {
@@ -133,6 +145,8 @@ void DrawPlayer(Player& player, void* mesh, CameraPos &camera, float dt)
 
     float screenX = player.x - camera.x;
     float screenY = player.y - camera.y;
+
+
 
     // --- Trail & dash particles ---
     drawEmitter(player.trailEmitter);
@@ -170,9 +184,10 @@ void DrawPlayer(Player& player, void* mesh, CameraPos &camera, float dt)
     DrawSprite((AEGfxVertexList*)mesh, screenX, screenY,
         PLAYER_RADIUS * 1.1f * halo, PLAYER_RADIUS * 1.1f * halo, 0.0f);
 
-    // Inner core (bright neon green)
+    // Inner core - weapon color
+
     AEGfxSetTransparency(1.0f);
-    AEGfxSetColorToMultiply(0.2f, 1.0f, 0.2f, 1.0f);
+    AEGfxSetColorToMultiply(r, g, b, 1.0f);
     DrawSprite((AEGfxVertexList*)mesh, screenX, screenY,
         PLAYER_RADIUS * 0.7f, PLAYER_RADIUS * 0.7f, 0.0f);
 
@@ -338,6 +353,31 @@ void RenderBullets(const std::vector<Bullet>& bullets, void* mesh,
         // Core
         AEGfxSetColorToMultiply(1.0f, 1.0f, 1.0f, 1.0f);
         DrawSprite((AEGfxVertexList*)mesh, screenX, screenY, BULLET_RADIUS -20.0f, BULLET_RADIUS -20.0f, 0.0f);
+    }
+}
+
+void RenderBullets(Player& player, const std::vector<Bullet>& bullets, void* mesh,
+    CameraPos camera) {
+    // Loop through each bullet
+
+    for (const Bullet& bullet : bullets) {
+        //  Convert world position to screen position
+        // minus camera position to ensure bullets are drawn in the correct place relative to the player
+        float screenX = bullet.x - camera.x;
+        float screenY = bullet.y - camera.y;
+
+        float r, g, b;
+        GetWeaponColor(player.currentWeaponIndex, r, g, b);
+
+        // Outer glow
+        AEGfxSetColorToMultiply(r, g, b, 0.3f);
+        DrawSprite((AEGfxVertexList*)mesh, screenX, screenY, BULLET_RADIUS, BULLET_RADIUS, 0.0f);
+        // Middle glow
+        AEGfxSetColorToMultiply(r, g, b, 0.6f);
+        DrawSprite((AEGfxVertexList*)mesh, screenX, screenY, BULLET_RADIUS - 10.0f, BULLET_RADIUS - 10.0f, 0.0f);
+        // Core
+        AEGfxSetColorToMultiply(1.0f, 1.0f, 1.0f, 1.0f);
+        DrawSprite((AEGfxVertexList*)mesh, screenX, screenY, BULLET_RADIUS - 20.0f, BULLET_RADIUS - 20.0f, 0.0f);
     }
 }
 

@@ -131,3 +131,10 @@ void SetWeaponColor(int weaponIndex) {
 		AEGfxSetColorToMultiply(0.0f, 1.0f, 1.0f, 1.0f);  // Cyan - Default
 	}
 }
+
+// weapon.cpp
+void GetWeaponColor(int weaponIndex, float& r, float& g, float& b) {
+	if (weaponIndex == 0) { r = 1.f; g = 1.f; b = 0.f; } // Yellow
+	else if (weaponIndex == 1) { r = 1.f; g = 0.f; b = 1.f; } // Purple
+	else { r = 0.f; g = 1.f; b = 1.f; } // Cyan
+}

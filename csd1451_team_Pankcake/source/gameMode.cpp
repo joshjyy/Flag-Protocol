@@ -45,7 +45,7 @@ void UpdateAndRenderGameplay(
 
     RenderGrunts(grunts, meshes.circle, camera);
     DrawPlayer(player, meshes.circle, camera, dt);
-    RenderBullets(playerBullets, meshes.circle,camera);
+    RenderBullets(player,playerBullets, meshes.circle,camera);
     RenderBullets(enemyBullets, meshes.circle, camera);
     DrawPlayerUI(player, weapon, meshes.square, meshes.circle, camera);
     DrawCrosshair(meshes.square);
