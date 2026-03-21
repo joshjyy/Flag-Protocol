@@ -187,7 +187,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				AEAudioPlay(EditorBGM, EditorBGMGroup, 1.0f, 1.0f, 1);
 				editorPaintReady = false;
 			}
-
+			if (currentState == STATE_GAME) {
+				Background_Init();  
+			}
 			previousState = currentState;
 
 		}

@@ -1,55 +1,61 @@
 #include "debris.hpp"
 #include "AEEngine.h"
+#include <random>
 
-
-#define ASTEROID_COUNT 400
+#define ASTEROID_COUNT 2000
 extern float MAP_WIDTH;
 extern float MAP_HEIGHT;
 extern float TILE_SIZE;
 
 static AEGfxVertexList* asteroidMesh = nullptr;
 static Asteroid asteroids[ASTEROID_COUNT];
+static std::mt19937 rng(std::random_device{}());
 
 void Background_Load() {
     AEGfxMeshStart();
     AEGfxTriAdd(
-        -0.5f, -0.5f, 0xFF00FF80, 0.0f, 0.0f,
-        0.5f, 0.5f, 0xFF00FF80, 0.0f, 0.0f,
-        -0.5f, 0.5f, 0xFF00FF80, 0.0f, 0.0f);
+        -0.5f, -0.5f, 0xFF003300, 0.0f, 0.0f,
+        0.5f, 0.5f, 0xFF00FF00, 0.0f, 0.0f,
+        -0.5f, 0.5f, 0xFF00FF00, 0.0f, 0.0f);
     AEGfxTriAdd(
-        -0.5f, -0.5f, 0xFF00FF80, 0.0f, 0.0f,
-        0.5f, -0.5f, 0xFF00FF80, 0.0f, 0.0f,
-        0.5f, 0.5f, 0xFF00FF80, 0.0f, 0.0f);
+        -0.5f, -0.5f, 0xFF003300, 0.0f, 0.0f,
+        0.5f, -0.5f, 0xFF003300, 0.0f, 0.0f,
+        0.5f, 0.5f, 0xFF00FF00, 0.0f, 0.0f);
     asteroidMesh = AEGfxMeshEnd();
 }
 
 void Background_Init() {
-    int cols = (int)sqrt((float)ASTEROID_COUNT);
-    int rows = (ASTEROID_COUNT + cols - 1) / cols;
+    std::uniform_real_distribution<float> randX(-775.0f, -775.0f + (MAP_WIDTH * TILE_SIZE));
+    std::uniform_real_distribution<float> randY(425.0f - (MAP_HEIGHT * TILE_SIZE), 425.0f);
+    std::uniform_real_distribution<float> randSpeed(30.0f, 100.0f);
+    std::uniform_real_distribution<float> randScale(15.0f, 40.0f);
 
     for (int i = 0; i < ASTEROID_COUNT; i++) {
-        int col = i % cols;
-        int row = i / cols;
-
-        asteroids[i].pos.x = col * (MAP_WIDTH * TILE_SIZE / cols) + AERandFloat() * 50.0f;
-        asteroids[i].pos.y = -(row * (MAP_HEIGHT * TILE_SIZE / rows)) - AERandFloat() * 50.0f;
-        asteroids[i].vel.x = (AERandFloat() - 0.5f) * 100.0f;
-        asteroids[i].vel.y = (AERandFloat() - 0.5f) * 100.0f;
-        asteroids[i].scale = 80.0f + AERandFloat() * 120.0f;
+        asteroids[i].pos.x = randX(rng);
+        asteroids[i].pos.y = randY(rng);
+        asteroids[i].vel.x = 0.0f;
+        asteroids[i].vel.y = -randSpeed(rng);
+        asteroids[i].scale = randScale(rng);
     }
 }
 
 void Background_Update(float g_dt) {
+    std::uniform_real_distribution<float> randX(-775.0f, -775.0f + (MAP_WIDTH * TILE_SIZE));
+    std::uniform_real_distribution<float> randSpeed(30.0f, 100.0f);
+    std::uniform_real_distribution<float> randScale(15.0f, 40.0f);
+
     for (int i = 0; i < ASTEROID_COUNT; i++) {
-        asteroids[i].pos.x += asteroids[i].vel.x * g_dt;
         asteroids[i].pos.y += asteroids[i].vel.y * g_dt;
 
-        // wrap around full map
-        asteroids[i].pos.x = AEWrap(asteroids[i].pos.x, 0.0f, MAP_WIDTH * TILE_SIZE);
-        asteroids[i].pos.y = AEWrap(asteroids[i].pos.y, -(MAP_HEIGHT * TILE_SIZE), 0.0f);
+        if (asteroids[i].pos.y < 425.0f - (MAP_HEIGHT * TILE_SIZE)) {
+            std::uniform_real_distribution<float> randResetY(425.0f, 425.0f + 200.0f);
+            asteroids[i].pos.x = randX(rng);
+            asteroids[i].pos.y = randResetY(rng);  
+            asteroids[i].vel.y = -randSpeed(rng);
+            asteroids[i].scale = randScale(rng);
+        }
     }
 }
-
 void Background_Draw(CameraPos camera) {
     AEGfxSetRenderMode(AE_GFX_RM_COLOR);
     AEGfxTextureSet(NULL, 0, 0);

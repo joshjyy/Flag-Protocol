@@ -1,2 +1,2 @@
-Previous Score: 0
-Previous Grunts Killed: 0
+Previous Score: 20
+Previous Grunts Killed: 2
