@@ -1,2 +1,2 @@
-Previous Score: 100
+Previous Score: 0
 Previous Viruses Killed: 0

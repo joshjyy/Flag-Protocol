@@ -340,31 +340,36 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		// ---------------------------------------------------------------------------
 		else if (currentState == STATE_PAUSE)
 		{
+			if (previousState == STATE_EDITOR)
+			{
+				// Removes any rendering from normal gameplay
+				currentState = UpdateAndRenderPause(meshes.square, fontID, dt, previousState);
+			}
+			else
+			{
+				camera.x = player.x;
+				camera.y = player.y;
 
-			camera.x = player.x;
-			camera.y = player.y;
+				// Render the map
+				Load_Map(*gameMap, camera);
 
-			// Render the map
-			Load_Map(*gameMap, camera);
+				// Render enemies
+				RenderGrunts(grunts, meshes.circle, camera);
 
-			// Render enemies
-			RenderGrunts(grunts, meshes.circle, camera);
+				// Render player
+				DrawPlayer(player, meshes.circle, camera, 0.0f);
 
-			// Render player
-			DrawPlayer(player, meshes.circle, camera, 0.0f);
+				// Render bullets
+				RenderBullets(playerBullets, meshes.circle, camera);
+				RenderBullets(enemyBullets, meshes.circle, camera);
 
-			// Render bullets
-			RenderBullets(playerBullets, meshes.circle, camera);
-			RenderBullets(enemyBullets, meshes.circle, camera);
+				// Render UI
+				WeaponStats weapon = GetCurrentWeapon(player);
+				DrawPlayerUI(player, weapon, meshes.square, meshes.circle, camera);
 
-			// Render UI
-			WeaponStats weapon = GetCurrentWeapon(player);
-			DrawPlayerUI(player, weapon, meshes.square, meshes.circle, camera);
-
-			// Pause menu on top
-			currentState = UpdateAndRenderPause(meshes.square, fontID, dt, previousState);
-			
-
+				// Pause menu on top
+				currentState = UpdateAndRenderPause(meshes.square, fontID, dt, previousState);
+			}
 		}
 
 		// ---------------------------------------------------------------------------
@@ -384,6 +389,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			UpdateAndRenderEditor(editor, *gameMap, meshes.square);
 			Popup_Update(popup, dt); 
 			Popup_Draw(popup, meshes.square, fontID);  
+
+			if (AEInputCheckTriggered(AEVK_P) || AEInputCheckTriggered(AEVK_ESCAPE)) {
+				currentState = STATE_PAUSE;
+				ShowCursor(true);
+			}
 
 			if (AEInputCheckTriggered(AEVK_Q)) {
 				currentState = STATE_MENU;

@@ -122,13 +122,18 @@ GameState UpdateAndRenderPause(AEGfxVertexList* mesh, s8 font, float dt, GameSta
     DrawButton(menuBtn, mesh, font);
     DrawButton(quitBtn, mesh, font);
 
+    // Using P key to resume from Paused screen
+    if (AEInputCheckTriggered(AEVK_P) || AEInputCheckTriggered(AEVK_ESCAPE)) {
+        return previous;
+    }
+
     // Button interactions
     if (IsButtonClicked(resumeBtn)) {
         return previous;
     }
     if (IsButtonClicked(menuBtn)) {
         AEAudioStopGroup(GameBGMGroup);
-
+        AEAudioStopGroup(EditorBGMGroup);
         
         return STATE_MENU;
     }
