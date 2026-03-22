@@ -153,6 +153,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			// Stop BGM only when leaving game or pause
 			if (previousState == STATE_GAME && currentState != STATE_PAUSE)
 				AEAudioStopGroup(GameBGMGroup);
+			// Stop BGM only when leaving custom or pause
+			if (previousState == STATE_CUSTOM && currentState != STATE_PAUSE)
+				AEAudioStopGroup(GameBGMGroup);
 
 			// Stop menu BGM when leaving menu or nav
 
@@ -273,12 +276,18 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 			if (gameEvents.winTriggered)
 			{
+				ShowCursor(true);
+
+				AEAudioPlay(WinOST, WinBGMGroup, 1.0f, 1.0f, 1);
 				currentState = STATE_WIN;
 				gameEvents.winTriggered = false; // Reset for potential future use
 			}
 
 			if (gameEvents.playerDied)
 			{
+				ShowCursor(true);
+
+				AEAudioPlay(LoseOST, LoseBGMGroup, 1.0f, 1.0f, 1);
 				currentState = STATE_LOSE;
 				gameEvents.playerDied = false; // Reset for potential future use
 			}
@@ -316,12 +325,18 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		
 			if(gameEvents.winTriggered)
 			{
+				ShowCursor(true);
+
+				AEAudioPlay(WinOST, WinBGMGroup, 1.0f, 1.0f, 1);
 				currentState = STATE_WIN;
 				gameEvents.winTriggered = false; // Reset for potential future use
 			}
 
 			if (gameEvents.playerDied)
 			{
+				ShowCursor(true);
+
+				AEAudioPlay(LoseOST, LoseBGMGroup, 1.0f, 1.0f, 1);
 				currentState = STATE_LOSE;
 				gameEvents.playerDied = false; // Reset for potential future use
 			}
