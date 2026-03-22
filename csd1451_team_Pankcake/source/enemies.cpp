@@ -6,6 +6,7 @@
 #include "utils.hpp"
 #include "damageNumbers.hpp"
 #include <cstdlib> 
+#include "sound.hpp"
 
 GruntSpawner gruntSpawner;
 
@@ -210,9 +211,8 @@ void CheckBulletGruntCollisions(std::vector<Bullet>& playerBullets, std::vector<
 
 				printf("Grunt hit! Health: %.1f\n", grunt.health);
 
-				if (grunt.health <= 0.0f && !grunt.isDead){
+				if (grunt.health <= 0.0f && !grunt.isDead) {
 					playerInfo.gruntsKilled++;
-					// Add ammo, capped at maxMagazine
 
 					playerInfo.pistol.currentAmmo += 5;
 					if (playerInfo.pistol.currentAmmo > playerInfo.pistol.maxAmmo)
@@ -226,14 +226,16 @@ void CheckBulletGruntCollisions(std::vector<Bullet>& playerBullets, std::vector<
 					if (playerInfo.shotgun.currentAmmo > playerInfo.shotgun.maxAmmo)
 						playerInfo.shotgun.currentAmmo = playerInfo.shotgun.maxAmmo;
 
-					playerInfo.score += 10;  
+					playerInfo.score += 10;
 					if (playerInfo.health < 85.0f) playerInfo.health += 15.0f;
-					else {
-						playerInfo.health = 100.0f;
-						
-					}
+					else playerInfo.health = 100.0f;
+
 					grunt.isDead = true;
 					grunt.currentState = AI_DEAD;
+
+					// Play death sound
+					AEAudioPlay(EDeathSound, gSFXGroup, 1.0f, 1.0f, 0);
+
 					printf("Grunt killed! Total kills: %d\n", playerInfo.gruntsKilled);
 				}
 
