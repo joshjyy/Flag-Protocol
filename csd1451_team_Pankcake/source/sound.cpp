@@ -5,6 +5,13 @@ AEAudio gDashSound;
 AEAudio gSprintSound;
 AEAudio gDeathSound;
 AEAudio gShoot1Sound;
+AEAudio gPickUpSound;
+AEAudio gDropSound;
+AEAudio gLowHealthBeepSound;
+
+
+AEAudio LoseOST;
+AEAudio WinOST;
 AEAudio StaticSound;
 AEAudio GameBGM1;
 AEAudio MainMenuBGM;
@@ -17,6 +24,8 @@ AEAudioGroup GameBGMGroup;
 AEAudioGroup StaticBGMGroup;
 AEAudioGroup MainBGMGroup;
 AEAudioGroup EditorBGMGroup;
+AEAudioGroup LoseBGMGroup;
+AEAudioGroup WinBGMGroup;
 
 
 void SoundInit()
@@ -27,6 +36,8 @@ void SoundInit()
 	StaticBGMGroup = AEAudioCreateGroup();
 	MainBGMGroup = AEAudioCreateGroup();
     EditorBGMGroup = AEAudioCreateGroup();
+	LoseBGMGroup = AEAudioCreateGroup();
+	WinBGMGroup = AEAudioCreateGroup();
     
 
     //Player Sound
@@ -34,6 +45,9 @@ void SoundInit()
     gSprintSound = AEAudioLoadSound("Assets/Sound/speed_boost.wav");
     gDeathSound = AEAudioLoadSound("Assets/Sound/death.wav");
 	gShoot1Sound = AEAudioLoadSound("Assets/Sound/gun1.wav");
+	gPickUpSound = AEAudioLoadSound("Assets/Sound/flagpickup.wav");
+	gDropSound = AEAudioLoadSound("Assets/Sound/flagdrop.wav");
+	gLowHealthBeepSound = AEAudioLoadSound("Assets/Sound/low_health.wav");
 
 	StaticSound = AEAudioLoadMusic("Assets/Sound/static.wav");
 
@@ -41,6 +55,8 @@ void SoundInit()
 	GameBGM1 = AEAudioLoadMusic("Assets/Sound/gameOST.wav");
     MainMenuBGM = AEAudioLoadMusic("Assets/Sound/mainOST.wav");
     EditorBGM = AEAudioLoadMusic("Assets/Sound/editor.wav");
+	WinOST = AEAudioLoadMusic("Assets/Sound/winOST.wav");
+	LoseOST = AEAudioLoadMusic("Assets/Sound/loseOST.wav");
 }
 
 void SoundFree()
@@ -49,10 +65,15 @@ void SoundFree()
     AEAudioUnloadAudio(gSprintSound);
     AEAudioUnloadAudio(gDeathSound);
 	AEAudioUnloadAudio(gShoot1Sound);
+    AEAudioUnloadAudio(gPickUpSound);
+	AEAudioUnloadAudio(gDropSound);
+	AEAudioUnloadAudio(gLowHealthBeepSound);
 
 	AEAudioUnloadAudio(StaticSound);
 	AEAudioUnloadAudio(MainMenuBGM);
     AEAudioUnloadAudio(EditorBGM);
+	AEAudioUnloadAudio(WinOST);
+	AEAudioUnloadAudio(LoseOST);
 
     AEAudioUnloadAudio(GameBGM1);
 }

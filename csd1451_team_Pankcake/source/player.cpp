@@ -24,7 +24,7 @@ Player InitPlayer(void) {
         0.0f,                     // dashCooldownTimer
         0.0f,                     // dashDirX
         0.0f,                     // dashDirY
-        false,                    //true
+        false,                    //canShoot
         Pistol(),                 // pistol constructor
         AssaultRifle(),           // rifle constructor
 		Shotgun(),               // shotgun constructor
@@ -33,7 +33,8 @@ Player InitPlayer(void) {
 		false,                     // inDash
         false,                    // isDead
         false,                      //holdingFlag
-        false,
+		false,                      // wasSprinting
+		false,                      // lowHealthWarningPlayed
 
 		 0.0f,                    // velocityX
          0.0f,                    // velocityY
@@ -191,6 +192,8 @@ void DrawPlayer(Player& player, void* mesh, CameraPos &camera, float dt)
     AEGfxSetColorToMultiply(r, g, b, 1.0f);
     DrawSprite((AEGfxVertexList*)mesh, screenX, screenY,
         PLAYER_RADIUS * 0.7f, PLAYER_RADIUS * 0.7f, 0.0f);
+
+
 
 }
 
@@ -589,6 +592,7 @@ void UpdatePlayer(Player* player, float dt, std::vector<std::vector<int>>& gameM
     }
     else if (collision == 4 && player->holdingFlag == false) {
         player->holdingFlag = true;
+		AEAudioPlay(gPickUpSound, gSFXGroup, 1.0f, 1.0f, 0);
         if (player->health < 80.0f) {
             player->health += 20.0f; // Heal player for picking up
         }
@@ -602,6 +606,7 @@ void UpdatePlayer(Player* player, float dt, std::vector<std::vector<int>>& gameM
         player->score += 100;
 		player->flagCaptures += 1;
         Spawn_Flag(gameMap);
+        AEAudioPlay(gDropSound, gSFXGroup, 1.0f, 1.0f, 0);
 
         // Milestone animations
         if (player->score == 300)
@@ -639,6 +644,17 @@ void UpdatePlayer(Player* player, float dt, std::vector<std::vector<int>>& gameM
         ParticleEmitterEmit(player->dashTrailEmitter, player->x, player->y, 3);
     }
     ParticleEmitterUpdate(player->dashTrailEmitter, dt);
+
+
+    if (player->health < 40.0f && !player->lowHealthWarningPlayed) {
+        AEAudioPlay(gLowHealthBeepSound, gSFXGroup, 0.6f, 1.0f, 0);
+        player->lowHealthWarningPlayed = true;
+    }
+
+    // Reset if health goes back up 
+    if (player->health >= 90.0f) {
+        player->lowHealthWarningPlayed = false;
+    }
 }
 
 
@@ -662,7 +678,7 @@ void CheckEnemyBulletPlayerCollision(std::vector<Bullet>& enemyBullets,
         if (collision > 0 && (!player.isDead)) {
             player.health -= enemyBullets[i].damage;
 
-            //printf("Player hit by bullet! Health: %.0f\n", player.health);
+
 
             // Check if player died
             if (player.health <= 0.0f) {
@@ -805,6 +821,7 @@ void LoadPlayer(Player& player) {
     player.velocityY = 0.0f;
     player.prevX = 0.0f;
     player.prevY = 0.0f;
+	player.canshoot = false;
 
     // Dash system
     player.inDash = false;
@@ -931,7 +948,7 @@ void SavePlayerScore(Player& player)
     if (file.is_open())
     {
         file << "Previous Score: " << player.score << std::endl;
-		file << "Previous Grunts Killed: " << player.gruntsKilled << std::endl;
+		file << "Previous Viruses Killed: " << player.gruntsKilled << std::endl;
         file.close();
     }
 }

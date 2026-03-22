@@ -127,13 +127,12 @@ GameState UpdateAndRenderPause(AEGfxVertexList* mesh, s8 font, float dt, GameSta
         return previous;
     }
     if (IsButtonClicked(menuBtn)) {
+        AEAudioStopGroup(GameBGMGroup);
+
         
         return STATE_MENU;
     }
-    if (IsButtonClicked(menuBtn)) {
-        return STATE_MENU;
-       
-    }
+
     if (IsButtonClicked(quitBtn)) {
         return STATE_QUIT;
     }
@@ -210,8 +209,20 @@ GameState UpdateAndRenderWinScreen(AEGfxVertexList* mesh, s8 font, float dt,  Pl
     DrawButton(menuBtn, mesh, font);
     DrawButton(creditsBtn, mesh, font);
 
-    if (IsButtonClicked(menuBtn)) return STATE_MENU;
-    if (IsButtonClicked(creditsBtn)) return STATE_CREDITS;
+    if (IsButtonClicked(menuBtn)) {
+        AEAudioStopGroup(WinBGMGroup);
+
+        AEAudioStopGroup(GameBGMGroup);
+
+        return STATE_MENU;
+    }
+    if (IsButtonClicked(creditsBtn)) {
+        AEAudioStopGroup(WinBGMGroup);
+
+        AEAudioStopGroup(GameBGMGroup);
+
+        return STATE_CREDITS;
+    }
 
     return STATE_WIN;
 }
@@ -222,7 +233,6 @@ GameState UpdateAndRenderLoseScreen(AEGfxVertexList* mesh, s8 font, float dt,
     Player& player, GameState previous) {
     (void)dt;
 
-    ShowCursor(true);
     AEGfxSetBackgroundColor(0.1f, 0.05f, 0.05f);
     AEGfxSetRenderMode(AE_GFX_RM_COLOR);
     AEGfxSetBlendMode(AE_GFX_BM_BLEND);
@@ -237,7 +247,7 @@ GameState UpdateAndRenderLoseScreen(AEGfxVertexList* mesh, s8 font, float dt,
     // Stats
     char scoreStr[64], gruntsStr[64], flagStr[64];
     sprintf_s(scoreStr, "SCORE: %d", player.score);
-    sprintf_s(gruntsStr, "GRUNTS KILLED: %d", player.gruntsKilled);
+    sprintf_s(gruntsStr, "VIRUSES KILLED: %d", player.gruntsKilled);
     sprintf_s(flagStr, "FLAGS CAPTURED: %d", player.flagCaptures);
 
     AEGfxGetPrintSize(font, scoreStr, 1.2f, &tw, &th);
@@ -258,9 +268,19 @@ GameState UpdateAndRenderLoseScreen(AEGfxVertexList* mesh, s8 font, float dt,
 
     if (IsButtonClicked(retryBtn)) {
         LoadPlayer(player);
+		AEAudioStopGroup(LoseBGMGroup);
+        
+        AEAudioPlay(GameBGM1, GameBGMGroup, 1.0f, 1.0f, -1);
+
         return previous;
     }
-    if (IsButtonClicked(menuBtn))  return STATE_MENU;
+    if (IsButtonClicked(menuBtn)) {
+        AEAudioStopGroup(LoseBGMGroup);
+
+        AEAudioStopGroup(GameBGMGroup);
+
+        return STATE_MENU;
+    }
 
     return STATE_LOSE;
 }
@@ -273,7 +293,7 @@ GameState UpdateAndRenderLoseScreen(AEGfxVertexList* mesh, s8 font, float dt,
 void CurrGamestate(GameState state, int& gGameRunning, std::vector<std::vector<int>>& gameMap, Player& player, GameState previousState) {
     if (state == STATE_MENU) {
         ShowCursor(true);
-        AEAudioPlay(MainMenuBGM, MainBGMGroup, 1.0f, 1.0f, 1);
+        AEAudioPlay(MainMenuBGM, MainBGMGroup, 1.0f, 1.0f, -1);
 
 
     }
@@ -292,16 +312,19 @@ void CurrGamestate(GameState state, int& gGameRunning, std::vector<std::vector<i
 			ShowCursor(false);
             LoadPlayer(player);
 
-            AEAudioPlay(GameBGM1, GameBGMGroup, 1.0f, 1.0f, 1);
+            AEAudioPlay(GameBGM1, GameBGMGroup, 1.0f, 1.0f, -1);
         }
 
     }
     else if (state == STATE_TUTORIAL) {
         GameStateLoadTutorial(gGameRunning, gameMap);
+
         ShowCursor(false);
         if (previousState != STATE_PAUSE) {
             LoadPlayer(player);
-            printf("Player loaded with health: %.0f\n", player.health);
+            AEAudioPlay(GameBGM1, GameBGMGroup, 1.0f, 1.0f, -1);
+
+        
         }
 
     }
@@ -310,7 +333,7 @@ void CurrGamestate(GameState state, int& gGameRunning, std::vector<std::vector<i
         ShowCursor(false);
         if (previousState != STATE_PAUSE) {
             LoadPlayer(player);
-            printf("Player loaded with health: %.0f\n", player.health);
+            AEAudioPlay(GameBGM1, GameBGMGroup, 1.0f, 1.0f, -1);
         }
 
 
@@ -320,7 +343,7 @@ void CurrGamestate(GameState state, int& gGameRunning, std::vector<std::vector<i
         ShowCursor(true);
     }
     else if (state == STATE_CUTSCENE) {
-        AEAudioPlay(StaticSound, StaticBGMGroup, 0.7f, 1.0f, 1);
+        AEAudioPlay(StaticSound, StaticBGMGroup, 0.7f, 1.0f, -1);
         ShowCursor(false);
     }
     else if (state == STATE_PAUSE) {
@@ -375,12 +398,3 @@ void GameStateLoadEditor(int& gGameRunning, std::vector<std::vector<int>>& gameM
     loaded = true;
 }
 
-//
-//void GameStateInit() {
-//}
-//
-//void GameStateFree() {
-//}
-//
-//void GameStateUnload() {
-//}

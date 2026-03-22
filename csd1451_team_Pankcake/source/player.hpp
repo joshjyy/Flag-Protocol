@@ -47,11 +47,14 @@ struct Player {
 	bool isDead;
 	bool holdingFlag;
     bool wasSprinting;
+	bool lowHealthWarningPlayed;
 
     float velocityX;
     float velocityY;
     float prevX;
     float prevY;
+
+
     AEGfxVertexList* particleMesh;
     ParticleEmitter* trailEmitter;
     ParticleEmitter* deathEmitter;
