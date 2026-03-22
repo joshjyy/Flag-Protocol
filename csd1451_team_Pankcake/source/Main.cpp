@@ -154,10 +154,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			if (previousState == STATE_GAME && currentState != STATE_PAUSE)
 				AEAudioStopGroup(GameBGMGroup);
 
-			// Stop BGM only when leaving game or pause
-			if (previousState == STATE_CUSTOM && currentState != STATE_PAUSE)
-				AEAudioStopGroup(GameBGMGroup);
-
 			// Stop menu BGM when leaving menu or nav
 
 			if ((previousState == STATE_MENU || previousState == STATE_NAVIGATION)
@@ -277,19 +273,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 			if (gameEvents.winTriggered)
 			{
-				ShowCursor(true);
-
-				AEAudioPlay(WinOST, WinBGMGroup, 1.0f, 1.0f, 1);
-
 				currentState = STATE_WIN;
 				gameEvents.winTriggered = false; // Reset for potential future use
 			}
 
 			if (gameEvents.playerDied)
 			{
-				ShowCursor(true);
-
-				AEAudioPlay(LoseOST, LoseBGMGroup, 1.0f, 1.0f, 1);
 				currentState = STATE_LOSE;
 				gameEvents.playerDied = false; // Reset for potential future use
 			}
@@ -303,17 +292,15 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		else if (currentState == STATE_CUTSCENE)
 		{
 			Cutscene_Draw(cutscene, fontID, meshes.square);
-			if (Cutscene_Update(cutscene, dt)) {
-				ShowCursor(false);
-
+			if (Cutscene_Update(cutscene, dt))
 				currentState = STATE_GAME;
-			}
 		}
 		// ---------------------------------------------------------------------------
 		// GAME STATE
 		// ---------------------------------------------------------------------------
 		else if (currentState == STATE_GAME)
 		{
+			AEGfxSetBackgroundColor(0.05f, 0.05f, 0.1f);
 			//Check for pause input
 			if (AEInputCheckTriggered(AEVK_P) || AEInputCheckTriggered(AEVK_ESCAPE)) {
 				currentState = STATE_PAUSE;
@@ -329,19 +316,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		
 			if(gameEvents.winTriggered)
 			{
-				ShowCursor(true);
-
-				AEAudioPlay(WinOST, WinBGMGroup, 1.0f, 1.0f, 1);
-
 				currentState = STATE_WIN;
 				gameEvents.winTriggered = false; // Reset for potential future use
 			}
 
 			if (gameEvents.playerDied)
 			{
-				ShowCursor(true);
-
-				AEAudioPlay(LoseOST, LoseBGMGroup, 1.0f, 1.0f, 1);
 				currentState = STATE_LOSE;
 				gameEvents.playerDied = false; // Reset for potential future use
 			}
@@ -424,7 +404,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		// ---------------------------------------------------------------------------
 		//Debugging Things--------------------------------------------------------------
 		killPlayer(player);
-
 
 		// Frame end
 		AESysFrameEnd();
