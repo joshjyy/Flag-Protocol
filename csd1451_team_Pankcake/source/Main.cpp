@@ -177,7 +177,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				camera.x = player.x;
 				camera.y = player.y;
 				FreeGrunts(grunts);
-				grunts.clear();
 				InitGruntSpawner();
 			}
 
@@ -193,11 +192,15 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			if (currentState == STATE_GAME) {
 				Background_Init();
 				FreeGrunts(grunts);
-				grunts.clear();
+				InitGruntSpawner();
+			}
+			if (currentState == STATE_CUSTOM) {
+				FreeGrunts(grunts);
 				InitGruntSpawner();
 			}
 			if (currentState != STATE_PAUSE  && currentState != STATE_LOSE) {
 				previousState = currentState;
+				FreeGrunts(grunts);
 			}
 			
 
