@@ -139,24 +139,31 @@ void UpdateAndRenderTutorial(
     std::vector<Grunt>& grunts,
     EventManager& events)
 {
-	(void)enemyBullets;
-	(void)grunts;
-
-
     WeaponStats weapon = GetCurrentWeapon(player);
 
+    // Update player
     UpdatePlayer(&player, dt, *gameMap);
     WeaponSwitchCheck(player);
     if (player.currentWeaponIndex == 2)
         SpreadShootingCheck(player, playerBullets, weapon, camera, 5, 30.0f);
     else
-        ShootingCheck(player, playerBullets, weapon, camera);  
+        ShootingCheck(player, playerBullets, weapon, camera);
     ReloadBullets(weapon, dt);
 
     UpdateBullets(playerBullets, dt, *gameMap);
 
+    // Update enemies
+    UpdateGruntSpawner(grunts, *gameMap, dt);
+    UpdateGrunts(grunts, player, enemyBullets, dt, *gameMap);
+    UpdateBullets(enemyBullets, dt, *gameMap);
+    CheckBulletGruntCollisions(playerBullets, grunts, player);
+    RemoveDeadGrunts(grunts);
+
+    // Render
     DrawPlayer(player, meshes.circle, camera, dt);
+    RenderGrunts(grunts, meshes.circle, camera);
     RenderBullets(playerBullets, meshes.circle, camera);
+    RenderBullets(enemyBullets, meshes.circle, camera);
     DrawPlayerUI(player, weapon, meshes.square, meshes.circle, camera);
     DrawCrosshair(meshes.square);
 

@@ -176,6 +176,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				
 				camera.x = player.x;
 				camera.y = player.y;
+				FreeGrunts(grunts);
+				grunts.clear();
+				InitGruntSpawner();
 			}
 
 			if (currentState == STATE_CUTSCENE) {
@@ -188,7 +191,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				editorPaintReady = false;
 			}
 			if (currentState == STATE_GAME) {
-				Background_Init();  
+				Background_Init();
+				FreeGrunts(grunts);
+				grunts.clear();
+				InitGruntSpawner();
 			}
 			if (currentState != STATE_PAUSE  && currentState != STATE_LOSE) {
 				previousState = currentState;
