@@ -18,6 +18,7 @@ GameState UpdateAndRenderPause(AEGfxVertexList* mesh, s8 font, float dt, GameSta
 GameState UpdateAndRenderNavigation(AEGfxVertexList* mesh, s8 font, float dt);
 GameState UpdateAndRenderWinScreen(AEGfxVertexList* mesh, s8 font, float dt, Player& player);
 GameState UpdateAndRenderLoseScreen(AEGfxVertexList* mesh, s8 font, float dt, Player& player, GameState previous);
+GameState UpdateAndRenderControls(AEGfxVertexList* mesh, s8 font, float dt);
 
 void CurrGamestate(GameState state, int& gGameRunning, std::vector<std::vector<int>>& gameMap, Player& player , GameState previousState);
 void GameStateLoad(int& gGameRunning, std::vector<std::vector<int>>& gameMap);

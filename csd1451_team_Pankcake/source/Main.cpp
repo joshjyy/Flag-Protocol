@@ -229,7 +229,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		else if(currentState == STATE_CONTROLS)
 		{
-			printf("Not Implemented Yet!\n");
+			currentState = UpdateAndRenderControls(meshes.square, fontID, dt);
 		}
 		// ---------------------------------------------------------------------------
 		// STATE_TUTORIAL
