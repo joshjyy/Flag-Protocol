@@ -341,6 +341,7 @@ void CurrGamestate(GameState state, int& gGameRunning, std::vector<std::vector<i
     else if (state == STATE_EDITOR) {
         GameStateLoadCustom(gGameRunning, gameMap);
         ShowCursor(true);
+
     }
     else if (state == STATE_CUTSCENE) {
         AEAudioPlay(StaticSound, StaticBGMGroup, 0.7f, 1.0f, -1);

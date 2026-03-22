@@ -177,6 +177,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				camera.x = player.x;
 				camera.y = player.y;
 				FreeGrunts(grunts);
+				grunts.clear();
 				InitGruntSpawner();
 			}
 
@@ -192,15 +193,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			if (currentState == STATE_GAME) {
 				Background_Init();
 				FreeGrunts(grunts);
-				InitGruntSpawner();
-			}
-			if (currentState == STATE_CUSTOM) {
-				FreeGrunts(grunts);
+				grunts.clear();
 				InitGruntSpawner();
 			}
 			if (currentState != STATE_PAUSE  && currentState != STATE_LOSE) {
 				previousState = currentState;
-				FreeGrunts(grunts);
 			}
 			
 
@@ -385,6 +382,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			}
 
 			UpdateAndRenderEditor(editor, *gameMap, meshes.square);
+			Popup_Update(popup, dt); 
+			Popup_Draw(popup, meshes.square, fontID);  
 
 			if (AEInputCheckTriggered(AEVK_Q)) {
 				currentState = STATE_MENU;

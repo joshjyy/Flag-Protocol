@@ -9,6 +9,7 @@
 #include <stack>
 #include <utility>
 #include "gameConstants.hpp"
+#include "popup.hpp"
 #include <vector>
 
 std::random_device rd;
@@ -17,6 +18,7 @@ float MAP_HEIGHT{};
 float MAP_WIDTH{};
 float TILE_SIZE{};
 std::vector<std::vector<int>> newMap;
+Popup popup;
 /* 
  * Loads a game level map from a text file into a 2D array.
  * Opens the specified file and reads MAP_HEIGHT x MAP_WIDTH integers.
@@ -315,9 +317,16 @@ bool HasHole() {
 			}
 		}
 	}
-	
-	if (hole) std::cout << "leak exists" << std::endl;
-	else std::cout << "no leak" << std::endl;
+
+	if (hole) {
+		std::cout << "leak exists" << std::endl;
+		Popup_Show(popup, "WARNING: LEAK FOUND", 3.0f, 1.0f, 0.0f, 0.0f);	
+	}
+	else {
+		std::cout << "no leak" << std::endl;
+		Popup_Show(popup, "Map Saved Successfully", 3.0f, 0.0f, 1.0f, 0.0f);
+	}
+
 	return hole;
 }
 
