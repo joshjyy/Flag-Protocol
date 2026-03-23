@@ -495,7 +495,7 @@ void CurrGamestate(GameState state, int& gGameRunning, std::vector<std::vector<i
         if (previousState != STATE_PAUSE) {
 			ShowCursor(false);
             LoadPlayer(player);
-            while (ShowCursor(true) < 0)
+
             AEAudioPlay(GameBGM1, GameBGMGroup, 1.0f, 1.0f, -1);
         }
 
