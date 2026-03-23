@@ -18,10 +18,10 @@ void Tutorial_RenderHints(s8 font)
     };
 
     Hint hints[] = {
-        { "G: God Mode",       0.4f, 1.0f, 0.4f },
+        { "G: Admin Mode",       0.4f, 1.0f, 0.4f },
         { "V: Unlimited Ammo", 0.4f, 0.8f, 1.0f },
         { "K: Die / Respawn",            1.0f, 0.4f, 0.4f },
-        { "P: Drop Flag",      1.0f, 1.0f, 0.4f },
+        { "M: Drop Flag",      1.0f, 1.0f, 0.4f },
         { "Look for the Lime Tile and Step On It to Obtain Flag Node!",          0.0f, 1.0f, 1.0f },  
         { "Look for the Purple Tile and Step On It To Connect Flag Node for Points!",      0.5f, 0.0f, 1.0f },
 
@@ -71,13 +71,15 @@ void Range_Hacks(Player& player)
     if (unlimitedAmmo) {
         player.pistol.currentAmmo = player.pistol.maxAmmo;
         player.rifle.currentAmmo = player.rifle.maxAmmo;
+        player.shotgun.currentAmmo = player.shotgun.maxAmmo;
+
     }
 
     // Kill player
     if (AEInputCheckTriggered(AEVK_K)) player.health = 0.0f;
 
     // Drop flag
-    if (AEInputCheckTriggered(AEVK_P)) player.holdingFlag = false;
+    if (AEInputCheckTriggered(AEVK_M)) player.holdingFlag = false;
 }
 
 void Tutorial_RenderDebug(s8 font, const Player& player)
@@ -108,6 +110,9 @@ void Tutorial_RenderDebug(s8 font, const Player& player)
     GetNormalizedTextPosition(xPos, startY - i++ * stepY, &textX, &textY);
     AEGfxPrint(font, buf, textX, textY, 0.7f, 0.8f, 0.8f, 1.0f, 1.0f);
 
+    sprintf_s(buf, 64, "Shotgun:%d/%d", player.shotgun.currentAmmo, player.shotgun.maxAmmo);
+    GetNormalizedTextPosition(xPos, startY - i++ * stepY, &textX, &textY);
+    AEGfxPrint(font, buf, textX, textY, 0.7f, 0.8f, 0.8f, 1.0f, 1.0f);
     // Velocity
     sprintf_s(buf, 64, "VX: %.2f  VY: %.2f", player.velocityX, player.velocityY);
     GetNormalizedTextPosition(xPos, startY - i++ * stepY, &textX, &textY);
@@ -138,7 +143,11 @@ void UpdateAndRenderTutorial(
     std::vector<Bullet>& enemyBullets,
     std::vector<Grunt>& grunts,
     EventManager& events)
+
+
 {
+    (void)events;  // Unused in this mode
+
     WeaponStats weapon = GetCurrentWeapon(player);
 
     // Update player
@@ -162,10 +171,9 @@ void UpdateAndRenderTutorial(
     // Render
     DrawPlayer(player, meshes.circle, camera, dt);
     RenderGrunts(grunts, meshes.circle, camera);
-    RenderBullets(playerBullets, meshes.circle, camera);
+    RenderBullets(player, playerBullets, meshes.circle, camera);
     RenderBullets(enemyBullets, meshes.circle, camera);
     DrawPlayerUI(player, weapon, meshes.square, meshes.circle, camera);
     DrawCrosshair(meshes.square);
 
-    CheckWinCondition(events, player);
 }

@@ -142,20 +142,17 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	{
 		AESysFrameStart();
 		float dt = (float)AEFrameRateControllerGetFrameTime();
-		
+
 		if (AEInputCheckTriggered(AEVK_ESCAPE) || 0 == AESysDoesWindowExist())
 			gGameRunning = 0;
-
 		//State Transition Stuff
 		if (currentState != previousState) {
 			CurrGamestate(currentState, gGameRunning, *gameMap, player, previousState);
 
-			// Stop BGM only when leaving game or pause
-			if (previousState == STATE_GAME && currentState != STATE_PAUSE)
+			if ((previousState == STATE_GAME || previousState == STATE_CUSTOM) && currentState != STATE_PAUSE) {
+				AEAudioStopGroup(gSFXGroup);
 				AEAudioStopGroup(GameBGMGroup);
-			// Stop BGM only when leaving custom or pause
-			if (previousState == STATE_CUSTOM && currentState != STATE_PAUSE)
-				AEAudioStopGroup(GameBGMGroup);
+			}
 
 			// Stop menu BGM when leaving menu or nav
 
@@ -165,14 +162,16 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				AEAudioStopGroup(MainBGMGroup);
 
 			if (previousState == STATE_PAUSE && currentState == STATE_GAME)
-				ShowCursor(false);
+				ForceShowCursor(false);
 
+
+			if (previousState == STATE_PAUSE && currentState == STATE_GAME)
+				ForceShowCursor(false);
 			if ((previousState == STATE_GAME || previousState == STATE_PAUSE) && currentState == STATE_MENU){
 				//Save player score
 				SavePlayerScore(player);
 			}
 
-			// Force spawn when entering tutorial temporary fix
 			if (currentState == STATE_TUTORIAL) {
 				player.x = 15 * TILE_SIZE - 800.0f + 25.0f;
 				player.y = 450.0f - 31 * TILE_SIZE - 25.0f;
@@ -195,6 +194,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			}
 			if (currentState == STATE_GAME) {
 				Background_Init();
+				FreeGrunts(grunts);
+				grunts.clear();
+				InitGruntSpawner();
+			}
+
+			if(currentState == STATE_LOSE || currentState == STATE_WIN)
+			{
 				FreeGrunts(grunts);
 				grunts.clear();
 				InitGruntSpawner();
@@ -239,6 +245,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		// ---------------------------------------------------------------------------
 		else if (currentState == STATE_TUTORIAL) {
 
+			ForceShowCursor(false);
 
 			Update_CameraPosition(camera, player.x, player.y, dt);
 			Load_Map(*gameMap, camera);
@@ -255,17 +262,18 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				currentState = STATE_MENU;
 			if (AEInputCheckTriggered(AEVK_P) || AEInputCheckTriggered(AEVK_ESCAPE)) {
 				currentState = STATE_PAUSE;
-				ShowCursor(true);
+				ForceShowCursor(true);
 
 				printf("Pause triggered!\n");
 			}
 		}
 
 		// ---------------------------------------------------------------------------
-		// STATE_LOAD
+		// STATE_CUSTOM
 		// ---------------------------------------------------------------------------
 		else if (currentState == STATE_CUSTOM) {
-			
+			ForceShowCursor(false);
+
 			Load_Map(*gameMap, camera);
 			if (AEInputCheckTriggered(AEVK_Q))
 				currentState = STATE_MENU;
@@ -273,7 +281,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			
 			if (AEInputCheckTriggered(AEVK_P) || AEInputCheckTriggered(AEVK_ESCAPE)) {
 				currentState = STATE_PAUSE;
-				ShowCursor(true);
+				ForceShowCursor(true);
 
 				printf("Pause triggered!\n");
 			}
@@ -282,19 +290,20 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 			if (gameEvents.winTriggered)
 			{
-				ShowCursor(true);
 
 				AEAudioPlay(WinOST, WinBGMGroup, 1.0f, 1.0f, 1);
 				currentState = STATE_WIN;
+				ForceShowCursor(true);
+
 				gameEvents.winTriggered = false; // Reset for potential future use
 			}
 
 			if (gameEvents.playerDied)
 			{
-				ShowCursor(true);
 
 				AEAudioPlay(LoseOST, LoseBGMGroup, 1.0f, 1.0f, 1);
 				currentState = STATE_LOSE;
+				ForceShowCursor(true);
 				gameEvents.playerDied = false; // Reset for potential future use
 			}
 		}
@@ -315,11 +324,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		// ---------------------------------------------------------------------------
 		else if (currentState == STATE_GAME)
 		{
+			ForceShowCursor(false);
+
 			AEGfxSetBackgroundColor(0.05f, 0.05f, 0.1f);
 			//Check for pause input
 			if (AEInputCheckTriggered(AEVK_P) || AEInputCheckTriggered(AEVK_ESCAPE)) {
 				currentState = STATE_PAUSE;
-				ShowCursor(true);
+				ForceShowCursor(true);
 
 				printf("Pause triggered!\n");
 			}
@@ -331,19 +342,21 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		
 			if(gameEvents.winTriggered)
 			{
-				ShowCursor(true);
 
 				AEAudioPlay(WinOST, WinBGMGroup, 1.0f, 1.0f, 1);
 				currentState = STATE_WIN;
+				ForceShowCursor(true);
+
 				gameEvents.winTriggered = false; // Reset for potential future use
 			}
 
 			if (gameEvents.playerDied)
 			{
-				ShowCursor(true);
 
 				AEAudioPlay(LoseOST, LoseBGMGroup, 1.0f, 1.0f, 1);
 				currentState = STATE_LOSE;
+				ForceShowCursor(true);
+
 				gameEvents.playerDied = false; // Reset for potential future use
 			}
 			if (AEInputCheckTriggered(AEVK_Q))
@@ -362,6 +375,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			}
 			else
 			{
+
 				camera.x = player.x;
 				camera.y = player.y;
 
@@ -407,7 +421,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 			if (AEInputCheckTriggered(AEVK_P) || AEInputCheckTriggered(AEVK_ESCAPE)) {
 				currentState = STATE_PAUSE;
-				ShowCursor(true);
+				ForceShowCursor(true);
 			}
 
 			if (AEInputCheckTriggered(AEVK_Q)) {

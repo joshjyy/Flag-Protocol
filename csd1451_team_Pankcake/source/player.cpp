@@ -509,7 +509,7 @@ void UpdatePlayer(Player* player, float dt, std::vector<std::vector<int>>& gameM
     // Dash input
 	// Only trigger if space is pressed, dash is not on cooldown, and there is some movement input (can't dash in place)
     if (AEInputCheckTriggered(AEVK_SPACE) && player->dashCooldownTimer <= 0.0f && (inputX != 0.0f || inputY != 0.0f)) {
-		printf("Dash!\n");
+		//printf("Dash!\n");
         AEAudioPlay(gDashSound, gSFXGroup, 0.7f, 1.0f, 0); 
 
 		// Start dash in input direction (
@@ -523,10 +523,10 @@ void UpdatePlayer(Player* player, float dt, std::vector<std::vector<int>>& gameM
         player->dashTimer = DASH_DURATION;
         player->dashCooldownTimer = DASH_COOLDOWN;
         player->inDash = true;
-        if(player->health < 10.0f){
+        if(player->health < 5.0f){
             player->health = 0.0f;
 		}
-        else player->health -= 10.0f;  // Dash costs health
+        else player->health -= 5.0f;  // Dash costs health
     }
 
 	//Store old position before moving for collision checks
@@ -752,8 +752,8 @@ void CheckPlayerGruntBodyCollision(Player& player, std::vector<Grunt>& grunts) {
 
         if (player.inDash == 1) {
             if (dist < minDist + 20.0f) { // slightly larger radius for dash hit
-                //printf("Dashed into grunt!\n");
                 grunt.health -= 50.0f; // dash damage
+				AEAudioPlay(gHealSound, gSFXGroup, 0.7f, 1.0f, 0);
                 if (grunt.health <= 0.0f) {
                     if(player.health < 80.0f) {
                         player.health += 20.0f; // heal player for 20 health on kill
@@ -769,12 +769,10 @@ void CheckPlayerGruntBodyCollision(Player& player, std::vector<Grunt>& grunts) {
                     player.rifle.currentAmmo += 10;
                     if (player.rifle.currentAmmo > player.rifle.maxAmmo)
                         player.rifle.currentAmmo = player.rifle.maxAmmo;
-                    printf("After: pistol=%d\n", player.pistol.currentAmmo);
 
                     player.score += 10;
                     grunt.isDead = true;
                     player.gruntsKilled++;
-                    //printf("Grunt killed by dash! Total kills: %d\n", player.gruntsKilled);
                 }
 			}
         }

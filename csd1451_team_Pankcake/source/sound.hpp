@@ -7,6 +7,7 @@ extern AEAudio gShoot1Sound;
 extern AEAudio gPickUpSound;
 extern AEAudio gDropSound;
 extern AEAudio gLowHealthBeepSound;
+extern AEAudio gHealSound;
 
 extern AEAudio EDeathSound;
 

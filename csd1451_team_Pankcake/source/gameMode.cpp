@@ -20,6 +20,7 @@ void UpdateAndRenderGameplay(
     EventManager& events)
 {
 	WeaponStats weapon = GetCurrentWeapon(player);
+    ShowCursor(false); 
 
     Background_Draw(camera);
     Load_Map(*gameMap,camera);

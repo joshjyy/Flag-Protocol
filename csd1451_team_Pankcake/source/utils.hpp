@@ -33,3 +33,4 @@ extern CommonMeshes meshes;  // Global mesh storage
 void InitCommonMeshes(void);
 void FreeCommonMeshes(void);
 
+void ForceShowCursor(bool show);

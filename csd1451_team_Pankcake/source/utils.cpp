@@ -215,3 +215,8 @@ void NormalizeVector(float* x, float* y) {
         *y /= length;
     }
 }
+
+void ForceShowCursor(bool show) {
+    if (show) { while (ShowCursor(true) < 0); }
+    else { while (ShowCursor(false) >= 0); }
+}

@@ -450,6 +450,7 @@ GameState UpdateAndRenderLoseScreen(AEGfxVertexList* mesh, s8 font, float dt,
 
     if (IsButtonClicked(retryBtn)) {
         LoadPlayer(player);
+
 		AEAudioStopGroup(LoseBGMGroup);
         
         AEAudioPlay(GameBGM1, GameBGMGroup, 1.0f, 1.0f, -1);
@@ -474,6 +475,7 @@ GameState UpdateAndRenderLoseScreen(AEGfxVertexList* mesh, s8 font, float dt,
 
 void CurrGamestate(GameState state, int& gGameRunning, std::vector<std::vector<int>>& gameMap, Player& player, GameState previousState) {
     if (state == STATE_MENU) {
+        LoadPlayer(player);
         ShowCursor(true);
         AEAudioPlay(MainMenuBGM, MainBGMGroup, 1.0f, 1.0f, -1);
 
@@ -500,7 +502,6 @@ void CurrGamestate(GameState state, int& gGameRunning, std::vector<std::vector<i
     }
     else if (state == STATE_TUTORIAL) {
         GameStateLoadTutorial(gGameRunning, gameMap);
-
         ShowCursor(false);
         if (previousState != STATE_PAUSE) {
             LoadPlayer(player);
@@ -511,6 +512,8 @@ void CurrGamestate(GameState state, int& gGameRunning, std::vector<std::vector<i
 
     }
     else if (state == STATE_CUSTOM) {
+        LoadPlayer(player);
+
         GameStateLoadCustom(gGameRunning, gameMap);
         ShowCursor(false);
         if (previousState != STATE_PAUSE) {

@@ -227,6 +227,7 @@ void CheckBulletGruntCollisions(std::vector<Bullet>& playerBullets, std::vector<
 						playerInfo.shotgun.currentAmmo = playerInfo.shotgun.maxAmmo;
 
 					playerInfo.score += 10;
+					AEAudioPlay(gHealSound, gSFXGroup, 0.3f, 1.0f, 0);
 					if (playerInfo.health < 85.0f) playerInfo.health += 15.0f;
 					else playerInfo.health = 100.0f;
 
