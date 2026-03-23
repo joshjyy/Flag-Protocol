@@ -142,17 +142,16 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	{
 		AESysFrameStart();
 		float dt = (float)AEFrameRateControllerGetFrameTime();
+		
+		
 
-		if (AEInputCheckTriggered(AEVK_ESCAPE) || 0 == AESysDoesWindowExist())
-			gGameRunning = 0;
 		//State Transition Stuff
 		if (currentState != previousState) {
 			CurrGamestate(currentState, gGameRunning, *gameMap, player, previousState);
 
-			if ((previousState == STATE_GAME || previousState == STATE_CUSTOM) && currentState != STATE_PAUSE) {
-				AEAudioStopGroup(gSFXGroup);
+			// Stop BGM only when leaving game or pause
+			if (previousState == STATE_GAME && currentState != STATE_PAUSE)
 				AEAudioStopGroup(GameBGMGroup);
-			}
 
 			// Stop menu BGM when leaving menu or nav
 
@@ -162,16 +161,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				AEAudioStopGroup(MainBGMGroup);
 
 			if (previousState == STATE_PAUSE && currentState == STATE_GAME)
-				ForceShowCursor(false);
+				ShowCursor(false);
 
-
-			if (previousState == STATE_PAUSE && currentState == STATE_GAME)
-				ForceShowCursor(false);
 			if ((previousState == STATE_GAME || previousState == STATE_PAUSE) && currentState == STATE_MENU){
 				//Save player score
 				SavePlayerScore(player);
 			}
 
+			// Force spawn when entering tutorial temporary fix
 			if (currentState == STATE_TUTORIAL) {
 				player.x = 15 * TILE_SIZE - 800.0f + 25.0f;
 				player.y = 450.0f - 31 * TILE_SIZE - 25.0f;
@@ -198,13 +195,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				grunts.clear();
 				InitGruntSpawner();
 			}
-
-			if(currentState == STATE_LOSE || currentState == STATE_WIN)
-			{
+			if (currentState == STATE_CUSTOM) {
+				Background_Init();
 				FreeGrunts(grunts);
 				grunts.clear();
 				InitGruntSpawner();
 			}
+
 			if (currentState != STATE_PAUSE  && currentState != STATE_LOSE) {
 				previousState = currentState;
 			}
@@ -238,14 +235,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		else if(currentState == STATE_CONTROLS)
 		{
-			currentState = UpdateAndRenderControls(meshes.square, fontID, dt);
+			printf("Not Implemented Yet!\n");
 		}
 		// ---------------------------------------------------------------------------
 		// STATE_TUTORIAL
 		// ---------------------------------------------------------------------------
 		else if (currentState == STATE_TUTORIAL) {
 
-			ForceShowCursor(false);
 
 			Update_CameraPosition(camera, player.x, player.y, dt);
 			Load_Map(*gameMap, camera);
@@ -262,48 +258,39 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				currentState = STATE_MENU;
 			if (AEInputCheckTriggered(AEVK_P) || AEInputCheckTriggered(AEVK_ESCAPE)) {
 				currentState = STATE_PAUSE;
-				ForceShowCursor(true);
+				ShowCursor(true);
 
 				printf("Pause triggered!\n");
 			}
 		}
 
 		// ---------------------------------------------------------------------------
-		// STATE_CUSTOM
+		// STATE_LOAD
 		// ---------------------------------------------------------------------------
 		else if (currentState == STATE_CUSTOM) {
-			ForceShowCursor(false);
-
-			Load_Map(*gameMap, camera);
-			if (AEInputCheckTriggered(AEVK_Q))
-				currentState = STATE_MENU;
-
+			
+			
 			
 			if (AEInputCheckTriggered(AEVK_P) || AEInputCheckTriggered(AEVK_ESCAPE)) {
 				currentState = STATE_PAUSE;
-				ForceShowCursor(true);
+				ShowCursor(true);
 
 				printf("Pause triggered!\n");
 			}
+			Background_Update(dt);
+			Background_Draw(camera);
 			Update_CameraPosition(camera, player.x, player.y, dt);
 			UpdateAndRenderGameplay(player, dt, gameMap, camera, playerBullets, enemyBullets, grunts, gameEvents);
 
 			if (gameEvents.winTriggered)
 			{
-
-				AEAudioPlay(WinOST, WinBGMGroup, 1.0f, 1.0f, 1);
 				currentState = STATE_WIN;
-				ForceShowCursor(true);
-
 				gameEvents.winTriggered = false; // Reset for potential future use
 			}
 
 			if (gameEvents.playerDied)
 			{
-
-				AEAudioPlay(LoseOST, LoseBGMGroup, 1.0f, 1.0f, 1);
 				currentState = STATE_LOSE;
-				ForceShowCursor(true);
 				gameEvents.playerDied = false; // Reset for potential future use
 			}
 		}
@@ -324,13 +311,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		// ---------------------------------------------------------------------------
 		else if (currentState == STATE_GAME)
 		{
-			ForceShowCursor(false);
-
 			AEGfxSetBackgroundColor(0.05f, 0.05f, 0.1f);
 			//Check for pause input
 			if (AEInputCheckTriggered(AEVK_P) || AEInputCheckTriggered(AEVK_ESCAPE)) {
 				currentState = STATE_PAUSE;
-				ForceShowCursor(true);
+				ShowCursor(true);
 
 				printf("Pause triggered!\n");
 			}
@@ -342,25 +327,16 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		
 			if(gameEvents.winTriggered)
 			{
-
-				AEAudioPlay(WinOST, WinBGMGroup, 1.0f, 1.0f, 1);
 				currentState = STATE_WIN;
-				ForceShowCursor(true);
-
 				gameEvents.winTriggered = false; // Reset for potential future use
 			}
 
 			if (gameEvents.playerDied)
 			{
-
-				AEAudioPlay(LoseOST, LoseBGMGroup, 1.0f, 1.0f, 1);
 				currentState = STATE_LOSE;
-				ForceShowCursor(true);
-
 				gameEvents.playerDied = false; // Reset for potential future use
 			}
-			if (AEInputCheckTriggered(AEVK_Q))
-				currentState = STATE_MENU;
+			
 		}
 
 		// ---------------------------------------------------------------------------
@@ -368,37 +344,31 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		// ---------------------------------------------------------------------------
 		else if (currentState == STATE_PAUSE)
 		{
-			if (previousState == STATE_EDITOR)
-			{
-				// Removes any rendering from normal gameplay
-				currentState = UpdateAndRenderPause(meshes.square, fontID, dt, previousState);
-			}
-			else
-			{
 
-				camera.x = player.x;
-				camera.y = player.y;
+			camera.x = player.x;
+			camera.y = player.y;
 
-				// Render the map
-				Load_Map(*gameMap, camera);
+			// Render the map
+			Load_Map(*gameMap, camera);
 
-				// Render enemies
-				RenderGrunts(grunts, meshes.circle, camera);
+			// Render enemies
+			RenderGrunts(grunts, meshes.circle, camera);
 
-				// Render player
-				DrawPlayer(player, meshes.circle, camera, 0.0f);
+			// Render player
+			DrawPlayer(player, meshes.circle, camera, 0.0f);
 
-				// Render bullets
-				RenderBullets(playerBullets, meshes.circle, camera);
-				RenderBullets(enemyBullets, meshes.circle, camera);
+			// Render bullets
+			RenderBullets(playerBullets, meshes.circle, camera);
+			RenderBullets(enemyBullets, meshes.circle, camera);
 
-				// Render UI
-				WeaponStats weapon = GetCurrentWeapon(player);
-				DrawPlayerUI(player, weapon, meshes.square, meshes.circle, camera);
+			// Render UI
+			WeaponStats weapon = GetCurrentWeapon(player);
+			DrawPlayerUI(player, weapon, meshes.square, meshes.circle, camera);
 
-				// Pause menu on top
-				currentState = UpdateAndRenderPause(meshes.square, fontID, dt, previousState);
-			}
+			// Pause menu on top
+			currentState = UpdateAndRenderPause(meshes.square, fontID, dt, previousState);
+			
+
 		}
 
 		// ---------------------------------------------------------------------------
@@ -419,16 +389,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			Popup_Update(popup, dt); 
 			Popup_Draw(popup, meshes.square, fontID);  
 
-			if (AEInputCheckTriggered(AEVK_P) || AEInputCheckTriggered(AEVK_ESCAPE)) {
-				currentState = STATE_PAUSE;
-				ForceShowCursor(true);
-			}
-
-			if (AEInputCheckTriggered(AEVK_Q)) {
-				currentState = STATE_MENU;
-				editorLoaded = false;
-				Quit_Editor(editor);
-			}
+			
 		}
 
 		else if(currentState == STATE_WIN)
