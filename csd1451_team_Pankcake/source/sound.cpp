@@ -17,6 +17,7 @@ AEAudio GameBGM1;
 AEAudio MainMenuBGM;
 AEAudio EditorBGM;
 
+AEAudio EDeathSound;
 
 AEAudioGroup gSFXGroup;
 AEAudioGroup gSprintGroup;
@@ -51,6 +52,9 @@ void SoundInit()
 
 	StaticSound = AEAudioLoadMusic("Assets/Sound/static.wav");
 
+	//Enemy death sound
+	EDeathSound = AEAudioLoadMusic("Assets/Sound/EnemyDeath.wav");
+
     //BGM
 	GameBGM1 = AEAudioLoadMusic("Assets/Sound/gameOST.wav");
     MainMenuBGM = AEAudioLoadMusic("Assets/Sound/mainOST.wav");
@@ -68,6 +72,8 @@ void SoundFree()
     AEAudioUnloadAudio(gPickUpSound);
 	AEAudioUnloadAudio(gDropSound);
 	AEAudioUnloadAudio(gLowHealthBeepSound);
+
+	AEAudioUnloadAudio(EDeathSound);
 
 	AEAudioUnloadAudio(StaticSound);
 	AEAudioUnloadAudio(MainMenuBGM);

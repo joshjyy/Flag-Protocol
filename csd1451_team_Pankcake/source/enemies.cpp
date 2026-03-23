@@ -6,6 +6,7 @@
 #include "utils.hpp"
 #include "damageNumbers.hpp"
 #include <cstdlib> 
+#include "sound.hpp"
 
 GruntSpawner gruntSpawner;
 
@@ -114,11 +115,11 @@ void UpdateGruntSpawner(std::vector<Grunt>& grunts,
 		return;
 
 	gruntSpawner.waveTimer = 0.0f;
-	// Don't spawn if at max capacity of 25.
+
 	if ((int)grunts.size() >= 25)
 		return;
 
-	// Find all spawner positions
+	// Find all spawner tiles
 	struct SpawnTile { int row, col; };
 	std::vector<SpawnTile> spawnTiles;
 
@@ -126,63 +127,58 @@ void UpdateGruntSpawner(std::vector<Grunt>& grunts,
 		for (int j = 0; j < MAP_WIDTH; j++) {
 			if (gameMap[i][j] == 3) {
 				spawnTiles.push_back({ i, j });
-
 			}
 		}
 	}
 
 	if (spawnTiles.empty()) return;
 
-	// Random count between 1 and 3
-	int spawnCount = 1 + (rand() % 3);
+	// Each spawner tile independently rolls its own spawn count
+	for (const auto& tile : spawnTiles) {
+		if ((int)grunts.size() >= 25)
+			break;
 
-	// Clamp to not exceed max
-	int maxNew = 25 - (int)grunts.size();
-	if (spawnCount > maxNew)
-		spawnCount = maxNew;
-
-	for (int n = 0; n < spawnCount; n++) {
-		// Pick a random spawn tile
-		int idx = rand() % (int)spawnTiles.size();
-		int row = spawnTiles[idx].row;
-		int col = spawnTiles[idx].col;
-
-		// Convert tile to world position
-		float tileWorldX = (col * TILE_SIZE) - 800.0f + 25.0f;
-		float tileWorldY = 450.0f - (row * TILE_SIZE) - 25.0f;
-
+		float tileWorldX = (tile.col * TILE_SIZE) - 800.0f + 25.0f;
+		float tileWorldY = 450.0f - (tile.row * TILE_SIZE) - 25.0f;
 		float radius = 3.0f * (float)TILE_SIZE;
 
-		// Try up to 5 times to find a valid position
-		bool validSpawn = false;
-		float spawnX = tileWorldX;
-		float spawnY = tileWorldY;
+		// Each tile rolls its own random count between 1 and 3
+		int spawnCount = 1 + (rand() % 3);
+		int maxNew = 25 - (int)grunts.size();
+		if (spawnCount > maxNew)
+			spawnCount = maxNew;
 
-		for (int attempt = 0; attempt < 5; attempt++) {
-			float angle = ((float)(rand() % 360)) * 3.14159f / 180.0f;
-			float dist = ((float)(rand() % (int)radius));
-			float tryX = tileWorldX + dist * cosf(angle);
-			float tryY = tileWorldY + dist * sinf(angle);
-
-			// Convert back to tile indices
-			int tileCol = (int)((tryX + 800.0f - 25.0f) / TILE_SIZE);
-			int tileRow = (int)((450.0f - tryY - 25.0f) / TILE_SIZE);
-
-			// Bounds check
-			if (tileCol < 0 || tileCol >= MAP_WIDTH || tileRow < 0 || tileRow >= MAP_HEIGHT)
-				continue;
-
-			// Only spawn on empty tiles (0)
-			if (gameMap[tileRow][tileCol] == 0) {
-				spawnX = tryX;
-				spawnY = tryY;
-				validSpawn = true;
+		for (int n = 0; n < spawnCount; n++) {
+			if ((int)grunts.size() >= 25)
 				break;
-			}
-		}
 
-		if (validSpawn) {
-			grunts.push_back(SpawnGrunt(spawnX, spawnY));
+			bool validSpawn = false;
+			float spawnX = tileWorldX;
+			float spawnY = tileWorldY;
+
+			for (int attempt = 0; attempt < 5; attempt++) {
+				float angle = ((float)(rand() % 360)) * 3.14159f / 180.0f;
+				float dist = ((float)(rand() % (int)radius));
+				float tryX = tileWorldX + dist * cosf(angle);
+				float tryY = tileWorldY + dist * sinf(angle);
+
+				int tileCol = (int)((tryX + 800.0f - 25.0f) / TILE_SIZE);
+				int tileRow = (int)((450.0f - tryY - 25.0f) / TILE_SIZE);
+
+				if (tileCol < 0 || tileCol >= MAP_WIDTH || tileRow < 0 || tileRow >= MAP_HEIGHT)
+					continue;
+
+				if (gameMap[tileRow][tileCol] == 0) {
+					spawnX = tryX;
+					spawnY = tryY;
+					validSpawn = true;
+					break;
+				}
+			}
+
+			if (validSpawn) {
+				grunts.push_back(SpawnGrunt(spawnX, spawnY));
+			}
 		}
 	}
 }
@@ -215,9 +211,8 @@ void CheckBulletGruntCollisions(std::vector<Bullet>& playerBullets, std::vector<
 
 				printf("Grunt hit! Health: %.1f\n", grunt.health);
 
-				if (grunt.health <= 0.0f && !grunt.isDead){
+				if (grunt.health <= 0.0f && !grunt.isDead) {
 					playerInfo.gruntsKilled++;
-					// Add ammo, capped at maxMagazine
 
 					playerInfo.pistol.currentAmmo += 5;
 					if (playerInfo.pistol.currentAmmo > playerInfo.pistol.maxAmmo)
@@ -231,14 +226,16 @@ void CheckBulletGruntCollisions(std::vector<Bullet>& playerBullets, std::vector<
 					if (playerInfo.shotgun.currentAmmo > playerInfo.shotgun.maxAmmo)
 						playerInfo.shotgun.currentAmmo = playerInfo.shotgun.maxAmmo;
 
-					playerInfo.score += 10;  
+					playerInfo.score += 10;
 					if (playerInfo.health < 85.0f) playerInfo.health += 15.0f;
-					else {
-						playerInfo.health = 100.0f;
-						
-					}
+					else playerInfo.health = 100.0f;
+
 					grunt.isDead = true;
 					grunt.currentState = AI_DEAD;
+
+					// Play death sound
+					AEAudioPlay(EDeathSound, gSFXGroup, 1.0f, 1.0f, 0);
+
 					printf("Grunt killed! Total kills: %d\n", playerInfo.gruntsKilled);
 				}
 

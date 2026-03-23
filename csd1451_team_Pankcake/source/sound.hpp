@@ -8,6 +8,7 @@ extern AEAudio gPickUpSound;
 extern AEAudio gDropSound;
 extern AEAudio gLowHealthBeepSound;
 
+extern AEAudio EDeathSound;
 
 extern AEAudio LoseOST;
 extern AEAudio WinOST;

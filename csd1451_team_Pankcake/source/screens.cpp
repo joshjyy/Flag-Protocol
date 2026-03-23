@@ -26,41 +26,114 @@ bool IsButtonClicked(const Button& btn) {
         btn.x, btn.y, btn.w, btn.h) == 1;
 }
 
-void DrawButton(const Button& btn, AEGfxVertexList* mesh, s8 font) {
-    // Black button background
-    AEGfxSetColorToMultiply(0.0f, 0.0f, 0.0f, 1.0f);
-    AEGfxSetColorToAdd(0.0f, 0.0f, 0.0f, 0.0f);
-    DrawSprite(mesh, btn.x, btn.y, btn.w, btn.h, 0.0f);
+bool IsButtonHovered(const Button& btn) {
+    s32 mx, my;
+    AEInputGetCursorPosition(&mx, &my);
 
-    // Text centering in the box
-    float textScale = 1.2f;
+    float cx = (float)mx - 800.0f;
+    float cy = 450.0f - (float)my;
+
+    return AreBoxesIntersecting(cx, cy, 1.0f, 1.0f,
+        btn.x, btn.y, btn.w, btn.h) == 1;
+}
+
+void DrawButton(const Button& btn, AEGfxVertexList* mesh, s8 font) {
+
+    bool hovered = IsButtonHovered(btn);
+
+    // Slight scale effect upon hovering
+    float drawW = hovered ? btn.w + 20.0f : btn.w;
+    float drawH = hovered ? btn.h + 10.0f : btn.h;
+
+    // Background color (slightly green tint on hover)
+    if (hovered)
+        AEGfxSetColorToMultiply(0.0f, 0.2f, 0.0f, 1.0f);
+    else
+        AEGfxSetColorToMultiply(0.0f, 0.0f, 0.0f, 1.0f);
+
+    AEGfxSetColorToAdd(0.0f, 0.0f, 0.0f, 0.0f);
+
+    DrawSprite(mesh, btn.x, btn.y, drawW, drawH, 0.0f);
+
+    // Text scaling
+    float textScale = hovered ? 1.3f : 1.2f;
+
     float textWidth, textHeight;
     AEGfxGetPrintSize(font, btn.label, textScale, &textWidth, &textHeight);
 
-    float nx, ny;
-
-    nx = btn.x / 800.0f;
-    ny = btn.y / 450.0f;
+    float nx = btn.x / 800.0f;
+    float ny = btn.y / 450.0f;
 
     nx -= textWidth / 2;
     ny -= textHeight / 2;
 
-    // Green text
-    AEGfxPrint(font, const_cast<char*>(btn.label), nx, ny, textScale, 0.0f, 1.0f, 0.0f, 1.0f);
+    // Text color (brightens on hovering over button)
+    if (hovered)
+        AEGfxPrint(font, const_cast<char*>(btn.label), nx, ny, textScale, 0.4f, 1.0f, 0.4f, 1.0f);
+    else
+        AEGfxPrint(font, const_cast<char*>(btn.label), nx, ny, textScale, 0.0f, 1.0f, 0.0f, 1.0f);
 }
 
 GameState UpdateAndRenderMenu(AEGfxVertexList* mesh, s8 font, float dt) {
-    //in case for future anims
-    (void)dt;
+    static float menuAnimTime = 0.0f;
+    menuAnimTime += dt;
+
+    static bool initialized = false;
+
+    struct MenuBlock {
+        float x, y;
+        float size;
+        float speedX;
+    };
+
+    static MenuBlock blocks[15];
+
+    // block trailing effect in the background
+    if (!initialized) {
+        for (int i = 0; i < 15; ++i) {
+            blocks[i].size = 18.0f + (rand() % 45);
+            blocks[i].x = -900.0f - (rand() % 500) - i * 120.0f;
+            blocks[i].y = (rand() % 900) - 450.0f;
+            blocks[i].speedX = 450.0f + (rand() % 200);
+        }
+        initialized = true;
+    }
+
+    // pulsing effect for title
+    float pulseScale = 2.5f + 0.2f * sinf(menuAnimTime * 4.0f);
 
     AEGfxSetBackgroundColor(0.05f, 0.05f, 0.1f);
     AEGfxSetRenderMode(AE_GFX_RM_COLOR);
     AEGfxSetBlendMode(AE_GFX_BM_BLEND);
     AEGfxSetTransparency(1.0f);
 
-    float tx, ty;
-    GetNormalizedTextPosition(-100.0f, 300.0f, &tx, &ty);
-    AEGfxPrint(font, const_cast<char*>("Flag Protocol"), tx, ty, 2.0f, 0.0f, 1.0f, 0.0f, 1.0f);
+    // drawing blocks in background
+    for (int i = 0; i < 15; ++i) {
+        blocks[i].x += blocks[i].speedX * dt;
+
+        if (blocks[i].x - blocks[i].size > 900.0f) {
+            blocks[i].size = 18.0f + (rand() % 45);
+            blocks[i].x = -900.0f - (rand() % 500);
+            blocks[i].y = (rand() % 900) - 450.0f;
+            blocks[i].speedX = 450.0f + (rand() % 200);
+        }
+
+        float s = blocks[i].size;
+
+        AEGfxSetColorToMultiply(0.15f, 0.9f, 0.15f, 0.45f);
+        AEGfxSetColorToAdd(0, 0, 0, 0);
+        DrawSprite(mesh, blocks[i].x, blocks[i].y, s, s, 0.0f);
+    }
+
+    float tw, th;
+    AEGfxGetPrintSize(font, "Flag Protocol", pulseScale, &tw, &th);
+
+    // title centering
+    float titleX = -tw / 2.0f;
+    float titleY = 0.65f;
+
+    // title
+    AEGfxPrint(font, const_cast<char*>("Flag Protocol"), titleX, titleY, pulseScale, 0.0f, 1.0f, 0.0f, 1.0f);
 
     Button playBtn = { 0.0f,  150.0f, 200.0f, 50.0f, "PLAY" };
     Button controlsBtn = { 0.0f,   50.0f, 200.0f, 50.0f, "CONTROLS" };
@@ -79,7 +152,6 @@ GameState UpdateAndRenderMenu(AEGfxVertexList* mesh, s8 font, float dt) {
     if (IsButtonClicked(creditBtn)) return STATE_CREDITS;
     if (IsButtonClicked(editorBtn)) return STATE_EDITOR;
     if (IsButtonClicked(quitBtn))   return STATE_QUIT;
-
 
     return STATE_MENU;
 }
@@ -122,13 +194,18 @@ GameState UpdateAndRenderPause(AEGfxVertexList* mesh, s8 font, float dt, GameSta
     DrawButton(menuBtn, mesh, font);
     DrawButton(quitBtn, mesh, font);
 
+    // Using P key to resume from Paused screen
+    if (AEInputCheckTriggered(AEVK_P) || AEInputCheckTriggered(AEVK_ESCAPE)) {
+        return previous;
+    }
+
     // Button interactions
     if (IsButtonClicked(resumeBtn)) {
         return previous;
     }
     if (IsButtonClicked(menuBtn)) {
         AEAudioStopGroup(GameBGMGroup);
-
+        AEAudioStopGroup(EditorBGMGroup);
         
         return STATE_MENU;
     }
@@ -138,6 +215,111 @@ GameState UpdateAndRenderPause(AEGfxVertexList* mesh, s8 font, float dt, GameSta
     }
 
     return STATE_PAUSE;
+}
+
+GameState UpdateAndRenderControls(AEGfxVertexList* mesh, s8 font, float dt) {
+    (void)dt;
+
+    AEGfxSetBackgroundColor(0.05f, 0.05f, 0.1f);
+    AEGfxSetRenderMode(AE_GFX_RM_COLOR);
+    AEGfxSetBlendMode(AE_GFX_BM_BLEND);
+    AEGfxSetTransparency(1.0f);
+
+    float textX, textY;
+
+    // Title
+    float tw, th;
+    AEGfxGetPrintSize(font, "CONTROLS", 1.8f, &tw, &th);
+    AEGfxPrint(font, const_cast<char*>("CONTROLS"), -tw / 2.0f, 0.75f, 1.8f, 0.0f, 1.0f, 0.0f, 1.0f);
+
+    // Movement
+    GetNormalizedTextPosition(-620.0f, 240.0f, &textX, &textY);
+    AEGfxPrint(font, const_cast<char*>("MOVEMENT"), textX, textY, 1.2f, 0.0f, 1.0f, 0.8f, 1.0f);
+
+    float xKey, y;
+    float xDesc, unusedY;
+    GetNormalizedTextPosition(-520.0f, 0.0f, &xDesc, &unusedY);
+
+    // Directional movement
+    GetNormalizedTextPosition(-620.0f, 190.0f, &xKey, &y);
+    AEGfxPrint(font, "W A S D", xKey, y, 1.0f, 1, 1, 1, 1);
+    AEGfxPrint(font, "- Move", xDesc, y, 1.0f, 1, 1, 1, 1);
+
+    // Sprint
+    GetNormalizedTextPosition(-620.0f, 150.0f, &xKey, &y);
+    AEGfxPrint(font, "RMB", xKey, y, 1.0f, 1, 1, 1, 1);
+    AEGfxPrint(font, "- Sprint", xDesc, y, 1.0f, 1, 1, 1, 1);
+
+    // Dash
+    GetNormalizedTextPosition(-620.0f, 110.0f, &xKey, &y);
+    AEGfxPrint(font, "SPACE", xKey, y, 1.0f, 1, 1, 1, 1);
+    AEGfxPrint(font, "- Dash (costs health)", xDesc, y, 1.0f, 1, 1, 1, 1);
+
+    // Combat
+    GetNormalizedTextPosition(-620.0f, 30.0f, &textX, &textY);
+    AEGfxPrint(font, const_cast<char*>("COMBAT"), textX, textY, 1.2f, 1.0f, 0.9f, 0.3f, 1.0f);
+
+    // Shoot
+    GetNormalizedTextPosition(-620.0f, -20.0f, &xKey, &y);
+    AEGfxPrint(font, "LMB", xKey, y, 1.0f, 1, 1, 1, 1);
+    AEGfxPrint(font, "- Shoot", xDesc, y, 1.0f, 1, 1, 1, 1);
+
+    // Reload
+    GetNormalizedTextPosition(-620.0f, -60.0f, &xKey, &y);
+    AEGfxPrint(font, "R", xKey, y, 1.0f, 1, 1, 1, 1);
+    AEGfxPrint(font, "- Reload", xDesc, y, 1.0f, 1, 1, 1, 1);
+
+    // Switch weapons
+    GetNormalizedTextPosition(-620.0f, -100.0f, &xKey, &y);
+    AEGfxPrint(font, "1 / 2 / 3", xKey, y, 1.0f, 1, 1, 1, 1);
+    AEGfxPrint(font, "- Switch Weapons", xDesc, y, 1.0f, 1, 1, 1, 1);
+
+    // Objective
+    GetNormalizedTextPosition(120.0f, 240.0f, &textX, &textY);
+    AEGfxPrint(font, const_cast<char*>("OBJECTIVE"), textX, textY, 1.2f, 1.0f, 0.4f, 1.0f, 1.0f);
+
+    GetNormalizedTextPosition(120.0f, 190.0f, &textX, &textY);
+    AEGfxPrint(font, const_cast<char*>("Step on CYAN / LIME tiles"), textX, textY, 1.0f, 0.0f, 1.0f, 1.0f, 1.0f);
+
+    GetNormalizedTextPosition(120.0f, 150.0f, &textX, &textY);
+    AEGfxPrint(font, const_cast<char*>("to pick up FLAG NODES."), textX, textY, 1.0f, 0.0f, 1.0f, 1.0f, 1.0f);
+
+    GetNormalizedTextPosition(120.0f, 90.0f, &textX, &textY);
+    AEGfxPrint(font, const_cast<char*>("Step on PURPLE tiles"), textX, textY, 1.0f, 0.7f, 0.3f, 1.0f, 1.0f);
+
+    GetNormalizedTextPosition(120.0f, 50.0f, &textX, &textY);
+    AEGfxPrint(font, const_cast<char*>("to deliver them for points."), textX, textY, 1.0f, 0.7f, 0.3f, 1.0f, 1.0f);
+
+    GetNormalizedTextPosition(120.0f, -10.0f, &textX, &textY);
+    AEGfxPrint(font, const_cast<char*>("Capture 10 FLAG NODES to win."), textX, textY, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f);
+
+    float xKeyR, yR;
+    float xDescR, unusedYR;
+    GetNormalizedTextPosition(240.0f, 0.0f, &xDescR, &unusedYR);
+
+    // Navigation
+    GetNormalizedTextPosition(120.0f, -100.0f, &textX, &textY);
+    AEGfxPrint(font, const_cast<char*>("NAVIGATION"), textX, textY, 1.2f, 0.4f, 1.0f, 0.4f, 1.0f);
+
+    // P / ESC
+    GetNormalizedTextPosition(120.0f, -150.0f, &xKeyR, &yR);
+    AEGfxPrint(font, "P / ESC", xKeyR, yR, 1.0f, 1, 1, 1, 1);
+    AEGfxPrint(font, "- Pause", xDescR, yR, 1.0f, 1, 1, 1, 1);
+
+    // Q
+    GetNormalizedTextPosition(120.0f, -190.0f, &xKeyR, &yR);
+    AEGfxPrint(font, "Q", xKeyR, yR, 1.0f, 1, 1, 1, 1);
+    AEGfxPrint(font, "- Return / Quit", xDescR, yR, 1.0f, 1, 1, 1, 1);
+
+    // Back button at bottom
+    Button backBtn = { 0.0f, -320.0f, 220.0f, 55.0f, "BACK" };
+    DrawButton(backBtn, mesh, font);
+
+    if (IsButtonClicked(backBtn) || AEInputCheckTriggered(AEVK_Q) || AEInputCheckTriggered(AEVK_ESCAPE)) {
+        return STATE_MENU;
+    }
+
+    return STATE_CONTROLS;
 }
 
 GameState UpdateAndRenderNavigation(AEGfxVertexList* mesh, s8 font, float dt) {
@@ -341,6 +523,7 @@ void CurrGamestate(GameState state, int& gGameRunning, std::vector<std::vector<i
     else if (state == STATE_EDITOR) {
         GameStateLoadCustom(gGameRunning, gameMap);
         ShowCursor(true);
+
     }
     else if (state == STATE_CUTSCENE) {
         AEAudioPlay(StaticSound, StaticBGMGroup, 0.7f, 1.0f, -1);

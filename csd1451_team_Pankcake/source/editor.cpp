@@ -2,6 +2,7 @@
 #include "utils.hpp"
 #include <cstdio>
 #include "sound.hpp"
+#include "popup.hpp"
 std::vector<std::vector<int>> g_initialEditorMap;
 
 EditorState InitEditor(void) {

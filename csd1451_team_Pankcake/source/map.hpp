@@ -3,11 +3,13 @@
 #include "AEEngine.h"
 #include <vector>
 #include "gameConstants.hpp"
+#include "popup.hpp"
 // Define the dimensions of the game map
 extern float MAP_HEIGHT;
 extern float MAP_WIDTH;
 extern float TILE_SIZE;
 extern std::vector<std::vector<int>> newMap;
+extern Popup popup;
 /**
  * Loads a game level map from a text file into a 2D array.
  * Returns 1 on success, 0 on failure.
