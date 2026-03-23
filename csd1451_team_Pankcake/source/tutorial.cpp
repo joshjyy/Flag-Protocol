@@ -167,6 +167,7 @@ void UpdateAndRenderTutorial(
     UpdateBullets(enemyBullets, dt, *gameMap);
     CheckBulletGruntCollisions(playerBullets, grunts, player);
     RemoveDeadGrunts(grunts);
+    CheckPlayerGruntBodyCollision(player, grunts);
 
     // Render
     DrawPlayer(player, meshes.circle, camera, dt);
