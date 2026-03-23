@@ -23,7 +23,7 @@ void UpdateAndRenderGameplay(
     ShowCursor(false); 
 
     Background_Draw(camera);
-    Load_Map(*gameMap,camera);
+    Load_Map(*gameMap,camera, false);
 
     UpdatePlayer(&player, dt, *gameMap);
     WeaponSwitchCheck(player);

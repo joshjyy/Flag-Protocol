@@ -35,15 +35,15 @@ const int SCREEN_WIDTH = 1600;
 const int SCREEN_HEIGHT = 900;
 
 
-//Tile Types
 enum TileType {
     EMPTY = 0,
     WALL,
     GOAL,
     ENEMY_SPAWN,
     FLAG,
-    SPAWN,
-    VISITED = -1
+    FLAG_SPAWN,   // rename this to FLAG_SPAWN (was implicitly 5)
+    PLAYER_SPAWN, // now = 6
+    VISITED = -1        
 };
 
 struct CameraPos {
