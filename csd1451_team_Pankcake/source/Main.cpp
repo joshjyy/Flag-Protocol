@@ -397,8 +397,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			currentState = UpdateAndRenderWinScreen(meshes.square, fontID, dt, player);
 		
 		}
-		else if(currentState == STATE_LOSE)
+		else if(currentState == STATE_LOSE) 
 		{
+			while (ShowCursor(true) < 0); //TMP fix
 			currentState = UpdateAndRenderLoseScreen(meshes.square, fontID, dt, player, previousState);
 		}
 
