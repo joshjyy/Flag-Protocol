@@ -30,7 +30,7 @@ void UpdateAndRenderEditor(EditorState& editor,
     editor.camera = moving_cursor(editor.camera);
 
     // Load and render the map
-    Load_Map(gameMap, editor.camera);
+    Load_Map(gameMap, editor.camera, true);
 
     // Draw hover preview
     DrawEditorHover(editor, gameMap, squareMesh);
@@ -111,6 +111,8 @@ void HandleEditorInput(EditorState& editor,
     if (AEInputCheckTriggered(AEVK_2)) editor.currentTileType = 2;  // Purple goal
     if (AEInputCheckTriggered(AEVK_3)) editor.currentTileType = 3;  // Red blocks
     if (AEInputCheckTriggered(AEVK_4)) editor.currentTileType = 4;  // Lime flag
+    if (AEInputCheckTriggered(AEVK_5)) editor.currentTileType = PLAYER_SPAWN;
+
 
     // Save custom map (S key)
     if (AEInputCheckTriggered(AEVK_S)) {
@@ -210,6 +212,7 @@ void RenderEditorUI(const EditorState& editor,
         {"2: Purple Goal", -550.0f, 0.5f, 0.0f, 1.0f},
         {"3: Red Blocks", -400.0f, 1.0f, 0.0f, 0.0f},
         {"4: Lime Flag", -700.0f, 0.0f, 1.0f, 1.0f},
+        {"5: Player Spawn", -550.0f, 1.0f, 1.0f, 0.0f},
         {"0: Eraser", -400.0f, 1.0f, 1.0f, 1.0f}
     };
 
@@ -241,13 +244,15 @@ void RenderEditorUI(const EditorState& editor,
     GetNormalizedTextPosition(-700.0f, uiY, &textX, &textY);
     char tileText[32];
 
-    const char* tileNames[] = { "Eraser", "Green Blocks", "Purple Goal", "Red Blocks", "Lime Flag" };
-    float tileColors[5][3] = {
-        {1.0f, 1.0f, 1.0f},
-        {0.0f, 1.0f, 0.0f},
-        {0.5f, 0.0f, 1.0f},
-        {1.0f, 0.0f, 0.0f},
-        {0.0f, 1.0f, 1.0f}
+    const char* tileNames[] = { "Eraser", "Wall", "Goal", "Enemy Spawn", "Flag", "Flag Spawn", "Player Spawn" };
+    float tileColors[7][3] = {
+        {1.0f, 1.0f, 1.0f},  // eraser
+        {0.0f, 1.0f, 0.0f},  // wall green
+        {0.5f, 0.0f, 1.0f},  // goal purple
+        {1.0f, 0.0f, 0.0f},  // enemy spawn red
+        {0.0f, 1.0f, 1.0f},  // flag cyan
+        {0.5f, 0.5f, 1.0f},  // flag spawn blue
+        {1.0f, 1.0f, 0.0f},  // player spawn yellow
     };
 
     sprintf_s(tileText, 32, "Current: %s", tileNames[editor.currentTileType]);

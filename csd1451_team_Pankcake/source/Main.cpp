@@ -197,6 +197,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				FreeGrunts(grunts);
 				grunts.clear();
 				InitGruntSpawner();
+				FindPlayerSpawn(*gameMap, player.x, player.y); 
 			}
 
 			if(currentState == STATE_LOSE || currentState == STATE_WIN)
@@ -246,7 +247,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			ForceShowCursor(false);
 
 			Update_CameraPosition(camera, player.x, player.y, dt);
-			Load_Map(*gameMap, camera);
+			Load_Map(*gameMap, camera, false);
 
 			Tutorial_RenderHints(fontID);
 			Tutorial_RenderDebug(fontID, player);
@@ -268,7 +269,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		else if (currentState == STATE_CUSTOM) {
 			ForceShowCursor(false);
 
-			Load_Map(*gameMap, camera);
+			Load_Map(*gameMap, camera, false);
 			
 
 			
@@ -372,7 +373,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				camera.y = player.y;
 
 				// Render the map
-				Load_Map(*gameMap, camera);
+				Load_Map(*gameMap, camera, false);
 
 				// Render enemies
 				RenderGrunts(grunts, meshes.circle, camera);

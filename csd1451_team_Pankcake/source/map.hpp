@@ -25,7 +25,7 @@ void Save_Game_Level(const char* filename, std::vector<std::vector<int>>& arr);
  * Renders the game map using the provided mesh.
  * Draws colored squares for each solid tile (value of 1) in the array.
  */
-void Load_Map(std::vector<std::vector<int>>& arr, CameraPos& camera);
+void Load_Map(std::vector<std::vector<int>>& arr, CameraPos& camera, bool editorMode = false);
 
 void PrintBlock(int choice, float d, float screenX, float screenY, AEGfxVertexList* mesh);
 
@@ -37,4 +37,4 @@ void zoom();
 void floodfill(std::vector<std::vector<int>>& arr, int x, int y);
 bool HasHole();
 void Update_CameraPosition(CameraPos& camera, float targetX, float targetY, float dt);
-
+void FindPlayerSpawn(std::vector<std::vector<int>>& arr, float& outX, float& outY);

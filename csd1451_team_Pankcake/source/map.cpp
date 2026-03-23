@@ -92,23 +92,19 @@ void Save_Game_Level(const char* filename, std::vector<std::vector<int>>& arr) {
   * 4 = yellow (sand)
   * 5 = purple (special tiles)
   */
-	void Load_Map(std::vector<std::vector<int>>& arr,
-	
-	CameraPos &camera) {
-	
-
+void Load_Map(std::vector<std::vector<int>>& arr, CameraPos& camera, bool editorMode) {
 	for (int i = 0; i < MAP_HEIGHT; i++) {
 		for (int j = 0; j < MAP_WIDTH; j++) {
-			if (arr[i][j] != 0 && arr[i][j] != 5) {
-				float x = (j * TILE_SIZE) - 800.0f + 25.0f;
-				float y = 450.0f - (i * TILE_SIZE) - 25.0f;
-				float screenX = x - camera.x;
-				float screenY = y - camera.y;
-				PrintBlock(arr[i][j], 1.0f, screenX, screenY, meshes.square);
-			}
+			if (arr[i][j] == EMPTY || arr[i][j] == FLAG_SPAWN) continue;
+			if (!editorMode && (arr[i][j] == PLAYER_SPAWN || arr[i][j] == ENEMY_SPAWN)) continue;
+
+			float x = (j * TILE_SIZE) - 800.0f + 25.0f;
+			float y = 450.0f - (i * TILE_SIZE) - 25.0f;
+			float screenX = x - camera.x;
+			float screenY = y - camera.y;
+			PrintBlock(arr[i][j], 1.0f, screenX, screenY, meshes.square);
 		}
 	}
-	
 }
 
 void PrintBlock(int choice, float d, float screenX, float screenY, AEGfxVertexList* mesh) {
@@ -117,6 +113,7 @@ void PrintBlock(int choice, float d, float screenX, float screenY, AEGfxVertexLi
 	else if (choice == GOAL) { r = 0.5f; g = 0.0f; b = 1.0f; }  // purple goal
 	else if (choice == ENEMY_SPAWN) { r = 1.0f; g = 0.0f; b = 0.0f; }  // red
 	else if (choice == FLAG) { r = 0.0f; g = 1.0f; b = 1.0f; }  // lime flag
+	else if (choice == PLAYER_SPAWN) { r = 1.0f; g = 1.0f; b = 0.0f; } 
 	AEGfxSetRenderMode(AE_GFX_RM_COLOR);
 	AEGfxSetTransparency(1.0f);
 	AEMtx33 scale, translate, transform;
@@ -148,43 +145,26 @@ void PrintBlock(int choice, float d, float screenX, float screenY, AEGfxVertexLi
 
 void Spawn_Flag(std::vector<std::vector<int>>& arr) {
 	struct Tile { int row, col; };
-	
+
 	int count = 0;
-	for (int i = 0; i < MAP_HEIGHT; i++) {
-		for (int j = 0; j < MAP_WIDTH; j++) {
-			if (arr[i][j] == 5) {
-				count++;
-			}
-		}
-	}
-	if (count == 0) {
-		std::cout << "No flag tiles found!\n";
-		return;
-	}
+	for (int i = 0; i < MAP_HEIGHT; i++)
+		for (int j = 0; j < MAP_WIDTH; j++)
+			if (arr[i][j] == FLAG_SPAWN) count++;
+
+	if (count == 0) { std::cout << "No flag tiles found!\n"; return; }
 
 	Tile* found = new Tile[count];
 	int flagloc = 0;
-	for (int i = 0; i < MAP_HEIGHT; i++) {
-		for (int j = 0; j < MAP_WIDTH; j++) {
-			if (arr[i][j] == 5) {
-				found[flagloc].row = i;
-				found[flagloc].col = j;
-				flagloc++;
-			}
-		}
-	}
+	for (int i = 0; i < MAP_HEIGHT; i++)
+		for (int j = 0; j < MAP_WIDTH; j++)
+			if (arr[i][j] == FLAG_SPAWN) { found[flagloc].row = i; found[flagloc].col = j; flagloc++; }
 
 	srand((unsigned int)time(0));
 	int index = rand() % count;
-
-	int row = found[index].row;
-	int col = found[index].col;
-
-	std::cout << "Flag spawned at Row: " << row << " Col: " << col << "\n";
-	arr[row][col] = 4;
+	arr[found[index].row][found[index].col] = FLAG;
+	std::cout << "Flag spawned at Row: " << found[index].row << " Col: " << found[index].col << "\n";
 	delete[] found;
 }
-
 
 CameraPos moving_cursor(CameraPos camera) {
 	static int prevMouseX = 0, prevMouseY = 0;
@@ -301,9 +281,13 @@ void floodfill(std::vector<std::vector<int>>& arr, int x, int y)
 			stack.push({ cx + 1, cy });
 			stack.push({ cx - 1, cy });
 		}
-		else if (newMap[cx][cy] == 1 || newMap[cx][cy] == -1 || newMap[cx][cy] == 2 || newMap[cx][cy] == 3 || newMap[cx][cy] == 4 || newMap[cx][cy] == 5) {
+		else if (newMap[cx][cy] == WALL || newMap[cx][cy] == VISITED ||
+			newMap[cx][cy] == GOAL || newMap[cx][cy] == ENEMY_SPAWN ||
+			newMap[cx][cy] == FLAG || newMap[cx][cy] == FLAG_SPAWN ||
+			newMap[cx][cy] == PLAYER_SPAWN) {
 			continue;
 		}
+		
 
 	}
 }
@@ -347,4 +331,19 @@ void Update_CameraPosition(CameraPos& camera, float targetX, float targetY, floa
 
 	camera.x = AEClamp(camera.x, minX - 200.0f, maxX + 200.0f);
 	camera.y = AEClamp(camera.y, minY - 200.0f, maxY + 200.0f);
+}
+
+void FindPlayerSpawn(std::vector<std::vector<int>>& arr, float& outX, float& outY) {
+	for (int i = 0; i < MAP_HEIGHT; i++) {
+		for (int j = 0; j < MAP_WIDTH; j++) {
+			if (arr[i][j] == PLAYER_SPAWN) {
+				outX = (j * TILE_SIZE) - 800.0f + 25.0f;
+				outY = 450.0f - (i * TILE_SIZE) - 25.0f;
+				return;
+			}
+		}
+	}
+	
+	outX = 0.0f;
+	outY = 0.0f;
 }
