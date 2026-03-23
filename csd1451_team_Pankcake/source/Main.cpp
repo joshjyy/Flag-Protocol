@@ -221,7 +221,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		// ---------------------------------------------------------------------------
 		if (currentState == STATE_MENU) {
 			currentState = UpdateAndRenderMenu(meshes.square, fontID, dt);
-			if (AEInputCheckTriggered(AEVK_Q))
+			if (AEInputCheckTriggered(AEVK_ESCAPE))
 				gGameRunning = 0;
 		}
 
@@ -232,8 +232,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		{
 			currentState = UpdateAndRenderNavigation(meshes.square, fontID, dt);
 
-			if (AEInputCheckTriggered(AEVK_Q))
-				currentState = STATE_MENU;
 		}
 
 		else if(currentState == STATE_CONTROLS)
@@ -256,10 +254,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			Range_Hacks(player);
 			UpdateAndRenderTutorial(player, dt, gameMap, camera, playerBullets, enemyBullets, grunts, gameEvents);
 
-
-
-			if (AEInputCheckTriggered(AEVK_Q))
-				currentState = STATE_MENU;
 			if (AEInputCheckTriggered(AEVK_P) || AEInputCheckTriggered(AEVK_ESCAPE)) {
 				currentState = STATE_PAUSE;
 				ForceShowCursor(true);
@@ -275,8 +269,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			ForceShowCursor(false);
 
 			Load_Map(*gameMap, camera);
-			if (AEInputCheckTriggered(AEVK_Q))
-				currentState = STATE_MENU;
+			
 
 			
 			if (AEInputCheckTriggered(AEVK_P) || AEInputCheckTriggered(AEVK_ESCAPE)) {
@@ -359,8 +352,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 				gameEvents.playerDied = false; // Reset for potential future use
 			}
-			if (AEInputCheckTriggered(AEVK_Q))
-				currentState = STATE_MENU;
+			
 		}
 
 		// ---------------------------------------------------------------------------
@@ -424,11 +416,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				ForceShowCursor(true);
 			}
 
-			if (AEInputCheckTriggered(AEVK_Q)) {
-				currentState = STATE_MENU;
-				editorLoaded = false;
-				Quit_Editor(editor);
-			}
+			
 		}
 
 		else if(currentState == STATE_WIN)

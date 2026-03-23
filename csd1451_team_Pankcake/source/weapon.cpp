@@ -15,9 +15,21 @@ void WeaponSwitchCheck(Player& player) {
 		printf("%s Switched!\n", GetCurrentWeapon(player).weaponName);
 	}
 	if (AEInputCheckTriggered(AEVK_3)) {
-    player.currentWeaponIndex = 2;
-    printf("%s Switched!\n", GetCurrentWeapon(player).weaponName);
-}
+		player.currentWeaponIndex = 2;
+		printf("%s Switched!\n", GetCurrentWeapon(player).weaponName);
+	}
+
+	s32 wheelDelta = 0;
+	AEInputMouseWheelDelta(&wheelDelta);
+
+	if (wheelDelta > 0) {
+		player.currentWeaponIndex = (player.currentWeaponIndex + 1) % 3;
+		printf("%s Switched!\n", GetCurrentWeapon(player).weaponName);
+	}
+	if (wheelDelta < 0) {
+		player.currentWeaponIndex = (player.currentWeaponIndex + 2) % 3;
+		printf("%s Switched!\n", GetCurrentWeapon(player).weaponName);
+	}
 }
 
 void ResetShootCooldown(Player &player, float dt) {
