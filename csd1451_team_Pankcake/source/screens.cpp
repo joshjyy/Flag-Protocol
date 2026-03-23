@@ -476,7 +476,7 @@ GameState UpdateAndRenderLoseScreen(AEGfxVertexList* mesh, s8 font, float dt,
 void CurrGamestate(GameState state, int& gGameRunning, std::vector<std::vector<int>>& gameMap, Player& player, GameState previousState) {
     if (state == STATE_MENU) {
         LoadPlayer(player);
-        ShowCursor(true);
+        while (ShowCursor(true) < 0)
         AEAudioPlay(MainMenuBGM, MainBGMGroup, 1.0f, 1.0f, -1);
 
 
