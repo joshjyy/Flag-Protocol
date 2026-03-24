@@ -479,6 +479,7 @@ void CurrGamestate(GameState state, int& gGameRunning, std::vector<std::vector<i
         ShowCursor(true);
         AEAudioPlay(MainMenuBGM, MainBGMGroup, 1.0f, 1.0f, -1);
 
+
     }
     else if (state == STATE_NAVIGATION) {
         ShowCursor(true);
