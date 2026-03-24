@@ -146,7 +146,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		if (AEInputCheckTriggered(AEVK_ESCAPE) || 0 == AESysDoesWindowExist())
 			gGameRunning = 0;
 		//State Transition Stuff
-		if (currentState != previousState) {
+		if (currentState != previousState || previousState == STATE_LOSE) {
 			CurrGamestate(currentState, gGameRunning, *gameMap, player, previousState);
 
 			if ((previousState == STATE_GAME || previousState == STATE_CUSTOM) && currentState != STATE_PAUSE) {
@@ -425,9 +425,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			currentState = UpdateAndRenderWinScreen(meshes.square, fontID, dt, player);
 		
 		}
-		else if(currentState == STATE_LOSE)
-		{
-			currentState = UpdateAndRenderLoseScreen(meshes.square, fontID, dt, player, previousState);
+		else if (currentState == STATE_LOSE) {
+			GameState next = UpdateAndRenderLoseScreen(meshes.square, fontID, dt, player, previousState);
+			if (next != STATE_LOSE) {
+				previousState = STATE_LOSE; 
+				currentState = next;
+			}
 		}
 
 		else if(currentState == STATE_CREDITS)
