@@ -168,6 +168,7 @@ void UpdateAndRenderTutorial(
     CheckBulletGruntCollisions(playerBullets, grunts, player);
     RemoveDeadGrunts(grunts);
     CheckPlayerGruntBodyCollision(player, grunts);
+    UpdateDamageNumbers(dt);
 
     // Render
     DrawPlayer(player, meshes.circle, camera, dt);
@@ -176,5 +177,6 @@ void UpdateAndRenderTutorial(
     RenderBullets(enemyBullets, meshes.circle, camera);
     DrawPlayerUI(player, weapon, meshes.square, meshes.circle, camera);
     DrawCrosshair(meshes.square);
+    RenderDamageNumbers(camera);
 
 }
