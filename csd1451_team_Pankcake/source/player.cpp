@@ -6,6 +6,7 @@
 #include "gameConstants.hpp"
 #include "enemies.hpp"
 #include "sound.hpp"
+#include "powerup.hpp"  
 #include <fstream>
 
 
@@ -660,7 +661,7 @@ void UpdatePlayer(Player* player, float dt, std::vector<std::vector<int>>& gameM
 
 
 void CheckEnemyBulletPlayerCollision(std::vector<Bullet>& enemyBullets,
-    Player& player) {
+    Player& player, PowerUps& powerup) {
 
 
     // Loop backwards so we can safely remove bullets
@@ -676,22 +677,20 @@ void CheckEnemyBulletPlayerCollision(std::vector<Bullet>& enemyBullets,
         );
 
         if (collision > 0 && (!player.isDead)) {
-            player.health -= enemyBullets[i].damage;
-
-
-
-            // Check if player died
-            if (player.health <= 0.0f) {
-				player.health = 0.0f;
-				player.isDead = true;
-                //printf("PLAYER DIED!\n");
-                // Handle death here
+            if (powerup.firewall) {
+              
+                enemyBullets.erase(enemyBullets.begin() + i);
+                break;
             }
 
-            // Remove the bullet (it hit the player)
-            enemyBullets.erase(enemyBullets.begin() + i);
+            player.health -= enemyBullets[i].damage;
 
-            // Only take damage from ONE bullet per hit
+            if (player.health <= 0.0f) {
+                player.health = 0.0f;
+                player.isDead = true;
+            }
+
+            enemyBullets.erase(enemyBullets.begin() + i);
             break;
         }
     }

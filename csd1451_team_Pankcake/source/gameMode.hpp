@@ -7,6 +7,7 @@
 #include "weapon.hpp"
 #include "events.hpp"
 #include "map.hpp"
+#include "powerup.hpp"
 
 void UpdateAndRenderGameplay(
     Player& player,

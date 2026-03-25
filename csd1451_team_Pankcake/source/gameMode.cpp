@@ -49,9 +49,7 @@ void UpdateAndRenderGameplay(
         playerPowerUps.firewallTimer = 5.0f;
     }
 
-    if (!playerPowerUps.firewall) {
-        CheckEnemyBulletPlayerCollision(enemyBullets, player);
-    }
+    CheckEnemyBulletPlayerCollision(enemyBullets, player, playerPowerUps);
    
     CheckPlayerGruntBodyCollision(player, grunts);
 

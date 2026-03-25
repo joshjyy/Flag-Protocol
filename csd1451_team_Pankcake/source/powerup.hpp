@@ -2,7 +2,6 @@
 #include "AEEngine.h"
 #include "player.hpp"
 #include "map.hpp"
-#include "player.hpp"
 
 struct PowerUps {
     bool firewall = false;
