@@ -156,19 +156,32 @@ void UpdateGruntSpawner(std::vector<Grunt>& grunts,
 			float spawnX = tileWorldX;
 			float spawnY = tileWorldY;
 
-			for (int attempt = 0; attempt < 5; attempt++) {
+			for (int attempt = 0; attempt < 10; attempt++) {
 				float angle = ((float)(rand() % 360)) * 3.14159f / 180.0f;
 				float dist = ((float)(rand() % (int)radius));
 				float tryX = tileWorldX + dist * cosf(angle);
 				float tryY = tileWorldY + dist * sinf(angle);
 
-				int tileCol = (int)((tryX + 800.0f - 25.0f) / TILE_SIZE);
-				int tileRow = (int)((450.0f - tryY - 25.0f) / TILE_SIZE);
+				// Convert world pos back to tile indices (matching Load_Map formula exactly)
+				int tileCol = (int)floorf((tryX + 800.0f - 25.0f) / (float)TILE_SIZE);
+				int tileRow = (int)floorf((450.0f - tryY - 25.0f) / (float)TILE_SIZE);
 
-				if (tileCol < 0 || tileCol >= MAP_WIDTH || tileRow < 0 || tileRow >= MAP_HEIGHT)
+				if (tileCol < 1 || tileCol >= MAP_WIDTH - 1 || tileRow < 1 || tileRow >= MAP_HEIGHT - 1)
 					continue;
 
-				if (gameMap[tileRow][tileCol] == 0) {
+				// Check 3x3 area so grunt body doesn't clip into adjacent walls
+				bool blocked = false;
+				for (int dr = -1; dr <= 1 && !blocked; dr++) {
+					for (int dc = -1; dc <= 1 && !blocked; dc++) {
+						int checkRow = tileRow + dr;
+						int checkCol = tileCol + dc;
+						if (gameMap[checkRow][checkCol] != 0) {
+							blocked = true;
+						}
+					}
+				}
+
+				if (!blocked) {
 					spawnX = tryX;
 					spawnY = tryY;
 					validSpawn = true;
