@@ -11,6 +11,8 @@
 #include "events.hpp"
 #include "sound.hpp"
 
+
+
 bool IsButtonClicked(const Button& btn) {
     if (!AEInputCheckTriggered(AEVK_LBUTTON)) return false;
 
@@ -152,6 +154,42 @@ GameState UpdateAndRenderMenu(AEGfxVertexList* mesh, s8 font, float dt) {
     if (IsButtonClicked(creditBtn)) return STATE_CREDITS;
     if (IsButtonClicked(editorBtn)) return STATE_EDITOR;
     if (IsButtonClicked(quitBtn))   return STATE_QUIT;
+
+    static bool showScoreboard = false;
+
+    // Scoreboard button - top right
+    Button scoreboardBtn = { 650.0f, 380.0f, 160.0f, 45.0f, "SCOREBOARD" };
+    DrawButton(scoreboardBtn, mesh, font);
+    if (IsButtonClicked(scoreboardBtn))
+        showScoreboard = !showScoreboard;
+
+    if (showScoreboard) {
+        float popX = 650.0f;  // world space center X
+        float popY = 150.0f;  // world space center Y
+
+        // Background box
+        AEGfxSetTransparency(0.85f);
+        AEGfxSetColorToMultiply(0.0f, 0.0f, 0.0f, 1.0f);
+        AEGfxSetColorToAdd(0, 0, 0, 0);
+        DrawSprite(mesh, popX, popY, 200.0f, 320.0f, 0.0f);
+        AEGfxSetTransparency(1.0f);
+
+        float popCenterNX = popX / (SCREEN_WIDTH / 2.0f);
+
+        // Title
+        const char* topStr = "TOP SCORES:";
+        AEGfxGetPrintSize(font, topStr, 0.9f, &tw, &th);
+		//AEGfxPrint(paramets) // font, string, x, y, scale, r, g, b, a
+        AEGfxPrint(font, const_cast<char*>(topStr), popCenterNX - tw / 2, (popY + 100.0f) / (SCREEN_HEIGHT / 2.0f), 0.9f, 1, 0.8f, 0, 1);
+
+        // Entries
+        for (int i = 0; i < 3; i++) {
+            char entry[64];
+            sprintf_s(entry, "%d. %s  %d", i + 1, highScores[i].name, highScores[i].score);
+            AEGfxGetPrintSize(font, entry, 0.8f, &tw, &th);
+            AEGfxPrint(font, entry, popCenterNX - tw / 2, (popY + 50.0f - i * 60.0f) / (SCREEN_HEIGHT / 2.0f), 0.8f, 1, 1, 1, 1);
+        }
+    }
 
     return STATE_MENU;
 }
@@ -356,59 +394,104 @@ GameState UpdateAndRenderNavigation(AEGfxVertexList* mesh, s8 font, float dt) {
     return STATE_NAVIGATION;
 }
 
-GameState UpdateAndRenderWinScreen(AEGfxVertexList* mesh, s8 font, float dt,  Player& player) {
+GameState UpdateAndRenderWinScreen(AEGfxVertexList* mesh, s8 font, float dt, Player& player, GameState previous) {
     (void)dt;
-
     AEGfxSetBackgroundColor(0.05f, 0.05f, 0.1f);
     AEGfxSetRenderMode(AE_GFX_RM_COLOR);
     AEGfxSetBlendMode(AE_GFX_BM_BLEND);
     AEGfxSetTransparency(1.0f);
 
-
     float tw, th;
+
     // Title
     AEGfxGetPrintSize(font, "YOU WIN!", 2.5f, &tw, &th);
     AEGfxPrint(font, const_cast<char*>("YOU WIN!"), -tw / 2, 0.75f, 2.5f, 0.0f, 1.0f, 0.0f, 1.0f);
 
-    // Stats - build strings
+    // Stats
     char scoreStr[64], gruntsStr[64], flagStr[64];
     sprintf_s(scoreStr, "SCORE: %d", player.score);
     sprintf_s(gruntsStr, "VIRUSES KILLED: %d", player.gruntsKilled);
     sprintf_s(flagStr, "FLAGS CAPTURED: %d", player.flagCaptures);
+
     AEGfxGetPrintSize(font, scoreStr, 1.2f, &tw, &th);
-    AEGfxPrint(font, scoreStr, -tw / 2, 0.35f, 1.2f, 1.0f, 1.0f, 1.0f, 1.0f);
-
+    AEGfxPrint(font, scoreStr, -tw / 2, 0.35f, 1.2f, 1, 1, 1, 1);
     AEGfxGetPrintSize(font, gruntsStr, 1.2f, &tw, &th);
-    AEGfxPrint(font, gruntsStr, -tw / 2, 0.15f, 1.2f, 1.0f, 1.0f, 1.0f, 1.0f);
-
+    AEGfxPrint(font, gruntsStr, -tw / 2, 0.15f, 1.2f, 1, 1, 1, 1);
     AEGfxGetPrintSize(font, flagStr, 1.2f, &tw, &th);
-    AEGfxPrint(font, flagStr, -tw / 2, -0.05f, 1.2f, 1.0f, 1.0f, 1.0f, 1.0f);
+    AEGfxPrint(font, flagStr, -tw / 2, -0.05f, 1.2f, 1, 1, 1, 1);
 
-    // Buttons
-    Button menuBtn = { 0.0f, -150.0f, 200.0f, 50.0f, "MAIN MENU" };
-    Button creditsBtn = { 0.0f, -250.0f, 200.0f, 50.0f, "CREDITS" };
+    bool fromMainGame = (previous == STATE_GAME);
 
+    if (fromMainGame) {
+        if (IsTopThree(player.score) && !scoreSaved) {
+            // Name entry prompt
+            const char* promptStr = "TOP 3 SCORE! ENTER YOUR NAME:";
+            AEGfxGetPrintSize(font, promptStr, 1.0f, &tw, &th);
+            AEGfxPrint(font, const_cast<char*>(promptStr), -tw / 2, -0.22f, 1.0f, 1, 0.8f, 0, 1);
+
+            // Keyboard input
+            for (u8 k = AEVK_A; k <= AEVK_Z; k++) {
+                if (AEInputCheckTriggered(k) && nameInputLen < 12) {
+                    nameInputBuffer[nameInputLen++] = 'A' + (k - AEVK_A);
+                    nameInputBuffer[nameInputLen] = '\0';
+                }
+            }
+            if (AEInputCheckTriggered(AEVK_BACK) && nameInputLen > 0)
+                nameInputBuffer[--nameInputLen] = '\0';
+
+            char displayName[64];
+            sprintf_s(displayName, "> %s_", nameInputBuffer);
+            AEGfxGetPrintSize(font, displayName, 1.2f, &tw, &th);
+            AEGfxPrint(font, displayName, -tw / 2, -0.36f, 1.2f, 0, 1, 1, 1);
+
+            if (nameInputLen > 0) {
+                Button saveBtn = { 0.0f, -290.0f, 200.0f, 50.0f, "SAVE SCORE" };
+                DrawButton(saveBtn, mesh, font);
+                if (IsButtonClicked(saveBtn)) {
+                    InsertHighScore(nameInputBuffer, player.score);
+                    scoreSaved = true;
+                    nameInputLen = 0;
+                    nameInputBuffer[0] = '\0';
+                }
+            }
+        }
+        else {
+            // Leaderboard
+            const char* topStr = "TOP SCORES:";
+            AEGfxGetPrintSize(font, topStr, 1.0f, &tw, &th);
+            AEGfxPrint(font, const_cast<char*>(topStr), -tw / 2, -0.22f, 1.0f, 1, 0.8f, 0, 1);
+
+            for (int i = 0; i < 3; i++) {
+                char entry[64];
+                sprintf_s(entry, "%d. %s  %d", i + 1, highScores[i].name, highScores[i].score);
+                AEGfxGetPrintSize(font, entry, 0.9f, &tw, &th);
+                AEGfxPrint(font, entry, -tw / 2, -0.34f - i * 0.12f, 0.9f, 1, 1, 1, 1);
+            }
+        }
+    }
+
+    // Nav buttons — lower if scoreboard shown
+    float btnY = fromMainGame ? -390.0f : -250.0f;
+    Button menuBtn = { -150.0f, btnY, 200.0f, 50.0f, "MAIN MENU" };
+    Button creditsBtn = { 150.0f, btnY, 200.0f, 50.0f, "CREDITS" };
     DrawButton(menuBtn, mesh, font);
     DrawButton(creditsBtn, mesh, font);
 
     if (IsButtonClicked(menuBtn)) {
+        scoreSaved = false;
         AEAudioStopGroup(WinBGMGroup);
-
         AEAudioStopGroup(GameBGMGroup);
-
         return STATE_MENU;
     }
     if (IsButtonClicked(creditsBtn)) {
+        scoreSaved = false;
         AEAudioStopGroup(WinBGMGroup);
-
         AEAudioStopGroup(GameBGMGroup);
-
         return STATE_CREDITS;
     }
 
     return STATE_WIN;
 }
-
 
 
 GameState UpdateAndRenderLoseScreen(AEGfxVertexList* mesh, s8 font, float dt,
@@ -528,7 +611,7 @@ void CurrGamestate(GameState state, int& gGameRunning, std::vector<std::vector<i
 
     }
     else if (state == STATE_CUTSCENE) {
-        AEAudioPlay(StaticSound, StaticBGMGroup, 0.7f, 1.0f, -1);
+        AEAudioPlay(StaticSound, StaticBGMGroup, 0.2f, 1.0f, -1);
         ShowCursor(false);
     }
     else if (state == STATE_PAUSE) {
@@ -583,3 +666,42 @@ void GameStateLoadEditor(int& gGameRunning, std::vector<std::vector<int>>& gameM
     loaded = true;
 }
 
+void LoadHighScores() {
+    FILE* f;
+    fopen_s(&f, "Assets/highscores.txt", "r");
+    if (!f) return;
+    for (int i = 0; i < 3; i++) {
+        if (fscanf_s(f, "%31s %d", highScores[i].name, 32, &highScores[i].score) != 2)
+            break;
+    }
+    fclose(f);
+}
+
+void SaveHighScores() {
+    
+    FILE* f;
+    fopen_s(&f, "Assets/highscores.txt", "w");
+    if (!f) return;
+    for (int i = 0; i < 3; i++)
+        fprintf(f, "%s %d\n", highScores[i].name, highScores[i].score);
+    fclose(f);
+}
+
+bool IsTopThree(int score) {
+    return score > highScores[2].score;
+}
+
+void InsertHighScore(const char* name, int score) {
+    // Insert and sort descending
+    for (int i = 0; i < 3; i++) {
+        if (score > highScores[i].score) {
+            // Shift down
+            for (int j = 2; j > i; j--)
+                highScores[j] = highScores[j - 1];
+            strncpy_s(highScores[i].name, name, 31);
+            highScores[i].score = score;
+            break;
+        }
+    }
+    SaveHighScores();
+}
