@@ -120,6 +120,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	//Sound Load
 	SoundInit();
 	
+	//Load High Scores
+	LoadHighScores();
 
 	
 	// ---------------------------------------------------------------------------
@@ -167,11 +169,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 			if (previousState == STATE_PAUSE && currentState == STATE_GAME)
 				ForceShowCursor(false);
-			if ((previousState == STATE_GAME || previousState == STATE_PAUSE) && currentState == STATE_MENU){
-				//Save player score
-				SavePlayerScore(player);
-			}
-
+	
 			if (currentState == STATE_TUTORIAL) {
 				player.x = 15 * TILE_SIZE - 800.0f + 25.0f;
 				player.y = 450.0f - 31 * TILE_SIZE - 25.0f;
@@ -206,7 +204,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				grunts.clear();
 				InitGruntSpawner();
 			}
-			if (currentState != STATE_PAUSE  && currentState != STATE_LOSE) {
+			if (currentState != STATE_PAUSE && currentState != STATE_LOSE && currentState != STATE_WIN) {
 				previousState = currentState;
 			}
 			
@@ -282,23 +280,20 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			Update_CameraPosition(camera, player.x, player.y, dt);
 			UpdateAndRenderGameplay(player, dt, gameMap, camera, playerBullets, enemyBullets, grunts, gameEvents);
 
-			if (gameEvents.winTriggered)
+
+			if (gameEvents.playerDied)
 			{
 
 				AEAudioPlay(WinOST, WinBGMGroup, 1.0f, 1.0f, 1);
 				currentState = STATE_WIN;
 				ForceShowCursor(true);
-
-				gameEvents.winTriggered = false; // Reset for potential future use
+				gameEvents.playerDied = false; // Reset for potential future use
 			}
 
-			if (gameEvents.playerDied)
-			{
 
-				AEAudioPlay(LoseOST, LoseBGMGroup, 1.0f, 1.0f, 1);
-				currentState = STATE_LOSE;
-				ForceShowCursor(true);
-				gameEvents.playerDied = false; // Reset for potential future use
+			if (AEInputCheckTriggered(AEVK_F1))
+			{
+				player.flagCaptures++;
 			}
 		}
 
@@ -354,6 +349,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				gameEvents.playerDied = false; // Reset for potential future use
 			}
 			
+			if(AEInputCheckTriggered(AEVK_F1))
+			{
+				player.flagCaptures++;
+			}
 		}
 
 		// ---------------------------------------------------------------------------
@@ -422,8 +421,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		else if(currentState == STATE_WIN)
 		{
-			currentState = UpdateAndRenderWinScreen(meshes.square, fontID, dt, player);
+			currentState = UpdateAndRenderWinScreen(meshes.square, fontID, dt, player, previousState);
 		
+		}
+		else if (currentState == STATE_SAVE_SCORE) {
+
 		}
 		else if (currentState == STATE_LOSE) {
 			GameState next = UpdateAndRenderLoseScreen(meshes.square, fontID, dt, player, previousState);
