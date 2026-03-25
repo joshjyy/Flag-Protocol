@@ -424,9 +424,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			currentState = UpdateAndRenderWinScreen(meshes.square, fontID, dt, player, previousState);
 		
 		}
-		else if (currentState == STATE_SAVE_SCORE) {
-
-		}
+	
 		else if (currentState == STATE_LOSE) {
 			GameState next = UpdateAndRenderLoseScreen(meshes.square, fontID, dt, player, previousState);
 			if (next != STATE_LOSE) {
