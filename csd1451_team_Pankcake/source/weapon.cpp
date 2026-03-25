@@ -75,16 +75,23 @@ void ReloadBullets(WeaponStats weapon, float dt) {
 		// Once the reload is completed, change current ammo count to max ammo count
 		if (*weapon.reloadTimer <= 0.f) {
 			*weapon.currentAmmo = *weapon.maxAmmo;
-			*weapon.inReload = false;  // Changed to inReload
+			*weapon.inReload = false;
 			printf("%s Reloaded!\n", weapon.weaponName);
 		}
 	}
 
-	// Start reload
+	// Start reload (manual)
 	if (AEInputCheckTriggered(AEVK_R) && *weapon.reloadTimer <= 0.f && *weapon.currentAmmo < *weapon.maxAmmo) {
 		printf("%s Reloading...\n", weapon.weaponName);
 		*weapon.reloadTimer = weapon.reloadSpeed;
-		*weapon.inReload = true; 
+		*weapon.inReload = true;
+	}
+
+	// Auto-reload when clip is empty
+	if (*weapon.currentAmmo <= 0 && *weapon.reloadTimer <= 0.f && !*weapon.inReload) {
+		printf("%s Auto-reloading...\n", weapon.weaponName);
+		*weapon.reloadTimer = weapon.reloadSpeed;
+		*weapon.inReload = true;
 	}
 }
 
