@@ -23,6 +23,7 @@
     <ClCompile Include="..\source\particle.cpp" />
     <ClCompile Include="..\source\player.cpp" />
     <ClCompile Include="..\source\popup.cpp" />
+    <ClCompile Include="..\source\powerup.cpp" />
     <ClCompile Include="..\source\screens.cpp" />
     <ClCompile Include="..\source\sound.cpp" />
     <ClCompile Include="..\source\tutorial.cpp" />

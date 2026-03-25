@@ -736,19 +736,19 @@ void CheckPlayerGruntBodyCollision(Player& player, std::vector<Grunt>& grunts) {
 		// Minimum distance to avoid collision 
         float minDist =  GRUNT_RADIUS; 
 
-		////if distance is less than minimum and greater than 0 , then collide and  to push the player out
-  //      if (dist < minDist && dist > 0.0f) {
+		//if distance is less than minimum and greater than 0 , then collide and  to push the player out
+        if (dist < minDist && dist > 0.0f) {
 		//	//printf("Collision with grunt! Pushing player out.\n");
   //          // Push player out
-		//	float overlap = minDist - dist; // how much circles are intersecting 
+		float overlap = minDist - dist; // how much circles are intersecting 
 
-		//	float nx = dx / dist; // normalize djrection vector to get push direction
-  //          float ny = dy / dist;
+			float nx = dx / dist; // normalize djrection vector to get push direction
+            float ny = dy / dist;
 
 		//	//multiply by overlap to get push amount, and add to player position to move them out of collision
-		//	player.x += nx * overlap; //push player out of collision
-  //          player.y += ny * overlap;
-  //      }
+			player.x += nx * overlap; //push player out of collision
+            player.y += ny * overlap;
+        }
 
         if (player.inDash == 1) {
             if (dist < minDist + 20.0f) { // slightly larger radius for dash hit

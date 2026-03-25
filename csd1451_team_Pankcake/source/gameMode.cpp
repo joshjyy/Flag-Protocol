@@ -8,6 +8,7 @@
 #include "events.hpp"
 #include "map.hpp"
 #include "debris.hpp"
+#include "powerup.hpp"
 
 void UpdateAndRenderGameplay(
     Player& player,
@@ -42,7 +43,16 @@ void UpdateAndRenderGameplay(
     UpdateDamageNumbers(dt);
 
     CheckBulletGruntCollisions(playerBullets, grunts, player);
-    CheckEnemyBulletPlayerCollision(enemyBullets, player);
+    Activate_Firewall(playerPowerUps, meshes.circle, dt, player, camera);
+    if (AEInputCheckTriggered(AEVK_F)) {
+        playerPowerUps.firewall = true;
+        playerPowerUps.firewallTimer = 5.0f;
+    }
+
+    if (!playerPowerUps.firewall) {
+        CheckEnemyBulletPlayerCollision(enemyBullets, player);
+    }
+   
     CheckPlayerGruntBodyCollision(player, grunts);
 
     RenderGrunts(grunts, meshes.circle, camera);
