@@ -13,31 +13,71 @@ float DistanceToPlayer(Grunt& grunt, Player& player) {
 
 bool HasLineOfSight(Grunt& grunt, Player& player, std::vector<std::vector<int>>& gameMap) {
     // Cast a ray from grunt to player
-    float dx = player.x - grunt.movingX;
-    float dy = player.y - grunt.movingY;
-    float distance = sqrtf(dx * dx + dy * dy);
+    float startX = grunt.movingX;
+    float startY = grunt.movingY;
+    float endX = player.x;
+    float endY = player.y;
 
-    // Normalize direction
-    if (distance > 0.0f) {
-        dx /= distance;
-        dy /= distance;
-    }
+    int tileColStart = static_cast<int>(floorf((startX + 800.0f - 25.0f) / (float)TILE_SIZE));
+    int tileRowStart = static_cast<int>(floorf((450.0f - startY - 25.0f) / (float)TILE_SIZE));
+    int tileColEnd = static_cast<int>(floorf((endX + 800.0f - 25.0f) / (float)TILE_SIZE));
+    int tileRowEnd = static_cast<int>(floorf((450.0f - endY - 25.0f) / (float)TILE_SIZE));
 
-    // Step along the ray and check for walls
-    const float STEP_SIZE = 10.0f;  // Check every 10 pixels
-    int numSteps = static_cast<int>((distance / STEP_SIZE));
+    // DDA setup
+    int col = tileColStart;
+    int row = tileRowStart;
 
-    for (int i = 1; i < numSteps; i++) {
-        float checkX = grunt.movingX + dx * STEP_SIZE * i;
-        float checkY = grunt.movingY + dy * STEP_SIZE * i;
+    int stepCol = (tileColEnd > tileColStart) ? 1 : -1;
+    int stepRow = (tileRowEnd > tileRowStart) ? 1 : -1;
 
-        // If any point hits a wall, no line of sight
-        if (checkCollision(checkX, checkY, 5.0f, gameMap)) {
+    float dx = fabsf(endX - startX);
+    float dy = fabsf(endY - startY);
+
+    // Avoid division by zero
+    float tDeltaCol = (dx > 0.0f) ? (float)TILE_SIZE / dx : 1e30f;
+    float tDeltaRow = (dy > 0.0f) ? (float)TILE_SIZE / dy : 1e30f;
+
+    // Initial t values to next tile boundary
+    float tMaxCol, tMaxRow;
+
+    // World X of current tile's right or left edge
+    float tileEdgeX = (stepCol > 0)
+        ? ((col + 1) * TILE_SIZE - 800.0f + 25.0f)
+        : (col * TILE_SIZE - 800.0f + 25.0f);
+    float tileEdgeY = (stepRow > 0)
+        ? (450.0f - (row + 1) * TILE_SIZE - 25.0f)
+        : (450.0f - row * TILE_SIZE - 25.0f);
+
+    tMaxCol = (dx > 0.0f) ? fabsf(tileEdgeX - startX) / dx : 1e30f;
+    tMaxRow = (dy > 0.0f) ? fabsf(tileEdgeY - startY) / dy : 1e30f;
+
+    int maxSteps = static_cast<int>(MAP_WIDTH) + static_cast<int>(MAP_HEIGHT);
+
+    for (int step = 0; step < maxSteps; step++) {
+        // Reached the destination tile
+        if (col == tileColEnd && row == tileRowEnd)
+            return true;
+
+        // Bounds check
+        if (col < 0 || col >= MAP_WIDTH || row < 0 || row >= MAP_HEIGHT)
             return false;
+
+        // Wall check
+        if (gameMap[row][col] != 0)
+            return false;
+
+        // Step to next tile
+        if (tMaxCol < tMaxRow) {
+            tMaxCol += tDeltaCol;
+            col += stepCol;
+        }
+        else {
+            tMaxRow += tDeltaRow;
+            row += stepRow;
         }
     }
 
-    return true;  // No walls blocking
+    return true;
 }
 
 

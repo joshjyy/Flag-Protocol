@@ -62,8 +62,8 @@ void UpdateGrunts(std::vector<Grunt>& grunts, Player& player, std::vector<Bullet
 		}
 		grunt.timeAlive += dt;
 
-		// Cull inactive grunts that haven't engaged the player after 20 seconds
-		if (grunt.timeAlive >= 20.0f &&
+		// Cull inactive grunts that haven't engaged the player after 30 seconds
+		if (grunt.timeAlive >= 30.0f &&
 			grunt.currentState == AI_PATROL &&
 			!grunt.isDead)
 		{
@@ -185,8 +185,8 @@ void UpdateGruntSpawner(std::vector<Grunt>& grunts,
 				// Convert world pos back to tile indices (matching Load_Map formula exactly)
 				// x = (j * TILE_SIZE) - 800 + 25  =>  j = (x + 800 - 25) / TILE_SIZE
 				// y = 450 - (i * TILE_SIZE) - 25  =>  i = (450 - y - 25) / TILE_SIZE
-				int tileCol = (int)floorf((tryX + 800.0f - 25.0f) / (float)TILE_SIZE);
-				int tileRow = (int)floorf((450.0f - tryY - 25.0f) / (float)TILE_SIZE);
+				int tileCol = static_cast<int>(floorf((tryX + 800.0f - 25.0f) / (float)TILE_SIZE));
+				int tileRow = static_cast<int>(floorf((450.0f - tryY - 25.0f) / (float)TILE_SIZE));
 
 				if (tileCol < 1 || tileCol >= MAP_WIDTH - 1 || tileRow < 1 || tileRow >= MAP_HEIGHT - 1)
 					continue;
