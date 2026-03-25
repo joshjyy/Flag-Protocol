@@ -24,6 +24,7 @@ struct Grunt {
 
     // State
     bool isDead;
+    float timeAlive;
 
     // Weapon
     Pistol pistol;

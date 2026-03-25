@@ -19,6 +19,7 @@ Grunt::Grunt(float x, float y)
 	movingX(x),
 	movingY(y),
 	isDead(false),
+	timeAlive(0.f),
 	pistol(),
 	shootCooldown(0.0f),
 	currentState(AI_PATROL),
@@ -57,10 +58,21 @@ void UpdateGrunts(std::vector<Grunt>& grunts, Player& player, std::vector<Bullet
 				grunt.deathExplosionSpawned = true;
 			}
 			ParticleEmitterUpdate(grunt.deathEmitter, dt);
+			continue;
 		}
-		if (!grunt.isDead) {
-			UpdateGruntAI(grunt, player, enemyBullets, dt, gameMap);
+		grunt.timeAlive += dt;
+
+		// Cull inactive grunts that haven't engaged the player after 20 seconds
+		if (grunt.timeAlive >= 20.0f &&
+			grunt.currentState == AI_PATROL &&
+			!grunt.isDead)
+		{
+			grunt.isDead = true;
+			grunt.currentState = AI_DEAD;
+			continue;
 		}
+
+		UpdateGruntAI(grunt, player, enemyBullets, dt, gameMap);
 	}
 }
 
@@ -116,6 +128,7 @@ void UpdateGruntSpawner(std::vector<Grunt>& grunts,
 
 	gruntSpawner.waveTimer = 0.0f;
 
+	// Don't spawn if at max capacity
 	if ((int)grunts.size() >= 25)
 		return;
 
@@ -138,12 +151,18 @@ void UpdateGruntSpawner(std::vector<Grunt>& grunts,
 		if ((int)grunts.size() >= 25)
 			break;
 
+		// 33% chance to skip this spawner entirely
+		if (rand() % 3 == 0)
+			continue;
+
 		float tileWorldX = (tile.col * TILE_SIZE) - 800.0f + 25.0f;
 		float tileWorldY = 450.0f - (tile.row * TILE_SIZE) - 25.0f;
 		float radius = 3.0f * (float)TILE_SIZE;
 
 		// Each tile rolls its own random count between 1 and 3
 		int spawnCount = 1 + (rand() % 3);
+
+		// Clamp to not exceed max
 		int maxNew = 25 - (int)grunts.size();
 		if (spawnCount > maxNew)
 			spawnCount = maxNew;
@@ -156,6 +175,7 @@ void UpdateGruntSpawner(std::vector<Grunt>& grunts,
 			float spawnX = tileWorldX;
 			float spawnY = tileWorldY;
 
+			// Try up to 10 times to find a valid position
 			for (int attempt = 0; attempt < 10; attempt++) {
 				float angle = ((float)(rand() % 360)) * 3.14159f / 180.0f;
 				float dist = ((float)(rand() % (int)radius));
@@ -163,6 +183,8 @@ void UpdateGruntSpawner(std::vector<Grunt>& grunts,
 				float tryY = tileWorldY + dist * sinf(angle);
 
 				// Convert world pos back to tile indices (matching Load_Map formula exactly)
+				// x = (j * TILE_SIZE) - 800 + 25  =>  j = (x + 800 - 25) / TILE_SIZE
+				// y = 450 - (i * TILE_SIZE) - 25  =>  i = (450 - y - 25) / TILE_SIZE
 				int tileCol = (int)floorf((tryX + 800.0f - 25.0f) / (float)TILE_SIZE);
 				int tileRow = (int)floorf((450.0f - tryY - 25.0f) / (float)TILE_SIZE);
 
@@ -173,11 +195,8 @@ void UpdateGruntSpawner(std::vector<Grunt>& grunts,
 				bool blocked = false;
 				for (int dr = -1; dr <= 1 && !blocked; dr++) {
 					for (int dc = -1; dc <= 1 && !blocked; dc++) {
-						int checkRow = tileRow + dr;
-						int checkCol = tileCol + dc;
-						if (gameMap[checkRow][checkCol] != 0) {
+						if (gameMap[tileRow + dr][tileCol + dc] != 0)
 							blocked = true;
-						}
 					}
 				}
 
