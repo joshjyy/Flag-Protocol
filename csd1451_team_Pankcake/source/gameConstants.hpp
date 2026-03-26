@@ -29,15 +29,11 @@ const float DASH_HIT_RADIUS_BONUS = 20.0f;
 const float ACCELERATION = 10000.0f;
 const float FRICTION = 10.0f;
 
-// AI Consts
-const float AI_DETECTION_RANGE = 400.0f;
-const float AI_ATTACK_RANGE = 300.0f;
-const float AI_RETREAT_HEALTH = 30.0f;
-const float AI_TOO_CLOSE_RANGE = 150.0f;
-const float AI_PATROL_SPEED = 50.0f;
-const float AI_CHASE_SPEED = 150.0f;
-const float AI_RETREAT_SPEED = 200.0f;
-const float AI_STRAFE_SPEED = 80.0f;
+// Shotgun constants
+const int   SHOTGUN_PELLET_COUNT = 5;
+const float SHOTGUN_SPREAD_ANGLE = 30.0f;
+
+
 
 //Screen Width and Height
 const int SCREEN_WIDTH = 1600;
@@ -60,3 +56,27 @@ struct CameraPos {
     float y = 0.0f;
     float lerpSpeed = 8.0f;
 };
+
+// Tutorial hint UI
+const float TUTORIAL_HINT_START_Y = 390.0f;
+const float TUTORIAL_HINT_STEP_Y = 30.0f;
+const float TUTORIAL_HINT_X = -780.0f;
+const float TUTORIAL_HINT_SCALE = 0.8f;
+const float TUTORIAL_HINT_SCALE_SMALL = 0.7f;
+const float TUTORIAL_HINT_EXTRA_OFFSET = 20.0f;
+const int   TUTORIAL_HINT_KEYBIND_COUNT = 4;
+
+// Tutorial debug UI
+const float TUTORIAL_DEBUG_X = 600.0f;
+const float TUTORIAL_DEBUG_START_Y = 390.0f;
+const float TUTORIAL_DEBUG_STEP_Y = 28.0f;
+
+// AI Consts
+const float AI_DETECTION_RANGE = 400.0f;
+const float AI_ATTACK_RANGE = 300.0f;
+const float AI_RETREAT_HEALTH = 30.0f;
+const float AI_TOO_CLOSE_RANGE = 150.0f;
+const float AI_PATROL_SPEED = 50.0f;
+const float AI_CHASE_SPEED = 150.0f;
+const float AI_RETREAT_SPEED = 200.0f;
+const float AI_STRAFE_SPEED = 80.0f;
