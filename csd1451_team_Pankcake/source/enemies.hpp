@@ -1,5 +1,5 @@
-#ifndef enemies_H
-#define enemies_H
+#pragma once
+
 
 #include "gunTypes.hpp"
 #include "player.hpp"
@@ -88,4 +88,3 @@ void CheckBulletGruntCollisions(std::vector<Bullet>& playerBullets, std::vector<
 void FreeGrunts(std::vector<Grunt>& grunts);
 void InitGruntParticles(Grunt* grunt, void* mesh);
 
-#endif

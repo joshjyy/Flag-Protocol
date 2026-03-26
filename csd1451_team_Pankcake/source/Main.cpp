@@ -19,7 +19,6 @@
 #include "gameConstants.hpp"
 #include "debris.hpp"
 #include "sound.hpp"
-#include "powerup.hpp"
 
 //Legend if needed later
 /*

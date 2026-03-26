@@ -1,3 +1,5 @@
+#pragma once
+
 #include "AEEngine.h" 
 
 extern AEAudio gDashSound;

@@ -1,5 +1,5 @@
-#ifndef AI_HPP
-#define AI_HPP
+#pragma once
+
 
 #include "enemies.hpp"
 #include "player.hpp"
@@ -45,4 +45,3 @@ void AI_Retreat(Grunt& grunt, Player& player, float dt, std::vector<std::vector<
 // Helper functions
 float DistanceToPlayer(Grunt& grunt, Player& player);
 
-#endif

@@ -1,5 +1,5 @@
-#ifndef DAMAGE_NUMBERS_HPP
-#define DAMAGE_NUMBERS_HPP
+#pragma once
+
 
 #include "utils.hpp"
 #include <vector>
@@ -23,4 +23,3 @@ void ClearDamageNumbers();
 // Global damage number storage
 extern std::vector<DamageNumber> damageNumbers;
 
-#endif
