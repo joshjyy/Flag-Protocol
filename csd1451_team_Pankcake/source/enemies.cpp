@@ -237,7 +237,13 @@ void CheckBulletGruntCollisions(std::vector<Bullet>& playerBullets, std::vector<
 
 			if (collision > 0) {
 				grunt.health -= playerBullets[i].damage;
-
+				if (playerInfo.currentWeaponIndex == 0) {
+					if (playerInfo.health < 80.0f) playerInfo.health += 20;
+					else {
+						playerInfo.health = 100.0f;
+						AEAudioPlay(gHealSound, gSFXGroup, 0.3f, 1.0f, 0);
+					}
+				};
 				// Spawn damage number at grunt position
 				SpawnDamageNumber(grunt.movingX, grunt.movingY, playerBullets[i].damage, false);
 
