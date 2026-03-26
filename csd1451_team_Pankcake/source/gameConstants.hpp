@@ -5,6 +5,13 @@ const float pi = 3.14159265359f;
 
 // Player constants
 const float PLAYER_RADIUS = 50.0f;
+const float PLAYER_COLLISION_RADIUS = 25.0f;
+const float PLAYER_MAX_HEALTH = 100.0f;
+const float PLAYER_LOW_HEALTH_THRESHOLD = 40.0f;
+const float PLAYER_HEALTH_RECOVER_THRESHOLD = 90.0f;
+const float PLAYER_HEAL_THRESHOLD = 80.0f;
+const float PLAYER_HEAL_AMOUNT = 20.0f;
+const float PLAYER_SPRINT_SPEED = 600.0f;
 
 // Bullet constants
 const float BULLET_RADIUS = 25.0f;
@@ -17,6 +24,8 @@ const float PLAYER_WALK_SPEED = 300.0f;
 const float PLAYER_DASH_SPEED = 1500.0f;
 const float DASH_DURATION = 0.1f;
 const float DASH_COOLDOWN = 0.5f;
+const float DASH_DAMAGE = 50.0f;
+const float DASH_HIT_RADIUS_BONUS = 20.0f;
 const float ACCELERATION = 10000.0f;
 const float FRICTION = 10.0f;
 
@@ -43,7 +52,7 @@ enum TileType {
     FLAG,
     FLAG_SPAWN,   // rename this to FLAG_SPAWN (was implicitly 5)
     PLAYER_SPAWN, // now = 6
-    VISITED = -1        
+    VISITED = -1
 };
 
 struct CameraPos {
