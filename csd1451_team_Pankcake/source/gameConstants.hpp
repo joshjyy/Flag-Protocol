@@ -33,6 +33,15 @@ const float FRICTION = 10.0f;
 const int   SHOTGUN_PELLET_COUNT = 5;
 const float SHOTGUN_SPREAD_ANGLE = 30.0f;
 
+//Flag indicator constants
+const float FLAG_INDICATOR_RADIUS_MULT = 1.8f;
+const float FLAG_INDICATOR_SIZE_MULT = 0.5f;
+const float FLAG_INDICATOR_SIZE_H_MULT = 0.5f;
+const float FLAG_INDICATOR_PULSE_SPEED = 5.0f;
+const float FLAG_INDICATOR_PULSE_BASE = 0.8f;
+const float FLAG_INDICATOR_PULSE_AMP = 0.2f;
+const float FLAG_INDICATOR_TRANSPARENCY = 0.9f;
+
 
 
 //Screen Width and Height
@@ -83,3 +92,5 @@ const int   TUTORIAL_HINT_KEYBIND_COUNT = 4;
 const float TUTORIAL_DEBUG_X = 600.0f;
 const float TUTORIAL_DEBUG_START_Y = 390.0f;
 const float TUTORIAL_DEBUG_STEP_Y = 28.0f;
+
+

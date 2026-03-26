@@ -49,7 +49,7 @@ void UpdateAndRenderGameplay(
     CheckPlayerGruntBodyCollision(player, grunts);
 
     RenderGrunts(grunts, meshes.circle, camera);
-    DrawPlayer(player, meshes.circle, camera, dt);
+    DrawPlayer(player, meshes.circle,meshes.arrow, camera, dt, *gameMap);
     RenderBullets(player,playerBullets, meshes.circle,camera);
     RenderBullets(enemyBullets, meshes.circle, camera);
     DrawPlayerUI(player, weapon, meshes.square, meshes.circle, camera);

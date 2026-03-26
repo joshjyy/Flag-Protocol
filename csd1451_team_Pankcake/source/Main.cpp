@@ -378,7 +378,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				RenderGrunts(grunts, meshes.circle, camera);
 
 				// Render player
-				DrawPlayer(player, meshes.circle, camera, 0.0f);
+				DrawPlayer(player, meshes.circle,meshes.arrow, camera, 0.0f, *gameMap);
 
 				// Render bullets
 				RenderBullets(playerBullets, meshes.circle, camera);

@@ -68,7 +68,7 @@ Bullet CreateBullet(float x, float y, float targetX, float targetY, float speed,
 Player InitPlayer(void);
 void InitPlayerParticles(Player* player, void* mesh, void* mesh2);
 
-void DrawPlayer(Player& player, void* mesh, CameraPos& camera, float dt);
+void DrawPlayer(Player& player, void* mesh,void* mesh2, CameraPos& camera, float dt, std::vector<std::vector<int>>& arr);
 void DrawPlayerUI(Player& player, WeaponStats& weapon, void* mesh, void* mesh2, CameraPos camera);
 void PlayerDashStaminaBar(Player& player, void* mesh, CameraPos& camera);
 void UpdateBullets(std::vector<Bullet>& bullets, float dt, std::vector<std::vector<int>>& gameMap);
@@ -95,3 +95,4 @@ void DrawScoreUI(Player& player, void* mesh, float dt);
 void SavePlayerScore(Player& player);
 
 bool CanShoot(Player& player);
+void DrawFlagIndicator(Player& player, std::vector<std::vector<int>>& arr, CameraPos& camera, void* mesh, float dt);
