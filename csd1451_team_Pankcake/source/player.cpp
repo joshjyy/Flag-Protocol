@@ -661,7 +661,7 @@ void UpdatePlayer(Player* player, float dt, std::vector<std::vector<int>>& gameM
 
 
 void CheckEnemyBulletPlayerCollision(std::vector<Bullet>& enemyBullets,
-    Player& player, PowerUps& powerup) {
+    Player& player) {
 
 
     // Loop backwards so we can safely remove bullets
@@ -677,11 +677,7 @@ void CheckEnemyBulletPlayerCollision(std::vector<Bullet>& enemyBullets,
         );
 
         if (collision > 0 && (!player.isDead)) {
-            if (powerup.firewall) {
-
-                enemyBullets.erase(enemyBullets.begin() + i);
-                break;
-            }
+      
 
             player.health -= enemyBullets[i].damage;
 

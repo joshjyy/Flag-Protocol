@@ -7,7 +7,6 @@
 #include "particle.hpp"
 
 struct Grunt;
-struct PowerUps;
 // Bullet structure
 struct Bullet {
     float x, y;
@@ -85,7 +84,7 @@ void UpdatePlayer(Player* player, float dt, std::vector<std::vector<int>>& gameM
 void DrawCrosshair(void* mesh);
 
 
-void CheckEnemyBulletPlayerCollision(std::vector<Bullet>& enemyBullets, Player& player, PowerUps& powerup);
+void CheckEnemyBulletPlayerCollision(std::vector<Bullet>& enemyBullets, Player& player);
 
 void CheckPlayerGruntBodyCollision(Player& player, std::vector<Grunt>& grunts);
 void killPlayer(Player& player);
