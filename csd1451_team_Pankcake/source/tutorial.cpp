@@ -167,7 +167,7 @@ void UpdateAndRenderTutorial(
     UpdateDamageNumbers(dt);
 
     // Render
-    DrawPlayer(player, meshes.circle, camera, dt);
+    DrawPlayer(player, meshes.circle,meshes.arrow, camera, dt, *gameMap);
     RenderGrunts(grunts, meshes.circle, camera);
     RenderBullets(player, playerBullets, meshes.circle, camera);
     RenderBullets(enemyBullets, meshes.circle, camera);

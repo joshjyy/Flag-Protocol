@@ -26,6 +26,7 @@ void NormalizeVector(float* x, float* y);
 typedef struct {
     AEGfxVertexList* square;
     AEGfxVertexList* circle;
+	AEGfxVertexList* arrow;
 } CommonMeshes;
 
 extern CommonMeshes meshes;  // Global mesh storage

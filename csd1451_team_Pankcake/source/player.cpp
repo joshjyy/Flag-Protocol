@@ -93,8 +93,11 @@ void InitPlayerParticles(Player* player, void* mesh, void* mesh2) {
 
 
 
-void DrawPlayer(Player& player, void* mesh, CameraPos& camera, float dt)
+void DrawPlayer(Player& player, void* mesh,void* mesh2, CameraPos& camera, float dt, std::vector<std::vector<int>>& arr)
 {
+
+    DrawFlagIndicator(player, arr, camera, mesh2, dt);
+
 
     // Lamda  to offset particles for camera movement 
     //returns particles to world space for correct position, then back to screen space after drawing
@@ -951,4 +954,46 @@ bool CanShoot(Player& player) {
         player.canshoot = true;
     }
     return player.canshoot;
+}
+
+void DrawFlagIndicator(Player& player, std::vector<std::vector<int>>& arr, CameraPos& camera, void* mesh, float dt)
+{
+    if (player.holdingFlag || player.isDead) return;
+
+    float flagWorldX = 0.0f, flagWorldY = 0.0f;
+    bool flagFound = false;
+
+    for (int i = 0; i < (int)MAP_HEIGHT && !flagFound; i++) {
+        for (int j = 0; j < (int)MAP_WIDTH && !flagFound; j++) {
+            if (arr[i][j] == FLAG) {
+                flagWorldX = (j * TILE_SIZE) - 800.0f + 25.0f;
+                flagWorldY = 450.0f - (i * TILE_SIZE) - 25.0f;
+                flagFound = true;
+            }
+        }
+    }
+
+    if (!flagFound) return;
+
+    float dx = flagWorldX - player.x;
+    float dy = flagWorldY - player.y;
+    float angle = atan2f(dy, dx);
+
+    float screenX = player.x - camera.x;
+    float screenY = player.y - camera.y;
+
+    const float INDICATOR_RADIUS = PLAYER_RADIUS * FLAG_INDICATOR_RADIUS_MULT;
+    float indX = screenX + cosf(angle) * INDICATOR_RADIUS;
+    float indY = screenY + sinf(angle) * INDICATOR_RADIUS;
+
+    static float pulseTime = 0.0f;
+    pulseTime += dt;
+    float pulse = FLAG_INDICATOR_PULSE_BASE + FLAG_INDICATOR_PULSE_AMP * sinf(pulseTime * FLAG_INDICATOR_PULSE_SPEED);
+    float sizeW = PLAYER_RADIUS * FLAG_INDICATOR_SIZE_MULT * pulse;
+    float sizeH = PLAYER_RADIUS * FLAG_INDICATOR_SIZE_H_MULT;
+
+    AEGfxSetRenderMode(AE_GFX_RM_COLOR);
+    AEGfxSetTransparency(FLAG_INDICATOR_TRANSPARENCY);
+    AEGfxSetColorToMultiply(0.0f, 1.0f, 1.0f, 1.0f);
+    DrawSprite((AEGfxVertexList*)mesh, indX, indY, sizeW, sizeH, angle);
 }

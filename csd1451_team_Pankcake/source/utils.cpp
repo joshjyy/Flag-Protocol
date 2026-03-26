@@ -95,6 +95,22 @@ void InitCommonMeshes(void) {
         );
     }
     meshes.circle = AEGfxMeshEnd();
+
+    
+        AEGfxMeshStart();
+        AEGfxTriAdd(
+            0.5f, 0.0f, 0xFFFFFFFF, 0.0f, 0.0f,   // tip
+            -0.5f, 0.3f, 0xFFFFFFFF, 0.0f, 0.0f,   // top-left
+            -0.5f, -0.3f, 0xFFFFFFFF, 0.0f, 0.0f    // bottom-left
+        );
+
+      meshes.arrow = AEGfxMeshEnd();
+    
+
+
+
+
+
 }
 
 void FreeCommonMeshes(void) {
