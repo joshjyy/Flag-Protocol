@@ -57,6 +57,19 @@ struct CameraPos {
     float lerpSpeed = 8.0f;
 };
 
+
+
+// AI Consts
+const float AI_DETECTION_RANGE = 400.0f;
+const float AI_ATTACK_RANGE = 300.0f;
+const float AI_RETREAT_HEALTH = 30.0f;
+const float AI_TOO_CLOSE_RANGE = 150.0f;
+const float AI_PATROL_SPEED = 50.0f;
+const float AI_CHASE_SPEED = 150.0f;
+const float AI_RETREAT_SPEED = 200.0f;
+const float AI_STRAFE_SPEED = 80.0f;
+
+
 // Tutorial hint UI
 const float TUTORIAL_HINT_START_Y = 390.0f;
 const float TUTORIAL_HINT_STEP_Y = 30.0f;
@@ -70,13 +83,3 @@ const int   TUTORIAL_HINT_KEYBIND_COUNT = 4;
 const float TUTORIAL_DEBUG_X = 600.0f;
 const float TUTORIAL_DEBUG_START_Y = 390.0f;
 const float TUTORIAL_DEBUG_STEP_Y = 28.0f;
-
-// AI Consts
-const float AI_DETECTION_RANGE = 400.0f;
-const float AI_ATTACK_RANGE = 300.0f;
-const float AI_RETREAT_HEALTH = 30.0f;
-const float AI_TOO_CLOSE_RANGE = 150.0f;
-const float AI_PATROL_SPEED = 50.0f;
-const float AI_CHASE_SPEED = 150.0f;
-const float AI_RETREAT_SPEED = 200.0f;
-const float AI_STRAFE_SPEED = 80.0f;
