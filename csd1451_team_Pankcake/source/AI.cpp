@@ -1,3 +1,17 @@
+/*!************************************************************************
+  \file AI.cpp
+  \author
+
+
+
+
+
+
+  \brief
+  This source file contains definitions for the enemy AI system, including the Grunt's behavior and decision-making logic.
+
+**************************************************************************/
+
 #include "ai.hpp"
 #include "player.hpp"
 #include "map.hpp"

@@ -1,5 +1,17 @@
-﻿// ---------------------------------------------------------------------------
-// includes
+﻿
+/*!************************************************************************
+  \file main.cpp
+  \author
+  Yeo Kah Boon Joshua (Player / Particle System)
+
+
+
+
+
+  \brief
+  This source file contains the main game loop and initialization code, as well as global variables that need to be accessed across multiple files.
+
+**************************************************************************/
 
 #include "AEEngine.h"
 #include "utils.hpp"  

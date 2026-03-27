@@ -8,7 +8,7 @@
 
 
   \brief
-  This source file contains declarations of the stuff related to the weapon types.
+  This source file contains declarations of the stuff related to the weapon system.
 
 **************************************************************************/
 #pragma once

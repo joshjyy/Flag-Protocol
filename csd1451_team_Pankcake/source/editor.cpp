@@ -1,3 +1,17 @@
+/*!************************************************************************
+  \file editor.cpp
+  \author
+
+
+
+
+
+
+  \brief
+  This source file contains definitions for the editor game mode.
+
+**************************************************************************/
+
 #include "editor.hpp"
 #include "utils.hpp"
 #include <cstdio>

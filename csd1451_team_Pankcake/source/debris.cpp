@@ -1,3 +1,17 @@
+/*!************************************************************************
+  \file debris.cpp
+  \author
+
+
+
+
+
+
+  \brief
+  This source file contains definitions for the background particles.
+
+**************************************************************************/
+
 #include "debris.hpp"
 #include "AEEngine.h"
 #include <random>

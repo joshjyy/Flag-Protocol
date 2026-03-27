@@ -1,3 +1,19 @@
+/*!************************************************************************
+  \file screens.cpp
+  \author
+  Yeo Kah Boon Joshua ( High Score Management, Win/Lose Screens, Navigation Screen )
+
+
+
+
+
+  \brief
+  This source file contains definitions of the stuff related to infographics.
+
+**************************************************************************/
+
+
+
 #include "screens.hpp"
 #include "utils.hpp"
 #include <string.h>

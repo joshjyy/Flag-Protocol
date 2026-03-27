@@ -1,3 +1,17 @@
+/*!************************************************************************
+  \file map.cpp
+  \author
+
+
+
+
+
+
+  \brief
+  This source file contains definitions for the map layout.
+
+**************************************************************************/
+
 #include "AEEngine.h"
 #include <iostream>
 #include "map.hpp"

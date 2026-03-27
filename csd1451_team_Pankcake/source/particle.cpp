@@ -1,3 +1,18 @@
+/*!************************************************************************
+  \file particle.cpp
+  \author
+  Yeo Kah Boon Joshua
+
+
+
+
+
+  \brief
+  This source file contains definitions of the stuff related to particles.
+
+**************************************************************************/
+
+
 #include "particle.hpp"
 #include "utils.hpp"
 #include <stdlib.h>

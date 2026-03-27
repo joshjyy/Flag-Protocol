@@ -1,3 +1,17 @@
+/*!************************************************************************
+  \file tutorial.cpp
+  \author
+  Yeo Kah Boon Joshua (Tutorial UI for Player)
+
+
+
+
+
+  \brief
+  This source file contains definitions of the stuff related to the tutorial level.
+
+**************************************************************************/
+
 #include "gameMode.hpp"
 #include "utils.hpp"
 #include "enemies.hpp"

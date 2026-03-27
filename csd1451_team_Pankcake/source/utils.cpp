@@ -1,3 +1,17 @@
+/*!************************************************************************
+  \file utils.cpp
+  \author
+  Yeo Kah Boon Joshua
+
+
+
+
+
+  \brief
+  This source file contains definitions of the universal functions.
+
+**************************************************************************/
+
 #include "utils.hpp"
 #include "AEEngine.h"
 #include <array>

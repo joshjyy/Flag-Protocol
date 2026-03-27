@@ -1,3 +1,17 @@
+/*!************************************************************************
+  \file player.cpp
+  \author
+  Yeo Kah Boon Joshua (Player Abilties and UI )
+
+
+
+
+
+  \brief
+  This source file contains definitions of the stuff related to the player.
+
+**************************************************************************/
+
 #include "player.hpp"
 #include "AEEngine.h"
 #include "utils.hpp"

@@ -1,3 +1,17 @@
+/*!************************************************************************
+  \file popup.cpp
+  \author
+
+
+
+
+
+
+  \brief
+  This source file contains definitions of the stuff related to the popups in the editor.
+
+**************************************************************************/
+
 #include "popup.hpp"
 #include <string.h>
 

@@ -1,4 +1,19 @@
-﻿#include "events.hpp"
+﻿/*!************************************************************************
+  \file events.cpp
+  \author
+  Yeo Kah Boon Joshua
+
+
+
+
+
+
+  \brief
+  This source file contains definitions for the game event manager.
+
+**************************************************************************/
+
+#include "events.hpp"
 #include "AEEngine.h"
 #include "gameConstants.hpp"
 #include "utils.hpp"

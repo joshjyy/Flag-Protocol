@@ -1,3 +1,17 @@
+/*!************************************************************************
+  \file enemies.hpp
+  \author
+
+
+
+
+
+
+  \brief
+  This source file contains definitions for the enemies.
+
+**************************************************************************/
+
 #include "enemies.hpp"
 #include "AI.hpp"
 #include "gameConstants.hpp"

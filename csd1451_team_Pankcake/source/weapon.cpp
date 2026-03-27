@@ -1,3 +1,18 @@
+
+/*!************************************************************************
+  \file weapon.cpp
+  \author
+  Yeo Kah Boon Joshua (Shooting Code )
+
+
+
+
+
+  \brief
+  This source file contains definitions of the stuff related to the weapon system.
+
+**************************************************************************/
+
 #include "AEEngine.h"
 #include "player.hpp"
 #include "gunTypes.hpp"

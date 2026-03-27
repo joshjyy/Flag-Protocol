@@ -8,7 +8,7 @@
 
 
   \brief
-  This source file contains declarations of the stuff related to the player.
+  This source file contains declarations of the stuff related to the audio.
 
 **************************************************************************/
 #pragma once

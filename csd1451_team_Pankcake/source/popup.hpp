@@ -1,3 +1,17 @@
+/*!************************************************************************
+  \file popup.hpp
+  \author
+
+
+
+
+
+
+  \brief
+  This source file contains declarations of the stuff related to the popups in the editor.
+
+**************************************************************************/
+
 #pragma once
 #include "AEEngine.h"
 

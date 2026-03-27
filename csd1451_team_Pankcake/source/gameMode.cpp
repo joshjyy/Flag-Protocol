@@ -1,3 +1,18 @@
+/*!************************************************************************
+  \file gameMode.cpp
+  \author
+  Yeo Kah Boon Joshua (Player Gameplay )
+
+
+
+
+
+
+  \brief
+  This source file contains definitions of the stuff related to the main level gameplay.
+
+**************************************************************************/
+
 #include "gameMode.hpp"
 #include "utils.hpp"
 #include "enemies.hpp"

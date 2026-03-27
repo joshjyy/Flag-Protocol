@@ -1,3 +1,18 @@
+/*!************************************************************************
+  \file damageNumbers.cpp
+  \author
+
+
+
+
+
+
+  \brief
+  This source file contains definitions for the rendering of damage numbers.
+
+**************************************************************************/
+
+
 #include "damageNumbers.hpp"
 #include "AEEngine.h"
 

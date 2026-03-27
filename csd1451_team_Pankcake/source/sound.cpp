@@ -1,3 +1,17 @@
+/*!************************************************************************
+  \file sound.cpp
+  \author
+  Yeo Kah Boon Joshua
+
+
+
+
+
+  \brief
+  This source file contains definitions of the stuff related to the audio.
+
+**************************************************************************/
+
 #include "AEEngine.h" 
 #include "sound.hpp"
 
