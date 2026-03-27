@@ -9,6 +9,31 @@
 #include "map.hpp"
 #include "debris.hpp"
 
+void DrawControlsHint(s8 font)
+{
+    struct HintLine {
+        const char* text;
+        float r, g, b;
+    };
+
+    HintLine hints[] = {
+        { "[ WASD ] Move   [ RMB ] Sprint   [ SPACE ] Dash",  1.0f, 0.9f, 0.3f },
+        { "[ LMB ] Shoot   [ R ] Reload   [ 1/2/3 ] or [MouseScroll] Weapon",  1.0f, 0.9f, 0.3f },
+        { "CYAN tile = Pick up FLAG NODE",                     0.0f, 1.0f, 1.0f },
+        { "PURPLE tile = Deliver FLAG NODE for Points",        0.5f, 0.0f, 1.0f },
+    };
+
+    float xPos = -780.0f;
+    float startY = 420.0f;
+    float stepY = 25.0f;
+
+    float textX, textY;
+    for (int i = 0; i < 4; i++) {
+        GetNormalizedTextPosition(xPos, startY - i * stepY, &textX, &textY);
+        AEGfxPrint(font, hints[i].text, textX, textY, 0.85f,
+            hints[i].r, hints[i].g, hints[i].b, 1.00f);
+    }
+}
 void UpdateAndRenderGameplay(
     Player& player,
     float dt,
@@ -62,4 +87,5 @@ void UpdateAndRenderGameplay(
 
 
     DrawScoreUI(player, meshes.square, dt);
+
 }

@@ -145,7 +145,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		AESysFrameStart();
 		float dt = (float)AEFrameRateControllerGetFrameTime();
 
-		if (AEInputCheckTriggered(AEVK_ESCAPE) || 0 == AESysDoesWindowExist())
+		if (0 == AESysDoesWindowExist())
 			gGameRunning = 0;
 		//State Transition Stuff
 		if (currentState != previousState || previousState == STATE_LOSE) {
@@ -220,8 +220,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		// ---------------------------------------------------------------------------
 		if (currentState == STATE_MENU) {
 			currentState = UpdateAndRenderMenu(meshes.square, fontID, dt);
-			if (AEInputCheckTriggered(AEVK_ESCAPE))
-				gGameRunning = 0;
+	
 		}
 
 		// ---------------------------------------------------------------------------

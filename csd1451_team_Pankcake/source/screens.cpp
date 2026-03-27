@@ -10,7 +10,7 @@
 #include "map.hpp"
 #include "events.hpp"
 #include "sound.hpp"
-
+#include "gameMode.hpp"
 
 
 bool IsButtonClicked(const Button& btn) {
@@ -197,7 +197,7 @@ GameState UpdateAndRenderMenu(AEGfxVertexList* mesh, s8 font, float dt) {
 GameState UpdateAndRenderPause(AEGfxVertexList* mesh, s8 font, float dt, GameState previous) {
     (void)dt;
 
-  
+
 
     // Translucent dark overlay
     AEGfxSetRenderMode(AE_GFX_RM_COLOR);
@@ -231,6 +231,7 @@ GameState UpdateAndRenderPause(AEGfxVertexList* mesh, s8 font, float dt, GameSta
     DrawButton(resumeBtn, mesh, font);
     DrawButton(menuBtn, mesh, font);
     DrawButton(quitBtn, mesh, font);
+    DrawControlsHint(fontID);
 
     // Using P key to resume from Paused screen
     if (AEInputCheckTriggered(AEVK_P) || AEInputCheckTriggered(AEVK_ESCAPE)) {
@@ -309,7 +310,7 @@ GameState UpdateAndRenderControls(AEGfxVertexList* mesh, s8 font, float dt) {
 
     // Switch weapons
     GetNormalizedTextPosition(-620.0f, -100.0f, &xKey, &y);
-    AEGfxPrint(font, "1 / 2 / 3", xKey, y, 1.0f, 1, 1, 1, 1);
+    AEGfxPrint(font, "1 / 2 / 3 or MouseScroll", xKey, y, 1.0f, 1, 1, 1, 1);
     AEGfxPrint(font, "- Switch Weapons", xDesc, y, 1.0f, 1, 1, 1, 1);
 
     // Objective

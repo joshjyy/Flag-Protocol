@@ -8,6 +8,8 @@
 #include "events.hpp"
 #include "map.hpp"
 
+void DrawControlsHint(s8 font);
+
 void UpdateAndRenderGameplay(
     Player& player,
     float dt,

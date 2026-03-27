@@ -24,6 +24,7 @@ static bool  scoreSaved = false;
 
 
 bool IsButtonClicked(const Button& btn);
+bool IsButtonHovered(const Button& btn);
 void DrawButton(const Button& btn, AEGfxVertexList* mesh, s8 font);
 GameState UpdateAndRenderMenu(AEGfxVertexList* mesh, s8 font, float dt);
 GameState UpdateAndRenderPause(AEGfxVertexList* mesh, s8 font, float dt, GameState previous);

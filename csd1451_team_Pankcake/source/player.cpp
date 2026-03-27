@@ -169,7 +169,8 @@ void DrawPlayer(Player& player, void* mesh,void* mesh2, CameraPos& camera, float
     // --- Player body ---
 
 
-    // Halo effect (health/flag indicator)
+    // Halo effect (he
+    // h/flag indicator)
     static float haloTime = 0.0f;
     haloTime += dt;
     float halo = 1.0f + 0.5f * sinf(haloTime * 4.0f);
