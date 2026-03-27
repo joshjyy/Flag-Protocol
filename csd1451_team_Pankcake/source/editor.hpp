@@ -1,3 +1,17 @@
+/*!************************************************************************
+  \file editor.hpp
+  \author
+
+
+
+
+
+
+  \brief
+  This source file contains declarations for the editor game mode.
+
+**************************************************************************/
+
 #pragma once
 
 #include "AEEngine.h"

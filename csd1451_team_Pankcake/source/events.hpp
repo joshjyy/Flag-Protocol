@@ -1,3 +1,18 @@
+/*!************************************************************************
+  \file events.hpp
+  \author
+  Yeo Kah Boon Joshua 
+
+
+
+
+
+
+  \brief
+  This source file contains declarations for the game event manager.
+
+**************************************************************************/
+
 #pragma once
 #include "AEEngine.h"
 #include "player.hpp"

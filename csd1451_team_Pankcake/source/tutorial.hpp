@@ -1,3 +1,17 @@
+/*!************************************************************************
+  \file tutorial.hpp
+  \author
+  Yeo Kah Boon Joshua (Tutorial UI for Player)
+
+
+
+
+
+  \brief
+  This source file contains declarations of the stuff related to the tutorial level.
+
+**************************************************************************/
+
 #pragma once
 #include "AEEngine.h"
 #include "utils.hpp"

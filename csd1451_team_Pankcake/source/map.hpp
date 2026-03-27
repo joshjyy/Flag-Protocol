@@ -1,3 +1,17 @@
+/*!************************************************************************
+  \file map.hpp
+  \author
+
+
+
+
+
+
+  \brief
+  This source file contains declarations for the map layout.
+
+**************************************************************************/
+
 #pragma once
 #include <array>
 #include "AEEngine.h"

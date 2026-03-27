@@ -1,3 +1,17 @@
+/*!************************************************************************
+  \file enemies.hpp
+  \author
+
+
+
+
+
+
+  \brief
+  This source file contains declarations for the enemies.
+
+**************************************************************************/
+
 #pragma once
 
 

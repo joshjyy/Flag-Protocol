@@ -1,3 +1,17 @@
+/*!************************************************************************
+  \file weapon.hpp
+  \author
+  Yeo Kah Boon Joshua 
+
+
+
+
+
+  \brief
+  This source file contains declarations of the universal functions.
+
+**************************************************************************/
+
 #pragma once
 #include "AEEngine.h"
 #include "map.hpp"

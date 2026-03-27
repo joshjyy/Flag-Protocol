@@ -1,3 +1,16 @@
+/*!************************************************************************
+  \file weapon.hpp
+  \author
+  Yeo Kah Boon Joshua (Shooting Code )
+
+
+
+
+
+  \brief
+  This source file contains declarations of the stuff related to the weapon types.
+
+**************************************************************************/
 #pragma once
 
 void ResetShootCooldown(Player& player, float dt);

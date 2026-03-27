@@ -1,3 +1,17 @@
+/*!************************************************************************
+  \file damageNumbers.hpp
+  \author
+
+
+
+
+
+
+  \brief
+  This source file contains declarations for the rendering of damage numbers.
+
+**************************************************************************/
+
 #pragma once
 
 

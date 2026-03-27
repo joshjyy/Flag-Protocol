@@ -1,3 +1,17 @@
+/*!************************************************************************
+  \file AI.hpp
+  \author
+
+
+
+
+
+
+  \brief
+  This source file contains declarations for the enemy AI system, including the Grunt's behavior and decision-making logic.
+
+**************************************************************************/
+
 #pragma once
 
 

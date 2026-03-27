@@ -1,3 +1,18 @@
+/*!************************************************************************
+  \file gameConstants.hpp
+  \author
+  Yeo Kah Boon Joshua (Player Gameplay )
+
+
+
+
+
+
+  \brief
+  This source file contains declarations for the game variables.
+
+**************************************************************************/
+
 #pragma once
 
 // Mathematical constants

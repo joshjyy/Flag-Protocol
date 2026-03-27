@@ -1,3 +1,16 @@
+/*!************************************************************************
+  \file sound.hpp
+  \author
+  Yeo Kah Boon Joshua 
+
+
+
+
+
+  \brief
+  This source file contains declarations of the stuff related to the player.
+
+**************************************************************************/
 #pragma once
 
 #include "AEEngine.h" 

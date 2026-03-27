@@ -1,3 +1,18 @@
+/*!************************************************************************
+  \file events.hpp
+  \author
+
+
+
+
+
+
+
+  \brief
+  This source file contains declarations for the gun types.
+
+**************************************************************************/
+
 #ifndef gunTypes_H
 #define gunTypes_H
 

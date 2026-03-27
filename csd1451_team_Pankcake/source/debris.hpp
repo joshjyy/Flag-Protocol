@@ -1,3 +1,17 @@
+/*!************************************************************************
+  \file debris.hpp
+  \author
+
+
+
+
+
+
+  \brief
+  This source file contains declarations for the background particles.
+
+**************************************************************************/
+
 #pragma once
 #include "AEEngine.h"
 #include "map.hpp"

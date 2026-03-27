@@ -1,3 +1,18 @@
+/*!************************************************************************
+  \file screens.hpp
+  \author 
+  Yeo Kah Boon Joshua ( High Score Management, Win/Lose Screens, Navigation Screen )
+
+
+
+
+
+  \brief
+  This source file contains definitions of the stuff related to infographics.
+
+**************************************************************************/
+
+
 #pragma once
 #include "AEEngine.h"
 #include <array>
@@ -26,6 +41,7 @@ static bool  scoreSaved = false;
 bool IsButtonClicked(const Button& btn);
 bool IsButtonHovered(const Button& btn);
 void DrawButton(const Button& btn, AEGfxVertexList* mesh, s8 font);
+
 GameState UpdateAndRenderMenu(AEGfxVertexList* mesh, s8 font, float dt);
 GameState UpdateAndRenderPause(AEGfxVertexList* mesh, s8 font, float dt, GameState previous);
 GameState UpdateAndRenderNavigation(AEGfxVertexList* mesh, s8 font, float dt);

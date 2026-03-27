@@ -1,3 +1,17 @@
+/*!************************************************************************
+  \file player.hpp
+  \author
+  Yeo Kah Boon Joshua (Player Abilties and UI )
+
+
+
+
+
+  \brief
+  This source file contains declarations of the stuff related to the player.
+
+**************************************************************************/
+
 #pragma once
 
 
