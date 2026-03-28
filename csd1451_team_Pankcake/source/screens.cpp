@@ -92,11 +92,57 @@ void DrawButton(const Button& btn, AEGfxVertexList* mesh, s8 font) {
         AEGfxPrint(font, const_cast<char*>(btn.label), nx, ny, textScale, 0.0f, 1.0f, 0.0f, 1.0f);
 }
 
+static void DrawConfirmWindow(
+    AEGfxVertexList* mesh,
+    s8 font,
+    const char* title,
+    const char* desc,
+    const Button& yesBtn,
+    const Button& noBtn)
+{
+    // Darker fullscreen overlay
+    AEGfxSetRenderMode(AE_GFX_RM_COLOR);
+    AEGfxSetBlendMode(AE_GFX_BM_BLEND);
+    AEGfxSetTransparency(0.88f);
+    AEGfxSetColorToMultiply(0.0f, 0.0f, 0.0f, 1.0f);
+    AEGfxSetColorToAdd(0.0f, 0.0f, 0.0f, 0.0f);
+    DrawSprite(mesh, 0.0f, 0.0f, 1600.0f, 900.0f, 0.0f);
+
+    // Main panel shadow
+    AEGfxSetTransparency(0.55f);
+    AEGfxSetColorToMultiply(0.0f, 0.0f, 0.0f, 1.0f);
+    DrawSprite(mesh, 8.0f, -8.0f, 500.0f, 210.0f, 0.0f);
+
+    // Main panel
+    AEGfxSetTransparency(0.96f);
+    AEGfxSetColorToMultiply(0.04f, 0.04f, 0.07f, 1.0f);
+    DrawSprite(mesh, 0.0f, 0.0f, 560.0f, 250.0f, 0.0f);
+
+    // Simple inner header strip5
+    AEGfxSetTransparency(1.0f);
+    AEGfxSetColorToMultiply(0.35f, 0.08f, 0.08f, 1.0f);
+    DrawSprite(mesh, 0.0f, 78.0f, 560.0f, 34.0f, 0.0f);
+
+    float tw, th;
+
+    // Centered title
+    AEGfxGetPrintSize(font, title, 1.3f, &tw, &th);
+    AEGfxPrint(font, const_cast<char*>(title), -tw / 2.0f, 0.15f, 1.3f, 1.0f, 0.35f, 0.35f, 1.0f);
+
+    // Centered description
+    AEGfxGetPrintSize(font, desc, 0.82f, &tw, &th);
+    AEGfxPrint(font, const_cast<char*>(desc), -tw / 2.0f - 0.01f, 0.00f, 0.98f, 1.0f, 1.0f, 1.0f, 1.0f);
+
+    DrawButton(yesBtn, mesh, font);
+    DrawButton(noBtn, mesh, font);
+}
+
 GameState UpdateAndRenderMenu(AEGfxVertexList* mesh, s8 font, float dt) {
     static float menuAnimTime = 0.0f;
     menuAnimTime += dt;
 
     static bool initialized = false;
+    static ConfirmAction confirmAction = CONFIRM_NONE;
 
     struct MenuBlock {
         float x, y;
@@ -165,11 +211,23 @@ GameState UpdateAndRenderMenu(AEGfxVertexList* mesh, s8 font, float dt) {
     DrawButton(editorBtn, mesh, font);
     DrawButton(quitBtn, mesh, font);
 
-    if (IsButtonClicked(playBtn))   return STATE_NAVIGATION;
-    if (IsButtonClicked(controlsBtn)) return STATE_CONTROLS;
-    if (IsButtonClicked(creditBtn)) return STATE_CREDITS;
-    if (IsButtonClicked(editorBtn)) return STATE_EDITOR;
-    if (IsButtonClicked(quitBtn))   return STATE_QUIT;
+    if (confirmAction == CONFIRM_NONE) {
+        if (IsButtonClicked(playBtn))
+            return STATE_NAVIGATION;
+
+        if (IsButtonClicked(controlsBtn))  
+            return STATE_CONTROLS;
+
+        if (IsButtonClicked(creditBtn))
+            return STATE_CREDITS;
+
+        if (IsButtonClicked(editorBtn))   
+            return STATE_EDITOR;
+
+        if (IsButtonClicked(quitBtn)) {
+            confirmAction = CONFIRM_QUIT;
+        }
+    }
 
     static bool showScoreboard = false;
 
@@ -195,17 +253,28 @@ GameState UpdateAndRenderMenu(AEGfxVertexList* mesh, s8 font, float dt) {
         // Title
         const char* topStr = "TOP SCORES:";
         AEGfxGetPrintSize(font, topStr, 0.9f, &tw, &th);
-		//AEGfxPrint(paramets) // font, string, x, y, scale, r, g, b, a
+        //AEGfxPrint(paramets) // font, string, x, y, scale, r, g, b, a
         AEGfxPrint(font, const_cast<char*>(topStr), popCenterNX - tw / 2, (popY + 100.0f) / (SCREEN_HEIGHT / 2.0f), 0.9f, 1, 0.8f, 0, 1);
-
-        // Entries
-        for (int i = 0; i < 3; i++) {
-            char entry[64];
-            sprintf_s(entry, "%d. %s  %d", i + 1, highScores[i].name, highScores[i].score);
-            AEGfxGetPrintSize(font, entry, 0.8f, &tw, &th);
-            AEGfxPrint(font, entry, popCenterNX - tw / 2, (popY + 50.0f - i * 60.0f) / (SCREEN_HEIGHT / 2.0f), 0.8f, 1, 1, 1, 1);
-        }
     }
+
+        if (confirmAction == CONFIRM_QUIT) {
+            Button yesBtn = { -110.0f, -55.0f, 140.0f, 45.0f, "YES" };
+            Button noBtn = { 110.0f, -55.0f, 140.0f, 45.0f, "NO" };
+
+            DrawConfirmWindow(mesh, font,
+                "QUIT GAME?",
+                "Exit application completely?",
+                yesBtn, noBtn);
+
+            if (IsButtonClicked(yesBtn)) {
+                confirmAction = CONFIRM_NONE;
+                return STATE_QUIT;
+            }
+
+            if (IsButtonClicked(noBtn) || AEInputCheckTriggered(AEVK_ESCAPE)) {
+                confirmAction = CONFIRM_NONE;
+            }
+        }
 
     return STATE_MENU;
 }
@@ -213,7 +282,8 @@ GameState UpdateAndRenderMenu(AEGfxVertexList* mesh, s8 font, float dt) {
 GameState UpdateAndRenderPause(AEGfxVertexList* mesh, s8 font, float dt, GameState previous) {
     (void)dt;
 
-
+    // Tracks destructive actions that require confirmation
+    static ConfirmAction confirmAction = CONFIRM_NONE;
 
     // Translucent dark overlay
     AEGfxSetRenderMode(AE_GFX_RM_COLOR);
@@ -249,24 +319,64 @@ GameState UpdateAndRenderPause(AEGfxVertexList* mesh, s8 font, float dt, GameSta
     DrawButton(quitBtn, mesh, font);
     DrawControlsHint(fontID);
 
-    // Using P key to resume from Paused screen
-    if (AEInputCheckTriggered(AEVK_P) || AEInputCheckTriggered(AEVK_ESCAPE)) {
-        return previous;
+    // Only allow instant resume when no confirmation popup is active
+    if (confirmAction == CONFIRM_NONE) {
+        // Using P key to resume from Paused screen
+        if (AEInputCheckTriggered(AEVK_P) || AEInputCheckTriggered(AEVK_ESCAPE)) {
+            return previous;
+        }
+
+        // Button interactions
+        if (IsButtonClicked(resumeBtn)) {
+            return previous;
+        }
+
+        if (IsButtonClicked(menuBtn)) {
+            confirmAction = CONFIRM_MENU;
+        }
+
+        if (IsButtonClicked(quitBtn)) {
+            confirmAction = CONFIRM_QUIT;
+        }
     }
 
-    // Button interactions
-    if (IsButtonClicked(resumeBtn)) {
-        return previous;
-    }
-    if (IsButtonClicked(menuBtn)) {
-        AEAudioStopGroup(GameBGMGroup);
-        AEAudioStopGroup(EditorBGMGroup);
-        
-        return STATE_MENU;
-    }
+    if (confirmAction != CONFIRM_NONE) {
+        Button yesBtn = { -110.0f, -55.0f, 140.0f, 45.0f, "YES" };
+        Button noBtn = { 110.0f, -55.0f, 140.0f, 45.0f, "NO" };
 
-    if (IsButtonClicked(quitBtn)) {
-        return STATE_QUIT;
+        if (confirmAction == CONFIRM_MENU) {
+            DrawConfirmWindow(mesh, font,
+                "RETURN TO MAIN MENU?",
+                "Progress will be lost.",
+                yesBtn, noBtn);
+
+            if (IsButtonClicked(yesBtn)) {
+                confirmAction = CONFIRM_NONE;
+                AEAudioStopGroup(GameBGMGroup);
+                AEAudioStopGroup(EditorBGMGroup);
+                return STATE_MENU;
+            }
+
+            if (IsButtonClicked(noBtn) || AEInputCheckTriggered(AEVK_ESCAPE)) {
+                confirmAction = CONFIRM_NONE;
+            }
+        }
+
+        if (confirmAction == CONFIRM_QUIT) {
+            DrawConfirmWindow(mesh, font,
+                "QUIT GAME?",
+                "Exit application completely?",
+                yesBtn, noBtn);
+
+            if (IsButtonClicked(yesBtn)) {
+                confirmAction = CONFIRM_NONE;
+                return STATE_QUIT;
+            }
+
+            if (IsButtonClicked(noBtn) || AEInputCheckTriggered(AEVK_ESCAPE)) {
+                confirmAction = CONFIRM_NONE;
+            }
+        }
     }
 
     return STATE_PAUSE;
