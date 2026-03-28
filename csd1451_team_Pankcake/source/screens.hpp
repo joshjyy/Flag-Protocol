@@ -23,6 +23,14 @@
 enum GameState { STATE_MENU, STATE_GAME, STATE_CUSTOM, STATE_CONTROLS,  STATE_EDITOR, STATE_LOAD, STATE_TUTORIAL, STATE_QUIT, STATE_PAUSE , STATE_CUTSCENE, STATE_NAVIGATION,
 STATE_LOSE, STATE_WIN, STATE_CREDITS , STATE_DIGIPENLOGO };
 
+// Confirmation state enums for handling destructive actions (back to menu and quit)
+enum ConfirmAction
+{
+    CONFIRM_NONE = 0,
+    CONFIRM_MENU,
+    CONFIRM_QUIT
+};
+
 //button struct
 struct Button { float x, y, w, h; const char* label; };
 
