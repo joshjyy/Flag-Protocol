@@ -678,7 +678,146 @@ GameState UpdateAndRenderLoseScreen(AEGfxVertexList* mesh, s8 font, float dt,
     return STATE_LOSE;
 }
 
+GameState UpdateAndRenderCredits(AEGfxVertexList* mesh, s8 font, float dt) {
+    (void)dt;
 
+    static int creditsPage = 0;
+    const int totalPages = 4;
+
+    AEGfxSetBackgroundColor(0.05f, 0.05f, 0.1f);
+    AEGfxSetRenderMode(AE_GFX_RM_COLOR);
+    AEGfxSetBlendMode(AE_GFX_BM_BLEND);
+    AEGfxSetTransparency(1.0f);
+
+    float tw, th;
+
+    // Title
+    AEGfxGetPrintSize(font, "Credits", 2.2f, &tw, &th);
+    AEGfxPrint(font, const_cast<char*>("Credits"), -tw / 2.0f, 0.78f, 2.2f, 1.0f, 0.92f, 0.92f, 1.0f);
+
+    // Page content
+    switch (creditsPage) {
+    case 0:
+    {
+        const char* line1 = "WWW.DIGIPEN.EDU";
+        const char* line2 = "All content (C) 2026 DigiPen Institute of Technology Singapore";
+        const char* line3 = "All Rights Reserved.";
+
+        AEGfxGetPrintSize(font, line1, 1.1f, &tw, &th);
+        AEGfxPrint(font, const_cast<char*>(line1), -tw / 2.0f, 0.12f, 1.1f, 1.0f, 1.0f, 1.0f, 1.0f);
+
+        AEGfxGetPrintSize(font, line2, 1.05f, &tw, &th);
+        AEGfxPrint(font, const_cast<char*>(line2), -tw / 2.0f, 0.00f, 1.05f, 1.0f, 1.0f, 1.0f, 1.0f);
+
+        AEGfxGetPrintSize(font, line3, 1.05f, &tw, &th);
+        AEGfxPrint(font, const_cast<char*>(line3), -tw / 2.0f, -0.08f, 1.05f, 1.0f, 1.0f, 1.0f, 1.0f);
+    }
+    break;
+
+    case 1:
+    {
+        const char* header = "TEAM MEMBERS";
+        const char* names[] = {
+            "Yeo Kah Boon Joshua",
+            "Ye Min Thwin",
+            "Zhang Yida",
+            "Pang Jun Yuan"
+        };
+
+        AEGfxGetPrintSize(font, header, 1.3f, &tw, &th);
+        AEGfxPrint(font, const_cast<char*>(header), -tw / 2.0f, 0.32f, 1.3f, 0.0f, 1.0f, 0.8f, 1.0f);
+
+        float startY = 0.18f;
+        for (int i = 0; i < 4; ++i) {
+            AEGfxGetPrintSize(font, names[i], 1.1f, &tw, &th);
+            AEGfxPrint(font, const_cast<char*>(names[i]), -tw / 2.0f, startY - i * 0.13f, 1.1f, 1.0f, 1.0f, 1.0f, 1.0f);
+        }
+    }
+    break;
+
+    case 2:
+    {
+        const char* header = "FACULTY & INSTRUCTORS";
+        const char* presidentHeader = "PRESIDENT";
+        const char* presidentName = "Claude Comair";
+        const char* instructorHeader = "INSTRUCTORS";
+        const char* instructors[] = {
+            "Gerald Wong Han Feng",
+            "Dr. Soroor Malekmohammadai Faradounbeh",
+            "Tommy Tan Chee Wei"
+        };
+
+        AEGfxGetPrintSize(font, header, 1.3f, &tw, &th);
+        AEGfxPrint(font, const_cast<char*>(header), -tw / 2.0f, 0.36f, 1.3f, 0.0f, 1.0f, 0.8f, 1.0f);
+
+        AEGfxGetPrintSize(font, presidentHeader, 1.05f, &tw, &th);
+        AEGfxPrint(font, const_cast<char*>(presidentHeader), -tw / 2.0f, 0.22f, 1.05f, 1.0f, 0.9f, 0.3f, 1.0f);
+
+        AEGfxGetPrintSize(font, presidentName, 1.05f, &tw, &th);
+        AEGfxPrint(font, const_cast<char*>(presidentName), -tw / 2.0f, 0.14f, 1.05f, 1.0f, 1.0f, 1.0f, 1.0f);
+
+        AEGfxGetPrintSize(font, instructorHeader, 1.05f, &tw, &th);
+        AEGfxPrint(font, const_cast<char*>(instructorHeader), -tw / 2.0f, 0.01f, 1.05f, 1.0f, 0.9f, 0.3f, 1.0f);
+
+        float startY = -0.07f;
+        for (int i = 0; i < 3; ++i) {
+            AEGfxGetPrintSize(font, instructors[i], 1.0f, &tw, &th);
+            AEGfxPrint(font, const_cast<char*>(instructors[i]), -tw / 2.0f, startY - i * 0.12f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f);
+        }
+    }
+    break;
+
+    case 3:
+    {
+        const char* header = "SPECIAL THANKS ;)";
+        const char* thanks[] = {
+            "Our instructors",
+            "Our classmates",
+            "Our playtesters"
+        };
+
+        AEGfxGetPrintSize(font, header, 1.3f, &tw, &th);
+        AEGfxPrint(font, const_cast<char*>(header), -tw / 2.0f, 0.28f, 1.3f, 0.0f, 1.0f, 0.8f, 1.0f);
+
+        float startY = 0.14f;
+        for (int i = 0; i < 3; ++i) {
+            AEGfxGetPrintSize(font, thanks[i], 1.1f, &tw, &th);
+            AEGfxPrint(font, const_cast<char*>(thanks[i]), -tw / 2.0f, startY - i * 0.13f, 1.1f, 1.0f, 1.0f, 1.0f, 1.0f);
+        }
+    }
+    break;
+    }
+
+    // Page indicator
+    char pageText[32];
+    sprintf_s(pageText, "Page %d / %d", creditsPage + 1, totalPages);
+    AEGfxGetPrintSize(font, pageText, 1.1f, &tw, &th);
+    AEGfxPrint(font, pageText, -tw / 2.0f, -0.62f, 1.1f, 1.0f, 0.92f, 0.92f, 1.0f);
+
+    // Buttons
+    Button prevBtn = { -520.0f, -360.0f, 180.0f, 60.0f, "<<" };
+    Button backBtn = { 0.0f, -360.0f, 260.0f, 60.0f, "Back" };
+    Button nextBtn = { 520.0f, -360.0f, 180.0f, 60.0f, ">>" };
+
+    DrawButton(prevBtn, mesh, font);
+    DrawButton(backBtn, mesh, font);
+    DrawButton(nextBtn, mesh, font);
+
+    if ((IsButtonClicked(prevBtn) || AEInputCheckTriggered(AEVK_LEFT)) && creditsPage > 0) {
+        creditsPage--;
+    }
+
+    if ((IsButtonClicked(nextBtn) || AEInputCheckTriggered(AEVK_RIGHT)) && creditsPage < totalPages - 1) {
+        creditsPage++;
+    }
+
+    if (IsButtonClicked(backBtn) || AEInputCheckTriggered(AEVK_ESCAPE)) {
+        creditsPage = 0;
+        return STATE_MENU;
+    }
+
+    return STATE_CREDITS;
+}
 
 
 

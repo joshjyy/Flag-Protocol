@@ -446,7 +446,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		else if(currentState == STATE_CREDITS)
 		{
-			printf("Credits Not Implemented Yet!\n");
+			currentState = UpdateAndRenderCredits(meshes.square, fontID, dt);
 		}
 		
 		// ---------------------------------------------------------------------------
