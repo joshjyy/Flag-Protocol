@@ -46,11 +46,19 @@ void LoadSettings()
     fopen_s(&f, "Assets/settings.txt", "r");
     if (!f)
     {
+        // No settings file yet – keep the 1.0f defaults and apply them
         ApplyVolumes();
         return;
     }
     fscanf_s(f, "%f %f %f", &gMasterVolume, &gMusicVolume, &gSFXVolume);
     fclose(f);
+
+    // Clamp in case the file is corrupted or from a bad testing session
+    auto Clamp01 = [](float v) { return v < 0.0f ? 0.0f : v > 1.0f ? 1.0f : v; };
+    gMasterVolume = Clamp01(gMasterVolume);
+    gMusicVolume = Clamp01(gMusicVolume);
+    gSFXVolume = Clamp01(gSFXVolume);
+
     ApplyVolumes();
 }
 
