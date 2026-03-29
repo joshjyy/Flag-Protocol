@@ -1,7 +1,7 @@
 /*!************************************************************************
   \file damageNumbers.cpp
   \author
-
+  Ye Min Thwin
 
 
 
@@ -14,6 +14,7 @@
 
 
 #include "damageNumbers.hpp"
+#include "gameConstants.hpp"
 #include "AEEngine.h"
 
 std::vector<DamageNumber> damageNumbers;
@@ -23,8 +24,8 @@ void SpawnDamageNumber(float x, float y, float damage, bool isCritical) {
     dmg.x = x;
     dmg.y = y;
     dmg.damage = damage;
-    dmg.lifetime = 1.0f;  // 1 second lifetime
-    dmg.velocityY = isCritical ? 100.0f : 60.0f;  // Crits fly faster
+    dmg.lifetime = DMG_NUM_LIFETIME;
+    dmg.velocityY = isCritical ? DMG_NUM_VELOCITY_CRIT : DMG_NUM_VELOCITY_NORMAL;
     dmg.active = true;
     dmg.isCritical = isCritical;
 
@@ -36,11 +37,10 @@ void UpdateDamageNumbers(float dt) {
         if (!dmg.active) continue;
 
         dmg.lifetime -= dt;
-        dmg.y += dmg.velocityY * dt;  // Float upward
+        dmg.y += dmg.velocityY * dt;  // float upward
 
-        if (dmg.lifetime <= 0.0f) {
+        if (dmg.lifetime <= 0.0f)
             dmg.active = false;
-        }
     }
 
     // Remove inactive numbers
@@ -59,26 +59,21 @@ void RenderDamageNumbers(CameraPos& camera) {
         float screenX = dmg.x - camera.x;
         float screenY = dmg.y - camera.y;
 
-        // Convert to normalized coordinates for AEGfxPrint
+        // Convert to normalised coordinates for AEGfxPrint
         float textX, textY;
-        GetNormalizedTextPosition(screenX - 20.0f, screenY, &textX, &textY);
+        GetNormalizedTextPosition(screenX + DMG_NUM_TEXT_OFFSET_X, screenY, &textX, &textY);
 
         // Format text
         char text[16];
         sprintf_s(text, "%.0f", dmg.damage);
 
-        // Fade out based on lifetime
-        float alpha = dmg.lifetime;  // 1.0 to 0.0
+        // Alpha fades from 1.0 to 0.0 over the lifetime
+        float alpha = dmg.lifetime;
 
-        // Color based on critical hit
-        if (dmg.isCritical) {
-            // Critical hits are yellow and larger
-            AEGfxPrint(fontID, text, textX, textY, 2.0f, 1.0f, 1.0f, 0.0f, alpha);
-        }
-        else {
-            // Normal hits are white
-            AEGfxPrint(fontID, text, textX, textY, 1.5f, 1.0f, 1.0f, 1.0f, alpha);
-        }
+        if (dmg.isCritical)
+            AEGfxPrint(fontID, text, textX, textY, DMG_NUM_SCALE_CRIT, 1.0f, 1.0f, 0.0f, alpha); // yellow
+        else
+            AEGfxPrint(fontID, text, textX, textY, DMG_NUM_SCALE_NORMAL, 1.0f, 1.0f, 1.0f, alpha); // white
     }
 }
 

@@ -1,14 +1,24 @@
+/*!************************************************************************
+  \file settings.cpp
+  \author
+  Ye Min Thwin
+
+  \brief
+  Implements the settings screen: Master / Music / SFX volume sliders,
+  and save/load to Assets/settings.txt.
+**************************************************************************/
 #include "screens.hpp"
 #include "settings.hpp"
 #include "utils.hpp"
 #include "sound.hpp"
+#include "gameConstants.hpp"
 
 // ---------------------------------------------------------------------------
 // Volume globals
 // ---------------------------------------------------------------------------
-float gMasterVolume = 1.0f;
-float gMusicVolume = 1.0f;
-float gSFXVolume = 1.0f;
+float gMasterVolume = SETTINGS_DEFAULT_MASTER;
+float gMusicVolume = SETTINGS_DEFAULT_MUSIC;
+float gSFXVolume = SETTINGS_DEFAULT_SFX;
 
 // ---------------------------------------------------------------------------
 // ApplyVolumes
@@ -74,9 +84,9 @@ static float DrawSlider(AEGfxVertexList* mesh, s8 font,
     float value,
     int sliderID, int& activeSlider)
 {
-    const float TRACK_H = 8.0f;
-    const float KNOB_R = 13.0f;
-    const float GAP = 18.0f;
+    const float TRACK_H = SETTINGS_SLIDER_TRACK_H;
+    const float KNOB_R = SETTINGS_SLIDER_KNOB_R;
+    const float GAP = SETTINGS_SLIDER_GAP;
 
     // track background
     AEGfxSetTransparency(1.0f);
@@ -157,12 +167,12 @@ GameState UpdateAndRenderSettings(AEGfxVertexList* mesh, s8 font, float dt)
     // translucent panel
     AEGfxSetTransparency(0.5f);
     AEGfxSetColorToMultiply(0.04f, 0.06f, 0.04f, 1.0f);
-    DrawSprite(mesh, 0.0f, 0.0f, 680.0f, 600.0f, 0.0f);
+    DrawSprite(mesh, 0.0f, 0.0f, SETTINGS_PANEL_W, SETTINGS_PANEL_H, 0.0f);
     AEGfxSetTransparency(1.0f);
 
     // green accent line at top of panel
     AEGfxSetColorToMultiply(0.0f, 0.8f, 0.2f, 1.0f);
-    DrawSprite(mesh, 0.0f, 275.0f, 680.0f, 4.0f, 0.0f);
+    DrawSprite(mesh, 0.0f, SETTINGS_ACCENT_Y, SETTINGS_PANEL_W, 4.0f, 0.0f);
 
     // title
     float tw, th;
@@ -170,28 +180,28 @@ GameState UpdateAndRenderSettings(AEGfxVertexList* mesh, s8 font, float dt)
     AEGfxPrint(font, const_cast<char*>("SETTINGS"),
         -tw / 2.0f, 0.55f, 2.0f, 0.0f, 1.0f, 0.0f, 1.0f);
 
-    // sliders – centred on screen (TRACK_X = 0 means track centre is at x=0)
-    const float TRACK_W = 400.0f;
-    const float TRACK_X = 0.0f;
+    // sliders
+    const float TRACK_W = SETTINGS_SLIDER_TRACK_W;
+    const float TRACK_X = SETTINGS_SLIDER_TRACK_X;
     static int activeSlider = -1;
 
-    float newMaster = DrawSlider(mesh, font, "MASTER", TRACK_X, 100.0f, TRACK_W, gMasterVolume, 0, activeSlider);
+    float newMaster = DrawSlider(mesh, font, "MASTER", TRACK_X, SETTINGS_SLIDER_Y_MASTER, TRACK_W, gMasterVolume, 0, activeSlider);
     if (newMaster != gMasterVolume) { gMasterVolume = newMaster; ApplyVolumes(); }
 
-    float newMusic = DrawSlider(mesh, font, "MUSIC", TRACK_X, -30.0f, TRACK_W, gMusicVolume, 1, activeSlider);
+    float newMusic = DrawSlider(mesh, font, "MUSIC", TRACK_X, SETTINGS_SLIDER_Y_MUSIC, TRACK_W, gMusicVolume, 1, activeSlider);
     if (newMusic != gMusicVolume) { gMusicVolume = newMusic;  ApplyVolumes(); }
 
-    float newSFX = DrawSlider(mesh, font, "SFX", TRACK_X, -160.0f, TRACK_W, gSFXVolume, 2, activeSlider);
+    float newSFX = DrawSlider(mesh, font, "SFX", TRACK_X, SETTINGS_SLIDER_Y_SFX, TRACK_W, gSFXVolume, 2, activeSlider);
     if (newSFX != gSFXVolume) { gSFXVolume = newSFX;    ApplyVolumes(); }
 
     // divider
     AEGfxSetTransparency(0.3f);
     AEGfxSetColorToMultiply(0.0f, 1.0f, 0.0f, 1.0f);
-    DrawSprite(mesh, 0.0f, -220.0f, 600.0f, 2.0f, 0.0f);
+    DrawSprite(mesh, 0.0f, SETTINGS_DIVIDER_Y, SETTINGS_DIVIDER_W, 2.0f, 0.0f);
     AEGfxSetTransparency(1.0f);
 
     // single BACK button (auto-saves)
-    Button backBtn = { 0.0f, -270.0f, 200.0f, 50.0f, "BACK" };
+    Button backBtn = { 0.0f, SETTINGS_BACK_BTN_Y, SETTINGS_BACK_BTN_W, SETTINGS_BACK_BTN_H, "BACK" };
     DrawButton(backBtn, mesh, font);
 
     if (IsButtonClicked(backBtn) || AEInputCheckTriggered(AEVK_ESCAPE))

@@ -1,3 +1,12 @@
+/*!************************************************************************
+  \file settings.cpp
+  \author
+  Ye Min Thwin
+
+  \brief
+  Implements the settings screen: Master / Music / SFX volume sliders,
+  and save/load to Assets/settings.txt.
+**************************************************************************/
 #pragma once
 #include "AEEngine.h"
 

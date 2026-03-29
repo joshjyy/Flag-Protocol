@@ -14,13 +14,12 @@
 
 #pragma once
 
-
+#include "gameConstants.hpp"
 #include "gunTypes.hpp"
 #include "player.hpp"
 #include "map.hpp"
 #include "particle.hpp"
 #include "utils.hpp"
-
 #include <vector>
 
 enum GruntAIState :int;

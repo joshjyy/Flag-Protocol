@@ -17,9 +17,9 @@
 
 #include "enemies.hpp"
 #include "player.hpp"
-#include "utils.hpp"        // For AreCirclesIntersecting
+#include "utils.hpp"        
 #include "map.hpp"
-#include "gameConstants.hpp" // For constants
+#include "gameConstants.hpp" 
 #include <vector>
 
 // AI States

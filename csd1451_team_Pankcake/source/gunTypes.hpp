@@ -1,7 +1,8 @@
 /*!************************************************************************
   \file gunTypes.hpp
   \author
-  Ye Min Thwin
+  Ye Min Thwin (Pistol and Assault Rifle)
+  Joshua (Shotgun)
 
 
 
