@@ -73,6 +73,8 @@ GameState UpdateAndRenderWinScreen(AEGfxVertexList* mesh, s8 font, float dt, Pla
 GameState UpdateAndRenderLoseScreen(AEGfxVertexList* mesh, s8 font, float dt, Player& player, GameState previous);
 GameState UpdateAndRenderControls(AEGfxVertexList* mesh, s8 font, float dt);
 GameState UpdateAndRenderCredits(AEGfxVertexList* mesh, s8 font, float dt);
+GameState UpdateAndRenderSplash(AEGfxVertexList* mesh, float dt);
+
 
 void CurrGamestate(GameState state, int& gGameRunning, std::vector<std::vector<int>>& gameMap, Player& player , GameState previousState);
 void GameStateLoad(int& gGameRunning, std::vector<std::vector<int>>& gameMap);
@@ -86,3 +88,6 @@ void LoadHighScores();
 void SaveHighScores();
 bool IsTopThree(int score);
 void InsertHighScore(const char* name, int score);
+
+void LoadSplashAssets();
+void FreeSplashAssets();

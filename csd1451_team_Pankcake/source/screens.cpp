@@ -28,6 +28,7 @@
 #include "sound.hpp"
 #include "gameMode.hpp"
 
+static AEGfxTexture* gDigiPenLogo = nullptr;
 
 bool IsButtonClicked(const Button& btn) {
     if (!AEInputCheckTriggered(AEVK_LBUTTON)) return false;
@@ -92,6 +93,20 @@ void DrawButton(const Button& btn, AEGfxVertexList* mesh, s8 font) {
         AEGfxPrint(font, const_cast<char*>(btn.label), nx, ny, textScale, 0.0f, 1.0f, 0.0f, 1.0f);
 }
 
+void LoadSplashAssets()
+{
+    if (!gDigiPenLogo)
+        gDigiPenLogo = AEGfxTextureLoad("Assets/DigiPen_Singapore_WEB_WHITE.png");
+}
+
+void FreeSplashAssets()
+{
+    if (gDigiPenLogo) {
+        AEGfxTextureUnload(gDigiPenLogo);
+        gDigiPenLogo = nullptr;
+    }
+}
+
 static void DrawConfirmWindow(
     AEGfxVertexList* mesh,
     s8 font,
@@ -135,6 +150,50 @@ static void DrawConfirmWindow(
 
     DrawButton(yesBtn, mesh, font);
     DrawButton(noBtn, mesh, font);
+}
+
+GameState UpdateAndRenderSplash(AEGfxVertexList* mesh, float dt)
+{
+    static float splashTimer = 0.0f;
+    splashTimer += dt;
+
+    const float fadeInTime = 0.5f;
+    const float visibleTime = 2.0f;
+    const float fadeOutTime = 0.5f;
+    const float totalTime = fadeInTime + visibleTime + fadeOutTime;
+
+    float alpha = 1.0f;
+
+    if (splashTimer <= fadeInTime) {
+        alpha = splashTimer / fadeInTime;
+    }
+    else if (splashTimer >= fadeInTime + visibleTime) {
+        alpha = (totalTime - splashTimer) / fadeOutTime;
+    }
+
+    if (alpha < 0.0f) alpha = 0.0f;
+    if (alpha > 1.0f) alpha = 1.0f;
+
+    AEGfxSetBackgroundColor(0.0f, 0.0f, 0.0f);
+    AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
+    AEGfxSetBlendMode(AE_GFX_BM_BLEND);
+    AEGfxSetTransparency(alpha);
+    AEGfxSetColorToMultiply(1.0f, 1.0f, 1.0f, 1.0f);
+    AEGfxSetColorToAdd(0.0f, 0.0f, 0.0f, 0.0f);
+
+    if (gDigiPenLogo) {
+        AEGfxTextureSet(gDigiPenLogo, 0.0f, 0.0f);
+        DrawSprite(mesh, 0.0f, 0.0f, 900.0f, 260.0f, 0.0f);
+    }
+
+    AEGfxSetTransparency(1.0f);
+
+    if (splashTimer >= totalTime) {
+        splashTimer = 0.0f;
+        return STATE_MENU;
+    }
+
+    return STATE_DIGIPENLOGO;
 }
 
 GameState UpdateAndRenderMenu(AEGfxVertexList* mesh, s8 font, float dt) {

@@ -139,6 +139,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	//Load High Scores
 	LoadHighScores();
 
+	//Load Digipen logo Splash Screen
+	LoadSplashAssets();
 	
 	// ---------------------------------------------------------------------------
 	// GAME LOOP
@@ -151,10 +153,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	AEGfxSetBlendMode(AE_GFX_BM_BLEND);
 	AEGfxSetTransparency(1.0f);
 	// Screen state
-	GameState currentState = STATE_MENU;
+	GameState currentState = STATE_DIGIPENLOGO;
 	static GameState previousState = STATE_MENU;
 	ShowCursor(true);
-	AEAudioPlay(MainMenuBGM, MainBGMGroup, 1.0f, 1.0f, 1);
 	
 	while (gGameRunning)
 	{
@@ -234,7 +235,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		// ---------------------------------------------------------------------------
 		// STATE_MENU
 		// ---------------------------------------------------------------------------
-		if (currentState == STATE_MENU) {
+		if (currentState == STATE_DIGIPENLOGO) {
+			currentState = UpdateAndRenderSplash(meshes.square, dt);
+		}
+
+		else if (currentState == STATE_MENU) {
 			currentState = UpdateAndRenderMenu(meshes.square, fontID, dt);
 	
 		}
@@ -484,6 +489,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	FreeCommonMeshes();
 	FreeGrunts(grunts);
 	SoundFree();
+	FreeSplashAssets();
 
 	AESysExit();
 
