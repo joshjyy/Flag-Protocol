@@ -168,7 +168,7 @@ void UpdateAndRenderTutorial(
     else
         ShootingCheck(player, playerBullets, weapon, camera);
     ReloadBullets(weapon, dt);
-
+        
     UpdateBullets(playerBullets, dt, *gameMap);
 
     // Update enemies

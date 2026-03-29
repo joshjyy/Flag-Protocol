@@ -24,6 +24,7 @@
     <ClCompile Include="..\source\player.cpp" />
     <ClCompile Include="..\source\popup.cpp" />
     <ClCompile Include="..\source\screens.cpp" />
+    <ClCompile Include="..\source\settings.cpp" />
     <ClCompile Include="..\source\sound.cpp" />
     <ClCompile Include="..\source\tutorial.cpp" />
     <ClCompile Include="..\source\utils.cpp" />
@@ -44,6 +45,7 @@
     <ClInclude Include="..\source\player.hpp" />
     <ClInclude Include="..\source\popup.hpp" />
     <ClInclude Include="..\source\screens.hpp" />
+    <ClInclude Include="..\source\settings.hpp" />
     <ClInclude Include="..\source\sound.hpp" />
     <ClInclude Include="..\source\tutorial.hpp" />
     <ClInclude Include="..\source\utils.hpp" />

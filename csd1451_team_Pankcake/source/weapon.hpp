@@ -2,7 +2,7 @@
   \file weapon.hpp
   \author
   Yeo Kah Boon Joshua (Shooting Code )
-
+  Ye Min Thwin (Reloading)
 
 
 

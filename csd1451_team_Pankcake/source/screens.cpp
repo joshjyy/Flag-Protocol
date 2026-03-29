@@ -199,30 +199,35 @@ GameState UpdateAndRenderMenu(AEGfxVertexList* mesh, s8 font, float dt) {
     // title
     AEGfxPrint(font, const_cast<char*>("Flag Protocol"), titleX, titleY, pulseScale, 0.0f, 1.0f, 0.0f, 1.0f);
 
-    Button playBtn = { 0.0f,  150.0f, 200.0f, 50.0f, "PLAY" };
-    Button controlsBtn = { 0.0f,   50.0f, 200.0f, 50.0f, "CONTROLS" };
-    Button creditBtn = { 0.0f,  -50.0f, 200.0f, 50.0f, "CREDITS" };
-    Button editorBtn = { 0.0f,  -150.0f, 200.0f, 50.0f, "EDITOR" };
-    Button quitBtn = { 0.0f, -300.0f, 200.0f, 50.0f, "QUIT" };
+    Button playBtn = { 0.0f,  200.0f, 200.0f, 50.0f, "PLAY" };
+    Button controlsBtn = { 0.0f,  100.0f, 200.0f, 50.0f, "CONTROLS" };
+    Button creditBtn = { 0.0f,    0.0f, 200.0f, 50.0f, "CREDITS" };
+    Button editorBtn = { 0.0f, -100.0f, 200.0f, 50.0f, "EDITOR" };
+    Button settingsBtn = { 0.0f, -200.0f, 200.0f, 50.0f, "SETTINGS" };
+    Button quitBtn = { 0.0f, -320.0f, 200.0f, 50.0f, "QUIT" };
 
     DrawButton(playBtn, mesh, font);
     DrawButton(controlsBtn, mesh, font);
     DrawButton(creditBtn, mesh, font);
     DrawButton(editorBtn, mesh, font);
+    DrawButton(settingsBtn, mesh, font);
     DrawButton(quitBtn, mesh, font);
 
     if (confirmAction == CONFIRM_NONE) {
         if (IsButtonClicked(playBtn))
             return STATE_NAVIGATION;
 
-        if (IsButtonClicked(controlsBtn))  
+        if (IsButtonClicked(controlsBtn))
             return STATE_CONTROLS;
 
         if (IsButtonClicked(creditBtn))
             return STATE_CREDITS;
 
-        if (IsButtonClicked(editorBtn))   
+        if (IsButtonClicked(editorBtn))
             return STATE_EDITOR;
+
+        if (IsButtonClicked(settingsBtn))
+            return STATE_SETTINGS;
 
         if (IsButtonClicked(quitBtn)) {
             confirmAction = CONFIRM_QUIT;

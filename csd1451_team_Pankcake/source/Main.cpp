@@ -31,6 +31,7 @@
 #include "gameConstants.hpp"
 #include "debris.hpp"
 #include "sound.hpp"
+#include "settings.hpp"
 
 //Legend if needed later
 /*
@@ -131,6 +132,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	//Sound Load
 	SoundInit();
+
+	//Load Settings
+	LoadSettings();
 	
 	//Load High Scores
 	LoadHighScores();
@@ -447,6 +451,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		else if(currentState == STATE_CREDITS)
 		{
 			currentState = UpdateAndRenderCredits(meshes.square, fontID, dt);
+		}
+
+		//Settings menu
+		else if (currentState == STATE_SETTINGS)               
+		{
+			currentState = UpdateAndRenderSettings(meshes.square, fontID, dt);
 		}
 		
 		// ---------------------------------------------------------------------------
