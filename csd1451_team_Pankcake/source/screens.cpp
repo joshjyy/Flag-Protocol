@@ -319,6 +319,14 @@ GameState UpdateAndRenderMenu(AEGfxVertexList* mesh, s8 font, float dt) {
         AEGfxGetPrintSize(font, topStr, 0.9f, &tw, &th);
         //AEGfxPrint(paramets) // font, string, x, y, scale, r, g, b, a
         AEGfxPrint(font, const_cast<char*>(topStr), popCenterNX - tw / 2, (popY + 100.0f) / (SCREEN_HEIGHT / 2.0f), 0.9f, 1, 0.8f, 0, 1);
+        for (int i = 0; i < 3; i++) {
+            char entry[64];
+            sprintf_s(entry, "%d. %s  %d", i + 1, highScores[i].name, highScores[i].score);
+            AEGfxGetPrintSize(font, entry, 0.8f, &tw, &th);
+            AEGfxPrint(font, entry, popCenterNX - tw / 2,
+                (popY + 50.0f - i * 60.0f) / (SCREEN_HEIGHT / 2.0f),
+                0.8f, 1, 1, 1, 1);
+        }
     }
 
         if (confirmAction == CONFIRM_QUIT) {
@@ -1001,8 +1009,12 @@ void LoadHighScores() {
     fopen_s(&f, "Assets/highscores.txt", "r");
     if (!f) return;
     for (int i = 0; i < 3; i++) {
-        if (fscanf_s(f, "%31s %d", highScores[i].name, 32, &highScores[i].score) != 2)
+        if (fscanf_s(f, "%31s %d", highScores[i].name, 32, &highScores[i].score) != 2) {
+            printf("Loaded score %d: %s %d\n", i, highScores[i].name, highScores[i].score);
+
+
             break;
+        }
     }
     fclose(f);
 }

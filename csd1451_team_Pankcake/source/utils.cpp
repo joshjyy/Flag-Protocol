@@ -136,6 +136,11 @@ void FreeCommonMeshes(void) {
         AEGfxMeshFree(meshes.circle);
         meshes.circle = NULL;
     }
+    if (meshes.arrow) 
+    { AEGfxMeshFree(meshes.arrow);
+        meshes.arrow = NULL;
+    }
+
 }
 
 int checkCollision(float playerX, float playerY, float radius,
