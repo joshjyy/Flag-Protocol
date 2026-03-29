@@ -214,6 +214,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				InitGruntSpawner();
 				FindPlayerSpawn(*gameMap, player.x, player.y); 
 			}
+			if (currentState == STATE_CUSTOM) {
+				Background_Init();
+				FreeGrunts(grunts);
+				grunts.clear();
+				InitGruntSpawner();
+				FindPlayerSpawn(*gameMap, player.x, player.y);
+			}
 
 			if(currentState == STATE_LOSE || currentState == STATE_WIN)
 			{
@@ -297,6 +304,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 				printf("Pause triggered!\n");
 			}
+			Background_Update(dt);
 			Update_CameraPosition(camera, player.x, player.y, dt);
 			UpdateAndRenderGameplay(player, dt, gameMap, camera, playerBullets, enemyBullets, grunts, gameEvents);
 
@@ -491,7 +499,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	SoundFree();
 	FreeSplashAssets();
 
-	AESysExit();
+	AESysExit();	
 
 	return 0;
 }

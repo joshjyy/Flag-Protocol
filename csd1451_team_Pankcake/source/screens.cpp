@@ -989,7 +989,9 @@ void GameStateLoadCustom(int& gGameRunning, std::vector<std::vector<int>>& gameM
         printf("Custom map loaded successfully!\n");
     }
     Spawn_Flag(gameMap);
+    floodfill(gameMap, 0, 0);
 }
+
 void GameStateLoadEditor(int& gGameRunning, std::vector<std::vector<int>>& gameMap) {
     static bool loaded = false;
     if (loaded) return;
