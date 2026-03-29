@@ -64,7 +64,7 @@ void SoundInit()
 	gPickUpSound = AEAudioLoadSound("Assets/Sound/flagpickup.wav");
 	gDropSound = AEAudioLoadSound("Assets/Sound/flagdrop.wav");
 	gLowHealthBeepSound = AEAudioLoadSound("Assets/Sound/low_health.wav");
-	gHealSound = AEAudioLoadSound("Assets/Sound/healup.mp3");
+	gHealSound = AEAudioLoadSound("Assets/Sound/healup.wav");
 
 	StaticSound = AEAudioLoadMusic("Assets/Sound/static.wav");
 
