@@ -172,13 +172,13 @@ GameState UpdateAndRenderSettings(AEGfxVertexList* mesh, s8 font, float dt)
 
     // green accent line at top of panel
     AEGfxSetColorToMultiply(0.0f, 0.8f, 0.2f, 1.0f);
-    DrawSprite(mesh, 0.0f, SETTINGS_ACCENT_Y, SETTINGS_PANEL_W, 4.0f, 0.0f);
+    DrawSprite(mesh, 0.0f, SETTINGS_ACCENT_Y, SETTINGS_PANEL_W, SETTINGS_ACCENT_H, 0.0f);
 
     // title
     float tw, th;
-    AEGfxGetPrintSize(font, "SETTINGS", 2.0f, &tw, &th);
+    AEGfxGetPrintSize(font, "SETTINGS", SETTINGS_TITLE_SCALE, &tw, &th);
     AEGfxPrint(font, const_cast<char*>("SETTINGS"),
-        -tw / 2.0f, 0.42f, 2.0f, 0.0f, 1.0f, 0.0f, 1.0f);
+        -tw / 2.0f, SETTINGS_TITLE_Y, SETTINGS_TITLE_SCALE, 0.0f, 1.0f, 0.0f, 1.0f);
 
     // sliders
     const float TRACK_W = SETTINGS_SLIDER_TRACK_W;
@@ -197,7 +197,7 @@ GameState UpdateAndRenderSettings(AEGfxVertexList* mesh, s8 font, float dt)
     // divider
     AEGfxSetTransparency(0.3f);
     AEGfxSetColorToMultiply(0.0f, 1.0f, 0.0f, 1.0f);
-    DrawSprite(mesh, 0.0f, SETTINGS_DIVIDER_Y, SETTINGS_DIVIDER_W, 2.0f, 0.0f);
+    DrawSprite(mesh, 0.0f, SETTINGS_DIVIDER_Y, SETTINGS_DIVIDER_W, SETTINGS_DIVIDER_H, 0.0f);
     AEGfxSetTransparency(1.0f);
 
     // single BACK button (auto-saves)
