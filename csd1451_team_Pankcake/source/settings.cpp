@@ -178,7 +178,7 @@ GameState UpdateAndRenderSettings(AEGfxVertexList* mesh, s8 font, float dt)
     float tw, th;
     AEGfxGetPrintSize(font, "SETTINGS", 2.0f, &tw, &th);
     AEGfxPrint(font, const_cast<char*>("SETTINGS"),
-        -tw / 2.0f, 0.55f, 2.0f, 0.0f, 1.0f, 0.0f, 1.0f);
+        -tw / 2.0f, 0.42f, 2.0f, 0.0f, 1.0f, 0.0f, 1.0f);
 
     // sliders
     const float TRACK_W = SETTINGS_SLIDER_TRACK_W;
