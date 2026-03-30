@@ -98,7 +98,7 @@ void InitCommonMeshes(void) {
 
     // Create circle mesh
     AEGfxMeshStart();
-    int segments = 360;
+    int segments = CIRCLE_MESH_SEGMENTS;
     for (int i = 0; i < segments; i++) {
         float angle1 = (i * 360.0f / segments) * PI / 180.0f;
         float angle2 = ((i + 1) * 360.0f / segments) * PI / 180.0f;
@@ -160,8 +160,8 @@ int checkCollision(float playerX, float playerY, float radius,
     std::vector<std::vector<int>>& gameMap) {
 
     // Shrink the collision box slightly inward from all sides
-    float epsilon = 30.0f;  // Adjust this value as needed
-    float epslion_less = 20.0f;
+    float epsilon = COLLISION_EPSILON;
+    float epslion_less = COLLISION_EPSILON_LESS;
     // Step 1: Calculate edge points - subtract epsilon from radius
     float leftEdge = playerX - (radius - epsilon);
     float rightEdge = playerX + (radius + epslion_less);
@@ -169,10 +169,10 @@ int checkCollision(float playerX, float playerY, float radius,
     float bottomEdge = playerY - (radius + epslion_less);
 
     // Step 2: Convert to grid coordinates
-    int leftCol = (int)((leftEdge + 800.0f - 25.0f) / 50.0f);
-    int rightCol = (int)((rightEdge + 800.0f - 25.0f) / 50.0f);
-    int topRow = (int)((450.0f - topEdge - 25.0f) / 50.0f);
-    int bottomRow = (int)((450.0f - bottomEdge - 25.0f) / 50.0f);
+    int leftCol = (int)((leftEdge + COLLISION_WORLD_OFFSET_X - COLLISION_TILE_OFFSET) / COLLISION_TILE_SIZE);
+    int rightCol = (int)((rightEdge + COLLISION_WORLD_OFFSET_X - COLLISION_TILE_OFFSET) / COLLISION_TILE_SIZE);
+    int topRow = (int)((COLLISION_WORLD_OFFSET_Y - topEdge - COLLISION_TILE_OFFSET) / COLLISION_TILE_SIZE);
+    int bottomRow = (int)((COLLISION_WORLD_OFFSET_Y - bottomEdge - COLLISION_TILE_OFFSET) / COLLISION_TILE_SIZE);
 
     // Step 3: Check boundaries
     if (leftCol < 0 || rightCol >= MAP_WIDTH ||
@@ -206,10 +206,10 @@ int checkCollision(Player& player, float radius,
     float topEdge = player.y + (radius - epsilon);
     float bottomEdge = player.y - (radius + epslion_less);
 
-    int leftCol = (int)((leftEdge + 800.0f - 25.0f) / 50.0f);
-    int rightCol = (int)((rightEdge + 800.0f - 25.0f) / 50.0f);
-    int topRow = (int)((450.0f - topEdge - 25.0f) / 50.0f);
-    int bottomRow = (int)((450.0f - bottomEdge - 25.0f) / 50.0f);
+    int leftCol = (int)((leftEdge + COLLISION_WORLD_OFFSET_X - COLLISION_TILE_OFFSET) / COLLISION_TILE_SIZE);
+    int rightCol = (int)((rightEdge + COLLISION_WORLD_OFFSET_X - COLLISION_TILE_OFFSET) / COLLISION_TILE_SIZE);
+    int topRow = (int)((COLLISION_WORLD_OFFSET_Y - topEdge - COLLISION_TILE_OFFSET) / COLLISION_TILE_SIZE);
+    int bottomRow = (int)((COLLISION_WORLD_OFFSET_Y - bottomEdge - COLLISION_TILE_OFFSET) / COLLISION_TILE_SIZE);
 
     if (leftCol < 0 || rightCol >= MAP_WIDTH || topRow < 0 || bottomRow >= MAP_HEIGHT)
         return 1;
@@ -222,8 +222,8 @@ int checkCollision(Player& player, float radius,
 	//Look for flag interactions in the same area. Player center must cross tile center to trigger
     for (int row = topRow; row <= bottomRow; row++) {
         for (int col = leftCol; col <= rightCol; col++) {
-            float tileCenterX = col * 50.0f - 800.0f + 10.0f;
-            float tileCenterY = 450.0f - row * 50.0f - 10.0f;
+            float tileCenterX = col * COLLISION_TILE_SIZE - COLLISION_WORLD_OFFSET_X + 10.0f;
+            float tileCenterY = COLLISION_WORLD_OFFSET_Y - row * COLLISION_TILE_SIZE - 10.0f;
 
             // Player center must cross tile center to trigger
             bool playerCenterInTile = (player.x >= tileCenterX - 25.0f && player.x <= tileCenterX + 25.0f &&
