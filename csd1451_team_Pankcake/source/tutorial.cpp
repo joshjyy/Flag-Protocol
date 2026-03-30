@@ -23,6 +23,7 @@
 #include "events.hpp"
 #include "map.hpp"
 #include "tutorial.hpp"
+#include "debug.hpp"
 #include <vector>
 
 void Tutorial_RenderHints(s8 font)
@@ -37,6 +38,8 @@ void Tutorial_RenderHints(s8 font)
         { "V: Unlimited Ammo", 0.4f, 0.8f, 1.0f },
         { "K: Die / Respawn",            1.0f, 0.4f, 0.4f },
         { "M: Drop Flag",      1.0f, 1.0f, 0.4f },
+        { "F2: Show Colliders", 1.0f, 0.6f, 0.0f },
+
         { "Look for the Lime Tile and Step On It to Obtain Flag Node!",          0.0f, 1.0f, 1.0f },
         { "Look for the Purple Tile and Step On It To Connect Flag Node for Points!",      0.5f, 0.0f, 1.0f },
     };
@@ -182,6 +185,9 @@ void UpdateAndRenderTutorial(
 
     // Render
     DrawPlayer(player, meshes.circle,meshes.arrow, camera, dt, *gameMap);
+    if (AEInputCheckTriggered(AEVK_F2)) DebugMode.g_debug_collision = !DebugMode.g_debug_collision;
+    DebugDraw(player, PLAYER_COLLISION_RADIUS, camera);
+
     RenderGrunts(grunts, meshes.circle, camera);
     RenderBullets(player, playerBullets, meshes.circle, camera);
     RenderBullets(enemyBullets, meshes.circle, camera);

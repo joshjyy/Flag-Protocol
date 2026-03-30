@@ -16,7 +16,7 @@
 #include "AEEngine.h"
 #include "utils.hpp"
 #include "player.hpp"
-#include "Debug.hpp"
+#include "debug.hpp"
 #include "gameConstants.hpp"
 
 debug DebugMode;
