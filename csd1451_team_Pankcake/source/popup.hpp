@@ -20,7 +20,7 @@ struct Popup {
     float timer = 0.0f;
     float duration = 3.0f;
     float r = 1.0f, g = 1.0f, b = 1.0f;  // ADD
-    char message[64] = {};
+    char message[256] = {};
 };
 
 void Popup_Show(Popup& p, const char* msg, float duration = 10.0f, float r = 1.0f, float g = 0.0f, float b = 0.0f);
