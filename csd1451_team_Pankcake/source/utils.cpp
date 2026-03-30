@@ -216,12 +216,12 @@ int checkCollision(Player& player, float radius,
 
             if (gameMap[row][col] == 4 && !player.holdingFlag && playerCenterInTile) {
                 gameMap[row][col] = 5;
-                printf("Flag picked up!\n");
+                //printf("Flag picked up!\n");
                 return 4;
             }
 
             if (gameMap[row][col] == 2 && player.holdingFlag && playerCenterInTile) {
-                printf("Flag dropped !");
+                //printf("Flag dropped !");
                 return 2;
             }
         }

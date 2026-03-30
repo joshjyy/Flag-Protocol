@@ -285,8 +285,8 @@ void UpdateGruntAI(Grunt& grunt, Player& player, std::vector<Bullet>& enemyBulle
         grunt.currentState = newState;
         grunt.stateTimer = 0.0f;
 
-        const char* stateNames[] = { "IDLE", "PATROL", "CHASE", "ATTACK", "RETREAT", "SEEK_COVER", "DEAD" };
-        printf("Grunt AI: %s -> %s\n", stateNames[oldState], stateNames[newState]);
+       // const char* stateNames[] = { "IDLE", "PATROL", "CHASE", "ATTACK", "RETREAT", "SEEK_COVER", "DEAD" };
+       // printf("Grunt AI: %s -> %s\n", stateNames[oldState], stateNames[newState]);
     }
 
     switch (grunt.currentState) {

@@ -284,7 +284,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				currentState = STATE_PAUSE;
 				ForceShowCursor(true);
 
-				printf("Pause triggered!\n");
+				//printf("Pause triggered!\n");
 			}
 		}
 
@@ -302,7 +302,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				currentState = STATE_PAUSE;
 				ForceShowCursor(true);
 
-				printf("Pause triggered!\n");
+				//printf("Pause triggered!\n");
 			}
 			Background_Update(dt);
 			Update_CameraPosition(camera, player.x, player.y, dt);
@@ -349,7 +349,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				currentState = STATE_PAUSE;
 				ForceShowCursor(true);
 
-				printf("Pause triggered!\n");
+				//printf("Pause triggered!\n");
 			}
 			
 			Background_Update(dt);

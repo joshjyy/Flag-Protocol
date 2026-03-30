@@ -212,7 +212,7 @@ void CheckBulletGruntCollisions(std::vector<Bullet>& playerBullets, std::vector<
                 }
 
                 SpawnDamageNumber(grunt.movingX, grunt.movingY, playerBullets[i].damage, false);
-                printf("Grunt hit! Health: %.1f\n", grunt.health);
+                //printf("Grunt hit! Health: %.1f\n", grunt.health);
 
                 if (grunt.health <= 0.0f && !grunt.isDead) {
                     playerInfo.gruntsKilled++;
@@ -243,7 +243,7 @@ void CheckBulletGruntCollisions(std::vector<Bullet>& playerBullets, std::vector<
                     grunt.currentState = AI_DEAD;
 
                     AEAudioPlay(EDeathSound, gSFXGroup, 1.0f, 1.0f, 0);
-                    printf("Grunt killed! Total kills: %d\n", playerInfo.gruntsKilled);
+                    //printf("Grunt killed! Total kills: %d\n", playerInfo.gruntsKilled);
                 }
 
                 playerBullets.erase(playerBullets.begin() + i);

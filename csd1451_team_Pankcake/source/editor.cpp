@@ -58,34 +58,34 @@ void SaveCustomMap(std::vector<std::vector<int>>& gameMap) {
     floodfill(gameMap, 0, 0);
     if (!HasHole()) {
         Save_Game_Level("Assets/My_Custom_Map.txt", gameMap);
-        printf("Custom map saved to Assets/My_Custom_Map.txt!\n");
+        //printf("Custom map saved to Assets/My_Custom_Map.txt!\n");
     }
     else {
-        printf("Map has holes! Fix them before saving.\n");
+        //printf("Map has holes! Fix them before saving.\n");
     }
 }
 
 // Loads custom map
 void LoadCustomMap(std::vector<std::vector<int>>& gameMap) {
     if (Load_Game_Level("Assets/My_Custom_Map.txt", gameMap)) {
-        printf("Custom map loaded from Assets/My_Custom_Map.txt!\n");
+        //printf("Custom map loaded from Assets/My_Custom_Map.txt!\n");
     }
     else {
-        printf("No custom map found! Save one first with 'S'.\n");
+        //printf("No custom map found! Save one first with 'S'.\n");
     }
 }
 
 // Loads initial map layout
 void ResetToInitialEditorMap(std::vector<std::vector<int>>& gameMap) {
     gameMap = g_initialEditorMap;
-    printf("Reset to initial editor map!\n");
+    //printf("Reset to initial editor map!\n");
 
 }
 
 // Save the initial editor map (called when editor first loads)
 void SaveInitialEditorMap(std::vector<std::vector<int>>& gameMap) {
     g_initialEditorMap = gameMap;
-    printf("Initial editor state saved!\n");
+    //printf("Initial editor state saved!\n");
 }
 
 void ClearTileType(std::vector<std::vector<int>>& gameMap, int tileType) {
@@ -159,7 +159,7 @@ void HandleEditorInput(EditorState& editor,
                 gameMap[i][j] = 0;
             }
         }
-        printf("Map cleared!\n");
+        //printf("Map cleared!\n");
     }
 
     // Zoom
