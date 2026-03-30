@@ -339,3 +339,11 @@ const float MAP_CAMERA_PADDING_Y = 500.0f;
 const float MAP_CAMERA_CLAMP_BUFFER = 200.0f;
 const float MAP_ZOOM_MAX = 50.0f;
 const float MAP_ZOOM_MIN = 14.0f;
+
+// Popup constants
+const float POPUP_BOX_W = 400.0f;
+const float POPUP_BOX_H = 60.0f;
+const float POPUP_BOX_Y = -300.0f;
+const float POPUP_BOX_ALPHA_MULT = 0.8f;
+const float POPUP_TEXT_Y = -0.7f;
+const float POPUP_TEXT_SCALE = 1.0f;

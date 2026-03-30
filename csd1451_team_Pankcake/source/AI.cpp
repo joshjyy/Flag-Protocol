@@ -281,12 +281,12 @@ void UpdateGruntAI(Grunt& grunt, Player& player, std::vector<Bullet>& enemyBulle
     GruntAIState newState = EvaluateDecisionTree(grunt, player, gameMap);
 
     if (newState != grunt.currentState) {
-        GruntAIState oldState = grunt.currentState;
+        //GruntAIState oldState = grunt.currentState;
         grunt.currentState = newState;
         grunt.stateTimer = 0.0f;
 
-       // const char* stateNames[] = { "IDLE", "PATROL", "CHASE", "ATTACK", "RETREAT", "SEEK_COVER", "DEAD" };
-       // printf("Grunt AI: %s -> %s\n", stateNames[oldState], stateNames[newState]);
+        //const char* stateNames[] = { "IDLE", "PATROL", "CHASE", "ATTACK", "RETREAT", "SEEK_COVER", "DEAD" };
+       //printf("Grunt AI: %s -> %s\n", stateNames[oldState], stateNames[newState]);
     }
 
     switch (grunt.currentState) {
