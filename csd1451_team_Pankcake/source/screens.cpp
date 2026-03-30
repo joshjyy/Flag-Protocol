@@ -290,14 +290,39 @@ GameState UpdateAndRenderMenu(AEGfxVertexList* mesh, s8 font, float dt) {
         const char* topStr = "TOP SCORES:";
         AEGfxGetPrintSize(font, topStr, 0.9f, &tw, &th);
         AEGfxPrint(font, const_cast<char*>(topStr), popCenterNX - tw / 2, (popY + 100.0f) / (SCREEN_HEIGHT / 2.0f), 0.9f, 1, 0.8f, 0, 1);
-
+        bool hasAnyScore = false;
         for (int i = 0; i < SCOREBOARD_ENTRY_COUNT; i++) {
-            char entry[64];
-            sprintf_s(entry, "%d. %s  %d", i + 1, highScores[i].name, highScores[i].score);
-            AEGfxGetPrintSize(font, entry, 0.8f, &tw, &th);
-            AEGfxPrint(font, entry, popCenterNX - tw / 2,
-                (popY + 50.0f - i * SCOREBOARD_ENTRY_STEP_Y) / (SCREEN_HEIGHT / 2.0f),
-                0.8f, 1, 1, 1, 1);
+            if (highScores[i].score > 0 && highScores[i].name[0] != '\0') {
+                hasAnyScore = true;
+                break;
+            }
+        }
+
+        if (!hasAnyScore) {
+            const char* msg = "Win the main level to earn a spot!";
+            AEGfxGetPrintSize(font, msg, 0.65f, &tw, &th);
+            AEGfxPrint(font, msg, popCenterNX - tw / 2,
+                popY / (SCREEN_HEIGHT / 2.0f),
+                0.65f, 0.5f, 0.5f, 0.5f, 1);
+        }
+        else {
+            for (int i = 0; i < SCOREBOARD_ENTRY_COUNT; i++) {
+                char entry[64];
+                if (highScores[i].score == 0 || highScores[i].name[0] == '\0') {
+                    sprintf_s(entry, "%d. ---", i + 1);
+                    AEGfxGetPrintSize(font, entry, 0.8f, &tw, &th);
+                    AEGfxPrint(font, entry, popCenterNX - tw / 2,
+                        (popY + 50.0f - i * SCOREBOARD_ENTRY_STEP_Y) / (SCREEN_HEIGHT / 2.0f),
+                        0.8f, 0.5f, 0.5f, 0.5f, 1);
+                }
+                else {
+                    sprintf_s(entry, "%d. %s  %d", i + 1, highScores[i].name, highScores[i].score);
+                    AEGfxGetPrintSize(font, entry, 0.8f, &tw, &th);
+                    AEGfxPrint(font, entry, popCenterNX - tw / 2,
+                        (popY + 50.0f - i * SCOREBOARD_ENTRY_STEP_Y) / (SCREEN_HEIGHT / 2.0f),
+                        0.8f, 1, 1, 1, 1);
+                }
+            }
         }
     }
 

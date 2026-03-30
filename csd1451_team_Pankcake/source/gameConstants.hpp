@@ -361,3 +361,16 @@ const float ASTEROID_SCALE_MAX = 40.0f;
 const float ASTEROID_WORLD_MIN_X = -775.0f;
 const float ASTEROID_WORLD_MAX_Y = 425.0f;
 const float ASTEROID_RESET_Y_MAX = 200.0f;
+
+
+
+// Collision check constants
+const float COLLISION_EPSILON = 30.0f;
+const float COLLISION_EPSILON_LESS = 20.0f;
+const float COLLISION_WORLD_OFFSET_X = 800.0f;
+const float COLLISION_WORLD_OFFSET_Y = 450.0f;
+const float COLLISION_TILE_OFFSET = 25.0f;
+const float COLLISION_TILE_SIZE = 50.0f;
+
+// Circle mesh segments
+const int   CIRCLE_MESH_SEGMENTS = 360;
