@@ -880,11 +880,11 @@ void CurrGamestate(GameState state, int& gGameRunning, std::vector<std::vector<i
 
 void GameStateLoad(int& gGameRunning, std::vector<std::vector<int>>& gameMap) {
     if (!Load_Game_Level("Assets/Level_1_Map.txt", gameMap)) {
-        printf("Failed to load map! Exiting...\n");
+        //printf("Failed to load map! Exiting...\n");
         gGameRunning = 0;
     }
     else {
-        printf("Map loaded successfully!\n");
+        //printf("Map loaded successfully!\n");
     }
     Spawn_Flag(gameMap);
     floodfill(gameMap, 0, 0);
@@ -892,22 +892,22 @@ void GameStateLoad(int& gGameRunning, std::vector<std::vector<int>>& gameMap) {
 
 void GameStateLoadTutorial(int& gGameRunning, std::vector<std::vector<int>>& gameMap) {
     if (!Load_Game_Level("Assets/Tutorial.txt", gameMap)) {
-        printf("Failed to load tutorial map! Exiting...\n");
+        //printf("Failed to load tutorial map! Exiting...\n");
         gGameRunning = 0;
     }
     else {
-        printf("Tutorial map loaded successfully!\n");
+        //printf("Tutorial map loaded successfully!\n");
     }
     Spawn_Flag(gameMap);
 }
 
 void GameStateLoadCustom(int& gGameRunning, std::vector<std::vector<int>>& gameMap) {
     if (!Load_Game_Level("Assets/My_Custom_Map.txt", gameMap)) {
-        printf("Failed to load custom map! Exiting...\n");
+        //printf("Failed to load custom map! Exiting...\n");
         gGameRunning = 0;
     }
     else {
-        printf("Custom map loaded successfully!\n");
+        //printf("Custom map loaded successfully!\n");
     }
     Spawn_Flag(gameMap);
     floodfill(gameMap, 0, 0);
@@ -917,11 +917,11 @@ void GameStateLoadEditor(int& gGameRunning, std::vector<std::vector<int>>& gameM
     if (loaded) return;
 
     if (!Load_Game_Level("Assets/My_Custom_Map.txt", gameMap)) {
-        printf("Failed to load editor map! Exiting...\n");
+        //printf("Failed to load editor map! Exiting...\n");
         gGameRunning = 0;
     }
     else {
-        printf("Editor map loaded successfully!\n");
+        //printf("Editor map loaded successfully!\n");
     }
     loaded = true;
 }
@@ -932,7 +932,7 @@ void LoadHighScores() {
     if (!f) return;
     for (int i = 0; i < 3; i++) {
         if (fscanf_s(f, "%31s %d", highScores[i].name, 32, &highScores[i].score) != 2) {
-            printf("Loaded score %d: %s %d\n", i, highScores[i].name, highScores[i].score);
+            //printf("Loaded score %d: %s %d\n", i, highScores[i].name, highScores[i].score);
 
 
             break;

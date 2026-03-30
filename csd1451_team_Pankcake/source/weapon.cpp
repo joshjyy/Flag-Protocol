@@ -23,15 +23,15 @@
 void WeaponSwitchCheck(Player& player) {
 	if (AEInputCheckTriggered(AEVK_1)) {
 		player.currentWeaponIndex = 0;
-		printf("%s Switched!\n", GetCurrentWeapon(player).weaponName);
+		//printf("%s Switched!\n", GetCurrentWeapon(player).weaponName);
 	}
 	if (AEInputCheckTriggered(AEVK_2)) {
 		player.currentWeaponIndex = 1;
-		printf("%s Switched!\n", GetCurrentWeapon(player).weaponName);
+		//printf("%s Switched!\n", GetCurrentWeapon(player).weaponName);
 	}
 	if (AEInputCheckTriggered(AEVK_3)) {
 		player.currentWeaponIndex = 2;
-		printf("%s Switched!\n", GetCurrentWeapon(player).weaponName);
+		//printf("%s Switched!\n", GetCurrentWeapon(player).weaponName);
 	}
 
 	s32 wheelDelta = 0;
@@ -39,11 +39,11 @@ void WeaponSwitchCheck(Player& player) {
 
 	if (wheelDelta > 0) {
 		player.currentWeaponIndex = (player.currentWeaponIndex + 1) % 3;
-		printf("%s Switched!\n", GetCurrentWeapon(player).weaponName);
+		//printf("%s Switched!\n", GetCurrentWeapon(player).weaponName);
 	}
 	if (wheelDelta < 0) {
 		player.currentWeaponIndex = (player.currentWeaponIndex + 2) % 3;
-		printf("%s Switched!\n", GetCurrentWeapon(player).weaponName);
+		//printf("%s Switched!\n", GetCurrentWeapon(player).weaponName);
 	}
 }
 
@@ -75,7 +75,7 @@ void ShootingCheck(Player& player, std::vector<Bullet>& type, WeaponStats weapon
 				type.push_back(newBullet);
 
 				(*weapon.currentAmmo)--;
-				printf("Ammo: %d/%d\n", *weapon.currentAmmo, *weapon.maxAmmo);
+				//printf("Ammo: %d/%d\n", *weapon.currentAmmo, *weapon.maxAmmo);
 
 				player.shootCooldown = weapon.fireRate;
 			}
@@ -91,20 +91,20 @@ void ReloadBullets(WeaponStats weapon, float dt) {
 		if (*weapon.reloadTimer <= 0.f) {
 			*weapon.currentAmmo = *weapon.maxAmmo;
 			*weapon.inReload = false;
-			printf("%s Reloaded!\n", weapon.weaponName);
+			//printf("%s Reloaded!\n", weapon.weaponName);
 		}
 	}
 
 	// Start reload (manual)
 	if (AEInputCheckTriggered(AEVK_R) && *weapon.reloadTimer <= 0.f && *weapon.currentAmmo < *weapon.maxAmmo) {
-		printf("%s Reloading...\n", weapon.weaponName);
+		//printf("%s Reloading...\n", weapon.weaponName);
 		*weapon.reloadTimer = weapon.reloadSpeed;
 		*weapon.inReload = true;
 	}
 
 	// Auto-reload when clip is empty
 	if (*weapon.currentAmmo <= 0 && *weapon.reloadTimer <= 0.f && !*weapon.inReload) {
-		printf("%s Auto-reloading...\n", weapon.weaponName);
+		//printf("%s Auto-reloading...\n", weapon.weaponName);
 		*weapon.reloadTimer = weapon.reloadSpeed;
 		*weapon.inReload = true;
 	}

@@ -329,3 +329,13 @@ const float CREDITS_P3_HEADER_Y = 0.28f;
 const float CREDITS_P3_THANKS_START_Y = 0.14f;
 const float CREDITS_P3_THANKS_STEP_Y = 0.13f;
 const int   CREDITS_P3_THANKS_COUNT = 3;
+
+// Map
+const float MAP_DEFAULT_TILE_SIZE = 50.0f;
+const float MAP_WORLD_SIZE_TILES = 64.0f;
+const float MAP_TILE_OFFSET = 25.0f;
+const float MAP_CAMERA_PADDING_X = 500.0f;
+const float MAP_CAMERA_PADDING_Y = 500.0f;
+const float MAP_CAMERA_CLAMP_BUFFER = 200.0f;
+const float MAP_ZOOM_MAX = 50.0f;
+const float MAP_ZOOM_MIN = 14.0f;
