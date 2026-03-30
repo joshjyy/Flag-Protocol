@@ -14,8 +14,8 @@
 
 #pragma once
 #include "AEEngine.h"
+#include "gameConstants.hpp"
 
-constexpr int MAX_PARTICLES = 30;
 
 typedef struct Particle {
     float x, y;

@@ -17,6 +17,9 @@
 
 // Mathematical constants
 const float pi = 3.14159265359f;
+// Particle constants
+const int MAX_PARTICLES = 30;
+
 
 // Player constants
 const float PLAYER_RADIUS = 50.0f;
