@@ -88,6 +88,13 @@ void SaveInitialEditorMap(std::vector<std::vector<int>>& gameMap) {
     printf("Initial editor state saved!\n");
 }
 
+void ClearTileType(std::vector<std::vector<int>>& gameMap, int tileType) {
+    for (int i = 0; i < MAP_HEIGHT; i++)
+        for (int j = 0; j < MAP_WIDTH; j++)
+            if (gameMap[i][j] == tileType)
+                gameMap[i][j] = EMPTY;
+}
+
 // Input handling
 void HandleEditorInput(EditorState& editor,
     std::vector<std::vector<int>>& gameMap) {
@@ -110,6 +117,8 @@ void HandleEditorInput(EditorState& editor,
     if (gridX >= 0 && gridX < MAP_WIDTH && gridY >= 0 && gridY < MAP_HEIGHT) {
         // Left click to paint
         if (editor.editorPaintReady && AEInputCheckCurr(AEVK_LBUTTON)) {
+            if (editor.currentTileType == PLAYER_SPAWN)
+                ClearTileType(gameMap, PLAYER_SPAWN);
             gameMap[gridY][gridX] = editor.currentTileType;
         }
 

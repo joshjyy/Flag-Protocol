@@ -33,6 +33,7 @@ void UpdateAndRenderEditor(EditorState& editor,
     std::vector<std::vector<int>>& gameMap,
     AEGfxVertexList* squareMesh);
 
+void ClearTileType(std::vector<std::vector<int>>& gameMap, int tileType);
 // Input handling
 void HandleEditorInput(EditorState& editor,
     std::vector<std::vector<int>>& gameMap);

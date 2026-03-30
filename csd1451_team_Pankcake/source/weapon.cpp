@@ -124,7 +124,7 @@ void SpreadShootingCheck(Player& player, std::vector<Bullet>& type, WeaponStats 
 
 			float screenX = (float)mouseX - 800.0f;
 			float screenY = 450.0f - (float)mouseY;
-
+			// Convert screen coordinates to world coordinates
 			float worldMouseX = screenX + camera.x;
 			float worldMouseY = screenY + camera.y;
 
@@ -137,9 +137,11 @@ void SpreadShootingCheck(Player& player, std::vector<Bullet>& type, WeaponStats 
 
 			for (int i = 0; i < pellets; i++) {
 				AEAudioPlay(gShoot1Sound, gSFXGroup, 0.6f, 1.0f, 0);
-
+				// Calculate angle for each pellet
 				float angle = baseAngle - halfSpread + angleStep * i;
+				// Calculate target X position for each pellet based on angle
 				float targetX = player.x + AECos(angle) * 100.0f;
+				// Calculate target Y position for each pellet based on angle
 				float targetY = player.y + AESin(angle) * 100.0f;
 
 				Bullet newBullet = CreateBullet(player.x, player.y, targetX, targetY,
@@ -153,6 +155,7 @@ void SpreadShootingCheck(Player& player, std::vector<Bullet>& type, WeaponStats 
 	}
 }
 
+// Sets the bullet color based on the current weapon index
 void SetWeaponColor(int weaponIndex) {
 	if (weaponIndex == 0) {
 		AEGfxSetColorToMultiply(1.0f, 1.0f, 0.0f, 1.0f);  // Yellow - Pistol
@@ -160,15 +163,12 @@ void SetWeaponColor(int weaponIndex) {
 	else if (weaponIndex == 1) {
 		AEGfxSetColorToMultiply(1.0f, 0.0f, 1.0f, 1.0f);  // Purple - Rifle
 	}
-	//else if (weaponIndex == 2) {
-	//	AEGfxSetColorToMultiply(1.0f, 0.0f, 0.0f, 1.0f);  // Red - Shotgun
-	//}
 	else {
-		AEGfxSetColorToMultiply(0.0f, 1.0f, 1.0f, 1.0f);  // Cyan - Default
+		AEGfxSetColorToMultiply(0.0f, 1.0f, 1.0f, 1.0f);  // Cyan - Shotgun
 	}
 }
 
-// weapon.cpp
+// Gets the RGB color values for the current weapon index, used for bullet coloring
 void GetWeaponColor(int weaponIndex, float& r, float& g, float& b) {
 	if (weaponIndex == 0) { r = 1.f; g = 1.f; b = 0.f; } // Yellow
 	else if (weaponIndex == 1) { r = 1.f; g = 0.f; b = 1.f; } // Purple
