@@ -16,7 +16,9 @@
 #include "utils.hpp"
 #include <cstdio>
 #include "sound.hpp"
-#include "popup.hpp"
+
+Popup popup;
+
 std::vector<std::vector<int>> g_initialEditorMap;
 
 EditorState InitEditor(void) {
@@ -27,6 +29,10 @@ EditorState InitEditor(void) {
     editor.editorPaintReady = false;
     editor.camera.x = 0.0f;
     editor.camera.y = 0.0f;
+    editor.flag_count = 0;
+    editor.enemy_spawner_count = 0;
+    editor.player_spawn_count = 0;
+    editor.goal_count = 0;
     return editor;
 }
 
@@ -54,17 +60,36 @@ void UpdateAndRenderEditor(EditorState& editor,
 }
 
 // Saves custom map
-void SaveCustomMap(std::vector<std::vector<int>>& gameMap) {
+void SaveCustomMap(std::vector<std::vector<int>>& gameMap, EditorState& editor) {
     floodfill(gameMap, 0, 0);
-    if (!HasHole()) {
-        Save_Game_Level("Assets/My_Custom_Map.txt", gameMap);
-        //printf("Custom map saved to Assets/My_Custom_Map.txt!\n");
-    }
-    else {
-        //printf("Map has holes! Fix them before saving.\n");
-    }
-}
 
+    if (HasHole()) {
+        Popup_Show(popup, "Map has holes! Fix before saving.", 3.0f, 1.0f, 0.0f, 0.0f);
+        return;
+    }
+
+    char errorMsg[128] = "";
+
+    if (editor.flag_count < 5)
+        strcat_s(errorMsg, "Need 5 flags!\n ");
+
+    if (editor.enemy_spawner_count < 2)
+        strcat_s(errorMsg, "Need 2 spawners!\n ");
+
+    if (editor.player_spawn_count < 1)
+        strcat_s(errorMsg, "Need 1 player spawn!\n");
+
+    if (editor.goal_count < 1)
+        strcat_s(errorMsg, "Need 1 Goal!\n");
+
+    if (strlen(errorMsg) > 0) {
+        Popup_Show(popup, errorMsg, 3.0f, 1.0f, 0.0f, 0.0f);
+        return;
+    }
+
+    Save_Game_Level("Assets/My_Custom_Map.txt", gameMap);
+    Popup_Show(popup, "Map Saved Successfully.", 3.0f, 0.0f, 1.0f, 0.0f);
+}
 // Loads custom map
 void LoadCustomMap(std::vector<std::vector<int>>& gameMap) {
     if (Load_Game_Level("Assets/My_Custom_Map.txt", gameMap)) {
@@ -99,6 +124,19 @@ void ClearTileType(std::vector<std::vector<int>>& gameMap, int tileType) {
 void HandleEditorInput(EditorState& editor,
     std::vector<std::vector<int>>& gameMap) {
 
+    editor.flag_count = 0;
+    editor.enemy_spawner_count = 0;
+    editor.player_spawn_count = 0;
+    editor.goal_count = 0;
+    for (int y = 0; y < MAP_HEIGHT; y++) {
+        for (int x = 0; x < MAP_WIDTH; x++) {
+            if (gameMap[y][x] == FLAG) editor.flag_count++; 
+            if (gameMap[y][x] == ENEMY_SPAWN) editor.enemy_spawner_count++;
+            if (gameMap[y][x] == PLAYER_SPAWN) editor.player_spawn_count++;
+            if (gameMap[y][x] == GOAL) editor.goal_count++;
+        }
+    }
+
     // Get mouse position
     AEInputGetCursorPosition(&editor.mouseX, &editor.mouseY);
 
@@ -115,16 +153,39 @@ void HandleEditorInput(EditorState& editor,
 
     // Check if within grid bounds
     if (gridX >= 0 && gridX < MAP_WIDTH && gridY >= 0 && gridY < MAP_HEIGHT) {
-        // Left click to paint
         if (editor.editorPaintReady && AEInputCheckCurr(AEVK_LBUTTON)) {
-            if (editor.currentTileType == PLAYER_SPAWN)
-                ClearTileType(gameMap, PLAYER_SPAWN);
-            gameMap[gridY][gridX] = editor.currentTileType;
+                if (editor.currentTileType == PLAYER_SPAWN)
+                    ClearTileType(gameMap, PLAYER_SPAWN);
+
+                if (editor.currentTileType == PLAYER_SPAWN)
+                    ClearTileType(gameMap, PLAYER_SPAWN);
+
+                if (editor.currentTileType == GOAL)
+                    ClearTileType(gameMap, GOAL);
+
+                if (editor.currentTileType == FLAG) {
+                    if (editor.flag_count < 10)
+                        gameMap[gridY][gridX] = editor.currentTileType;
+                }
+                else if (editor.currentTileType == ENEMY_SPAWN) {
+                    if (editor.enemy_spawner_count < 10)
+                        gameMap[gridY][gridX] = editor.currentTileType;
+                }
+                else {
+                    gameMap[gridY][gridX] = editor.currentTileType;
+                }
+
+            printf("flag_count: %d\n", editor.flag_count);
+            printf("enemy_spawner_count: %d\n", editor.enemy_spawner_count);
+            printf("player_spawn_count: %d\n", editor.player_spawn_count);
         }
 
-        // Right click to erase
         if (AEInputCheckCurr(AEVK_RBUTTON)) {
             gameMap[gridY][gridX] = 0;
+            printf("flag_count: %d\n", editor.flag_count);
+            printf("enemy_spawner_count: %d\n", editor.enemy_spawner_count);
+            printf("player_spawn_count: %d\n", editor.player_spawn_count);
+
         }
     }
 
@@ -139,7 +200,8 @@ void HandleEditorInput(EditorState& editor,
 
     // Save custom map (S key)
     if (AEInputCheckTriggered(AEVK_S)) {
-        SaveCustomMap(gameMap); 
+        printf("flags: %d spawners: %d\n", editor.flag_count, editor.enemy_spawner_count);
+        SaveCustomMap(gameMap, editor);
     }
 
     // Load custom map (L key)

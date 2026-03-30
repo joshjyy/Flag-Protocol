@@ -15,7 +15,6 @@
 #include <stack>
 #include <utility>
 #include "gameConstants.hpp"
-#include "popup.hpp"
 #include <vector>
 
 std::random_device rd;
@@ -24,7 +23,6 @@ float MAP_HEIGHT{};
 float MAP_WIDTH{};
 float TILE_SIZE{};
 std::vector<std::vector<int>> newMap;
-Popup popup;
 
 int Load_Game_Level(const char* filename, std::vector<std::vector<int>>& arr) {
 	std::ifstream map_file(filename);
@@ -123,8 +121,6 @@ void Spawn_Flag(std::vector<std::vector<int>>& arr) {
 	for (int i = 0; i < MAP_HEIGHT; i++)
 		for (int j = 0; j < MAP_WIDTH; j++)
 			if (arr[i][j] == FLAG_SPAWN) count++;
-
-	if (count == 0) { Popup_Show(popup, "No Flag Found", 3.0f, 0.0f, 1.0f, 0.0f); }
 
 	Tile* found = new Tile[count];
 	int flagloc = 0;
@@ -262,14 +258,6 @@ bool HasHole() {
 	for (int i = 0; i < MAP_HEIGHT + 2; i++)
 		for (int j = 0; j < MAP_WIDTH + 2; j++)
 			if (newMap[i][j] == 0) { hole = false; }
-
-	if (hole) {
-		Popup_Show(popup, "WARNING: LEAK FOUND", 3.0f, 1.0f, 0.0f, 0.0f);
-	}
-	else {
-		Popup_Show(popup, "Map Saved Successfully", 3.0f, 0.0f, 1.0f, 0.0f);
-	}
-
 	return hole;
 }
 

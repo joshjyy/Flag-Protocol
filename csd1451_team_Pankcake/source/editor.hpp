@@ -18,12 +18,17 @@
 #include "map.hpp"
 #include "utils.hpp"
 #include "gameConstants.hpp"
-
+#include "popup.hpp"
+extern Popup popup;
 struct EditorState {
     int currentTileType;    
     s32 mouseX;
     s32 mouseY;            
     bool editorPaintReady;  
+    int flag_count;
+    int enemy_spawner_count;
+    int player_spawn_count;
+    int goal_count;
     CameraPos camera;        
 };
 

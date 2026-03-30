@@ -23,6 +23,6 @@ struct Popup {
     char message[64] = {};
 };
 
-void Popup_Show(Popup& p, const char* msg, float duration = 3.0f, float r = 1.0f, float g = 0.0f, float b = 0.0f);
+void Popup_Show(Popup& p, const char* msg, float duration = 10.0f, float r = 1.0f, float g = 0.0f, float b = 0.0f);
 void Popup_Update(Popup& p, float dt);
-void Popup_Draw(Popup& p, AEGfxVertexList* mesh, s8 font);
+void Popup_Draw(Popup& p, s8 font);

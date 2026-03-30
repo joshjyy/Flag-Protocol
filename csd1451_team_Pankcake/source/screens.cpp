@@ -890,7 +890,7 @@ void CurrGamestate(GameState state, int& gGameRunning, std::vector<std::vector<i
 
     }
     else if (state == STATE_EDITOR) {
-        GameStateLoadCustom(gGameRunning, gameMap);
+        GameStateLoadEditor(gGameRunning, gameMap);
         ShowCursor(true);
 
     }

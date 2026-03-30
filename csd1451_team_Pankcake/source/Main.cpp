@@ -437,7 +437,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 			UpdateAndRenderEditor(editor, *gameMap, meshes.square);
 			Popup_Update(popup, dt); 
-			Popup_Draw(popup, meshes.square, fontID);  
+			Popup_Draw(popup, fontID);  
 
 			if (AEInputCheckTriggered(AEVK_P) || AEInputCheckTriggered(AEVK_ESCAPE)) {
 				currentState = STATE_PAUSE;
