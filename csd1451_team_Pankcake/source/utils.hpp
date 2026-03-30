@@ -41,6 +41,7 @@ typedef struct {
     AEGfxVertexList* square;
     AEGfxVertexList* circle;
 	AEGfxVertexList* arrow;
+    AEGfxVertexList* debug_quad;
 } CommonMeshes;
 
 extern CommonMeshes meshes;  // Global mesh storage

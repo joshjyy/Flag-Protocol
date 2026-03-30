@@ -29,7 +29,7 @@ Player InitPlayer(void) {
     Player player = {
         0,                          //gruntsKilled
         0,                        // score
-        9,						// flagCaptures
+        0,						// flagCaptures
         0,						// scoreMilestone
         0.0f,					// milestoneTimer
         PLAYER_MAX_HEALTH,       // health

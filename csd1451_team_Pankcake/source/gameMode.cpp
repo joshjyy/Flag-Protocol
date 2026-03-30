@@ -23,6 +23,7 @@
 #include "events.hpp"
 #include "map.hpp"
 #include "debris.hpp"
+#include "Debug.hpp"
 
 void DrawControlsHint(s8 font)
 {
@@ -73,6 +74,11 @@ void UpdateAndRenderGameplay(
     else
         ShootingCheck(player, playerBullets, weapon, camera);   
     ReloadBullets(weapon, dt);
+
+    if (AEInputCheckTriggered(AEVK_F1))
+        DebugMode.g_debug_collision = !DebugMode.g_debug_collision;
+
+    DebugDraw(player, PLAYER_COLLISION_RADIUS, camera);
 
     UpdateGrunts(grunts, player, enemyBullets, dt, *gameMap);
     UpdateGruntSpawner(grunts, *gameMap, dt);

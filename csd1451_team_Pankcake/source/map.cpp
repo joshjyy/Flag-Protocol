@@ -6,7 +6,6 @@
 **************************************************************************/
 
 #include "AEEngine.h"
-#include <iostream>
 #include "map.hpp"
 #include <fstream>
 #include <array>
@@ -49,7 +48,6 @@ int Load_Game_Level(const char* filename, std::vector<std::vector<int>>& arr) {
 void Save_Game_Level(const char* filename, std::vector<std::vector<int>>& arr) {
 	std::ofstream map_file(filename);
 	if (!map_file.is_open()) {
-		std::cout << "Error: Could not save file " << filename << std::endl;
 		return;
 	}
 
@@ -66,7 +64,6 @@ void Save_Game_Level(const char* filename, std::vector<std::vector<int>>& arr) {
 	}
 
 	map_file.close();
-	std::cout << "Map saved successfully to " << filename << "!" << std::endl;
 }
 
 void Load_Map(std::vector<std::vector<int>>& arr, CameraPos& camera, bool editorMode) {
@@ -127,7 +124,7 @@ void Spawn_Flag(std::vector<std::vector<int>>& arr) {
 		for (int j = 0; j < MAP_WIDTH; j++)
 			if (arr[i][j] == FLAG_SPAWN) count++;
 
-	if (count == 0) { std::cout << "No flag tiles found!\n"; return; }
+	if (count == 0) { Popup_Show(popup, "No Flag Found", 3.0f, 0.0f, 1.0f, 0.0f); }
 
 	Tile* found = new Tile[count];
 	int flagloc = 0;
@@ -138,7 +135,6 @@ void Spawn_Flag(std::vector<std::vector<int>>& arr) {
 	srand((unsigned int)time(0));
 	int index = rand() % count;
 	arr[found[index].row][found[index].col] = FLAG;
-	std::cout << "Flag spawned at Row: " << found[index].row << " Col: " << found[index].col << "\n";
 	delete[] found;
 }
 
@@ -268,11 +264,9 @@ bool HasHole() {
 			if (newMap[i][j] == 0) { hole = false; }
 
 	if (hole) {
-		std::cout << "leak exists" << std::endl;
 		Popup_Show(popup, "WARNING: LEAK FOUND", 3.0f, 1.0f, 0.0f, 0.0f);
 	}
 	else {
-		std::cout << "no leak" << std::endl;
 		Popup_Show(popup, "Map Saved Successfully", 3.0f, 0.0f, 1.0f, 0.0f);
 	}
 

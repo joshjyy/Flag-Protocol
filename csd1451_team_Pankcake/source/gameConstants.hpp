@@ -347,3 +347,18 @@ const float POPUP_BOX_Y = -300.0f;
 const float POPUP_BOX_ALPHA_MULT = 0.8f;
 const float POPUP_TEXT_Y = -0.7f;
 const float POPUP_TEXT_SCALE = 1.0f;
+
+// Debug constants
+const float DEBUG_EPSILON = 30.0f;
+const float DEBUG_EPSILON_LESS = 20.0f;
+const float DEBUG_THICKNESS = 2.0f;
+
+//debris file
+const int   ASTEROID_COUNT = 2000;
+const float ASTEROID_SPEED_MIN = 30.0f;
+const float ASTEROID_SPEED_MAX = 100.0f;
+const float ASTEROID_SCALE_MIN = 15.0f;
+const float ASTEROID_SCALE_MAX = 40.0f;
+const float ASTEROID_WORLD_MIN_X = -775.0f;
+const float ASTEROID_WORLD_MAX_Y = 425.0f;
+const float ASTEROID_RESET_Y_MAX = 200.0f;

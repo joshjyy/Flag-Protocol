@@ -1,22 +1,7 @@
-/*!************************************************************************
-  \file debris.cpp
-  \author
-
-
-
-
-
-
-  \brief
-  This source file contains definitions for the background particles.
-
-**************************************************************************/
-
 #include "debris.hpp"
 #include "AEEngine.h"
 #include <random>
 
-#define ASTEROID_COUNT 2000
 extern float MAP_WIDTH;
 extern float MAP_HEIGHT;
 extern float TILE_SIZE;
@@ -39,10 +24,10 @@ void Background_Load() {
 }
 
 void Background_Init() {
-    std::uniform_real_distribution<float> randX(-775.0f, -775.0f + (MAP_WIDTH * TILE_SIZE));
-    std::uniform_real_distribution<float> randY(425.0f - (MAP_HEIGHT * TILE_SIZE), 425.0f);
-    std::uniform_real_distribution<float> randSpeed(30.0f, 100.0f);
-    std::uniform_real_distribution<float> randScale(15.0f, 40.0f);
+    std::uniform_real_distribution<float> randX(ASTEROID_WORLD_MIN_X, ASTEROID_WORLD_MIN_X + (MAP_WIDTH * TILE_SIZE));
+    std::uniform_real_distribution<float> randY(ASTEROID_WORLD_MAX_Y - (MAP_HEIGHT * TILE_SIZE), ASTEROID_WORLD_MAX_Y);
+    std::uniform_real_distribution<float> randSpeed(ASTEROID_SPEED_MIN, ASTEROID_SPEED_MAX);
+    std::uniform_real_distribution<float> randScale(ASTEROID_SCALE_MIN, ASTEROID_SCALE_MAX);
 
     for (int i = 0; i < ASTEROID_COUNT; i++) {
         asteroids[i].pos.x = randX(rng);
@@ -54,22 +39,23 @@ void Background_Init() {
 }
 
 void Background_Update(float g_dt) {
-    std::uniform_real_distribution<float> randX(-775.0f, -775.0f + (MAP_WIDTH * TILE_SIZE));
-    std::uniform_real_distribution<float> randSpeed(30.0f, 100.0f);
-    std::uniform_real_distribution<float> randScale(15.0f, 40.0f);
+    std::uniform_real_distribution<float> randX(ASTEROID_WORLD_MIN_X, ASTEROID_WORLD_MIN_X + (MAP_WIDTH * TILE_SIZE));
+    std::uniform_real_distribution<float> randSpeed(ASTEROID_SPEED_MIN, ASTEROID_SPEED_MAX);
+    std::uniform_real_distribution<float> randScale(ASTEROID_SCALE_MIN, ASTEROID_SCALE_MAX);
 
     for (int i = 0; i < ASTEROID_COUNT; i++) {
         asteroids[i].pos.y += asteroids[i].vel.y * g_dt;
 
-        if (asteroids[i].pos.y < 425.0f - (MAP_HEIGHT * TILE_SIZE)) {
-            std::uniform_real_distribution<float> randResetY(425.0f, 425.0f + 200.0f);
+        if (asteroids[i].pos.y < ASTEROID_WORLD_MAX_Y - (MAP_HEIGHT * TILE_SIZE)) {
+            std::uniform_real_distribution<float> randResetY(ASTEROID_WORLD_MAX_Y, ASTEROID_WORLD_MAX_Y + ASTEROID_RESET_Y_MAX);
             asteroids[i].pos.x = randX(rng);
-            asteroids[i].pos.y = randResetY(rng);  
+            asteroids[i].pos.y = randResetY(rng);
             asteroids[i].vel.y = -randSpeed(rng);
             asteroids[i].scale = randScale(rng);
         }
     }
 }
+
 void Background_Draw(CameraPos camera) {
     AEGfxSetRenderMode(AE_GFX_RM_COLOR);
     AEGfxTextureSet(NULL, 0, 0);

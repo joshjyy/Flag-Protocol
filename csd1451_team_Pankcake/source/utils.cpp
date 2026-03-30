@@ -120,6 +120,18 @@ void InitCommonMeshes(void) {
 
       meshes.arrow = AEGfxMeshEnd();
     
+      AEGfxMeshStart();
+      AEGfxTriAdd(
+          -0.5f, -0.5f, 0xFF00FF00, 0.0f, 0.0f,
+          0.5f, -0.5f, 0xFF00FF00, 0.0f, 0.0f,
+          -0.5f, 0.5f, 0xFF00FF00, 0.0f, 0.0f
+      );
+      AEGfxTriAdd(
+          0.5f, -0.5f, 0xFF00FF00, 0.0f, 0.0f,
+          0.5f, 0.5f, 0xFF00FF00, 0.0f, 0.0f,
+          -0.5f, 0.5f, 0xFF00FF00, 0.0f, 0.0f
+      );
+      meshes.debug_quad = AEGfxMeshEnd();
 
 }
 
@@ -135,6 +147,11 @@ void FreeCommonMeshes(void) {
     if (meshes.arrow) 
     { AEGfxMeshFree(meshes.arrow);
         meshes.arrow = NULL;
+    }
+    if (meshes.debug_quad)
+    {
+        AEGfxMeshFree(meshes.debug_quad);
+        meshes.debug_quad = NULL;
     }
 
 }
