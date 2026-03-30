@@ -183,6 +183,8 @@ void UpdateAndRenderTutorial(
     RemoveDeadGrunts(grunts);
     CheckPlayerGruntBodyCollision(player, grunts);
     UpdateDamageNumbers(dt);
+    CheckEnemyBulletPlayerCollision(enemyBullets, player);
+
 
     // Render
     DrawPlayer(player, meshes.circle,meshes.arrow, camera, dt, *gameMap);
