@@ -16,6 +16,7 @@
 #include "damageNumbers.hpp"
 #include <cstdlib>
 #include "sound.hpp"
+#include "debug.hpp"
 
 GruntSpawner gruntSpawner;
 
@@ -105,7 +106,10 @@ void RenderGrunts(std::vector<Grunt>& grunts, void* mesh, CameraPos& camera) {
         }
         float screenX = grunt.movingX - camera.x;
         float screenY = grunt.movingY - camera.y;
+
+        AEGfxSetColorToMultiply(1.0f, 0.0f, 0.0f, 1.0f); // enemy red tint
         DrawSprite((AEGfxVertexList*)mesh, screenX, screenY, GRUNT_RADIUS, GRUNT_RADIUS, 0.0f);
+        DebugDrawAABB(grunt.movingX, grunt.movingY, GRUNT_RADIUS / 2, GRUNT_RADIUS / 2, camera, DebugDrawType::ENEMY);
     }
 }
 

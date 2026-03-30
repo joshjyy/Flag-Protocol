@@ -24,6 +24,7 @@
 #include "map.hpp"
 #include "tutorial.hpp"
 #include "debug.hpp"
+
 #include <vector>
 
 void Tutorial_RenderHints(s8 font)
@@ -186,7 +187,16 @@ void UpdateAndRenderTutorial(
     // Render
     DrawPlayer(player, meshes.circle,meshes.arrow, camera, dt, *gameMap);
     if (AEInputCheckTriggered(AEVK_F2)) DebugMode.g_debug_collision = !DebugMode.g_debug_collision;
-    DebugDraw(player, PLAYER_COLLISION_RADIUS, camera);
+
+DebugDrawAABB(player.x, player.y, PLAYER_COLLISION_RADIUS, PLAYER_COLLISION_RADIUS, camera, DebugDrawType::PLAYER);
+
+for (const Bullet& b : playerBullets)
+    DebugDrawAABB(b.x, b.y, BULLET_RADIUS, BULLET_RADIUS, camera, DebugDrawType::BULLET);
+
+for (const Bullet& b : enemyBullets)
+    DebugDrawAABB(b.x, b.y, BULLET_RADIUS, BULLET_RADIUS, camera, DebugDrawType::BULLET);
+
+
 
     RenderGrunts(grunts, meshes.circle, camera);
     RenderBullets(player, playerBullets, meshes.circle, camera);
