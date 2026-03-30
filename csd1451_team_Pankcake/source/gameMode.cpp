@@ -75,7 +75,7 @@ void UpdateAndRenderGameplay(
         ShootingCheck(player, playerBullets, weapon, camera);   
     ReloadBullets(weapon, dt);
 
-    if (AEInputCheckTriggered(AEVK_F1))
+    if (AEInputCheckTriggered(AEVK_F2))
         DebugMode.g_debug_collision = !DebugMode.g_debug_collision;
 
     DebugDraw(player, PLAYER_COLLISION_RADIUS, camera);
