@@ -121,10 +121,6 @@ void InitCommonMeshes(void) {
       meshes.arrow = AEGfxMeshEnd();
     
 
-
-
-
-
 }
 
 void FreeCommonMeshes(void) {
@@ -209,8 +205,8 @@ int checkCollision(Player& player, float radius,
 	//Look for flag interactions in the same area. Player center must cross tile center to trigger
     for (int row = topRow; row <= bottomRow; row++) {
         for (int col = leftCol; col <= rightCol; col++) {
-            float tileCenterX = col * 50.0f - 800.0f + 25.0f;
-            float tileCenterY = 450.0f - row * 50.0f - 25.0f;
+            float tileCenterX = col * 50.0f - 800.0f + 10.0f;
+            float tileCenterY = 450.0f - row * 50.0f - 10.0f;
 
             // Player center must cross tile center to trigger
             bool playerCenterInTile = (player.x >= tileCenterX - 25.0f && player.x <= tileCenterX + 25.0f &&

@@ -115,38 +115,32 @@ static void DrawConfirmWindow(
     const Button& yesBtn,
     const Button& noBtn)
 {
-    // Darker fullscreen overlay
     AEGfxSetRenderMode(AE_GFX_RM_COLOR);
     AEGfxSetBlendMode(AE_GFX_BM_BLEND);
-    AEGfxSetTransparency(0.88f);
+    AEGfxSetTransparency(CONFIRM_OVERLAY_ALPHA);
     AEGfxSetColorToMultiply(0.0f, 0.0f, 0.0f, 1.0f);
     AEGfxSetColorToAdd(0.0f, 0.0f, 0.0f, 0.0f);
     DrawSprite(mesh, 0.0f, 0.0f, 1600.0f, 900.0f, 0.0f);
 
-    // Main panel shadow
-    AEGfxSetTransparency(0.55f);
+    AEGfxSetTransparency(CONFIRM_SHADOW_ALPHA);
     AEGfxSetColorToMultiply(0.0f, 0.0f, 0.0f, 1.0f);
-    DrawSprite(mesh, 8.0f, -8.0f, 500.0f, 210.0f, 0.0f);
+    DrawSprite(mesh, CONFIRM_SHADOW_OFFSET, -CONFIRM_SHADOW_OFFSET, CONFIRM_SHADOW_W, CONFIRM_SHADOW_H, 0.0f);
 
-    // Main panel
-    AEGfxSetTransparency(0.96f);
+    AEGfxSetTransparency(CONFIRM_PANEL_ALPHA);
     AEGfxSetColorToMultiply(0.04f, 0.04f, 0.07f, 1.0f);
-    DrawSprite(mesh, 0.0f, 0.0f, 560.0f, 250.0f, 0.0f);
+    DrawSprite(mesh, 0.0f, 0.0f, CONFIRM_PANEL_W, CONFIRM_PANEL_H, 0.0f);
 
-    // Simple inner header strip5
     AEGfxSetTransparency(1.0f);
     AEGfxSetColorToMultiply(0.35f, 0.08f, 0.08f, 1.0f);
-    DrawSprite(mesh, 0.0f, 78.0f, 560.0f, 34.0f, 0.0f);
+    DrawSprite(mesh, 0.0f, CONFIRM_HEADER_Y, CONFIRM_HEADER_W, CONFIRM_HEADER_H, 0.0f);
 
     float tw, th;
 
-    // Centered title
-    AEGfxGetPrintSize(font, title, 1.3f, &tw, &th);
-    AEGfxPrint(font, const_cast<char*>(title), -tw / 2.0f, 0.15f, 1.3f, 1.0f, 0.35f, 0.35f, 1.0f);
+    AEGfxGetPrintSize(font, title, CONFIRM_TITLE_SCALE, &tw, &th);
+    AEGfxPrint(font, const_cast<char*>(title), -tw / 2.0f, 0.15f, CONFIRM_TITLE_SCALE, 1.0f, 0.35f, 0.35f, 1.0f);
 
-    // Centered description
-    AEGfxGetPrintSize(font, desc, 0.82f, &tw, &th);
-    AEGfxPrint(font, const_cast<char*>(desc), -tw / 2.0f - 0.01f, 0.00f, 0.98f, 1.0f, 1.0f, 1.0f, 1.0f);
+    AEGfxGetPrintSize(font, desc, CONFIRM_DESC_SCALE, &tw, &th);
+    AEGfxPrint(font, const_cast<char*>(desc), -tw / 2.0f - 0.01f, 0.00f, CONFIRM_DESC_RENDER_SCALE, 1.0f, 1.0f, 1.0f, 1.0f);
 
     DrawButton(yesBtn, mesh, font);
     DrawButton(noBtn, mesh, font);
@@ -157,9 +151,9 @@ GameState UpdateAndRenderSplash(AEGfxVertexList* mesh, float dt)
     static float splashTimer = 0.0f;
     splashTimer += dt;
 
-    const float fadeInTime = 0.5f;
-    const float visibleTime = 2.0f;
-    const float fadeOutTime = 0.5f;
+    const float fadeInTime = SPLASH_FADE_IN_TIME;
+    const float visibleTime = SPLASH_VISIBLE_TIME;
+    const float fadeOutTime = SPLASH_FADE_OUT_TIME;
     const float totalTime = fadeInTime + visibleTime + fadeOutTime;
 
     float alpha = 1.0f;
@@ -183,7 +177,7 @@ GameState UpdateAndRenderSplash(AEGfxVertexList* mesh, float dt)
 
     if (gDigiPenLogo) {
         AEGfxTextureSet(gDigiPenLogo, 0.0f, 0.0f);
-        DrawSprite(mesh, 0.0f, 0.0f, 900.0f, 260.0f, 0.0f);
+        DrawSprite(mesh, 0.0f, 0.0f, SPLASH_LOGO_W, SPLASH_LOGO_H, 0.0f);
     }
 
     AEGfxSetTransparency(1.0f);
@@ -209,40 +203,36 @@ GameState UpdateAndRenderMenu(AEGfxVertexList* mesh, s8 font, float dt) {
         float speedX;
     };
 
-    static MenuBlock blocks[15];
+    static MenuBlock blocks[MENU_BG_BLOCK_COUNT];
 
-    // block trailing effect in the background
     if (!initialized) {
-        for (int i = 0; i < 15; ++i) {
-            blocks[i].size = 18.0f + (rand() % 45);
-            blocks[i].x = -900.0f - (rand() % 500) - i * 120.0f;
+        for (int i = 0; i < MENU_BG_BLOCK_COUNT; ++i) {
+            blocks[i].size = MENU_BLOCK_MIN_SIZE + (rand() % MENU_BLOCK_SIZE_RAND);
+            blocks[i].x = -900.0f - (rand() % 500) - i * MENU_BLOCK_START_X_OFFSET;
             blocks[i].y = (rand() % 900) - 450.0f;
-            blocks[i].speedX = 450.0f + (rand() % 200);
+            blocks[i].speedX = MENU_BLOCK_MIN_SPEED + (rand() % MENU_BLOCK_SPEED_RAND);
         }
         initialized = true;
     }
 
-    // pulsing effect for title
-    float pulseScale = 2.5f + 0.2f * sinf(menuAnimTime * 4.0f);
+    float pulseScale = MENU_PULSE_BASE + MENU_PULSE_AMP * sinf(menuAnimTime * MENU_PULSE_FREQ);
 
     AEGfxSetBackgroundColor(0.05f, 0.05f, 0.1f);
     AEGfxSetRenderMode(AE_GFX_RM_COLOR);
     AEGfxSetBlendMode(AE_GFX_BM_BLEND);
     AEGfxSetTransparency(1.0f);
 
-    // drawing blocks in background
-    for (int i = 0; i < 15; ++i) {
+    for (int i = 0; i < MENU_BG_BLOCK_COUNT; ++i) {
         blocks[i].x += blocks[i].speedX * dt;
 
         if (blocks[i].x - blocks[i].size > 900.0f) {
-            blocks[i].size = 18.0f + (rand() % 45);
+            blocks[i].size = MENU_BLOCK_MIN_SIZE + (rand() % MENU_BLOCK_SIZE_RAND);
             blocks[i].x = -900.0f - (rand() % 500);
             blocks[i].y = (rand() % 900) - 450.0f;
-            blocks[i].speedX = 450.0f + (rand() % 200);
+            blocks[i].speedX = MENU_BLOCK_MIN_SPEED + (rand() % MENU_BLOCK_SPEED_RAND);
         }
 
         float s = blocks[i].size;
-
         AEGfxSetColorToMultiply(0.15f, 0.9f, 0.15f, 0.45f);
         AEGfxSetColorToAdd(0, 0, 0, 0);
         DrawSprite(mesh, blocks[i].x, blocks[i].y, s, s, 0.0f);
@@ -251,11 +241,8 @@ GameState UpdateAndRenderMenu(AEGfxVertexList* mesh, s8 font, float dt) {
     float tw, th;
     AEGfxGetPrintSize(font, "Flag Protocol", pulseScale, &tw, &th);
 
-    // title centering
     float titleX = -tw / 2.0f;
     float titleY = 0.65f;
-
-    // title
     AEGfxPrint(font, const_cast<char*>("Flag Protocol"), titleX, titleY, pulseScale, 0.0f, 1.0f, 0.0f, 1.0f);
 
     Button playBtn = { 0.0f,  200.0f, 200.0f, 50.0f, "PLAY" };
@@ -273,80 +260,64 @@ GameState UpdateAndRenderMenu(AEGfxVertexList* mesh, s8 font, float dt) {
     DrawButton(quitBtn, mesh, font);
 
     if (confirmAction == CONFIRM_NONE) {
-        if (IsButtonClicked(playBtn))
-            return STATE_NAVIGATION;
-
-        if (IsButtonClicked(controlsBtn))
-            return STATE_CONTROLS;
-
-        if (IsButtonClicked(creditBtn))
-            return STATE_CREDITS;
-
-        if (IsButtonClicked(editorBtn))
-            return STATE_EDITOR;
-
-        if (IsButtonClicked(settingsBtn))
-            return STATE_SETTINGS;
-
-        if (IsButtonClicked(quitBtn)) {
-            confirmAction = CONFIRM_QUIT;
-        }
+        if (IsButtonClicked(playBtn))     return STATE_NAVIGATION;
+        if (IsButtonClicked(controlsBtn)) return STATE_CONTROLS;
+        if (IsButtonClicked(creditBtn))   return STATE_CREDITS;
+        if (IsButtonClicked(editorBtn))   return STATE_EDITOR;
+        if (IsButtonClicked(settingsBtn)) return STATE_SETTINGS;
+        if (IsButtonClicked(quitBtn))     confirmAction = CONFIRM_QUIT;
     }
 
     static bool showScoreboard = false;
 
-    // Scoreboard button - top right
-    Button scoreboardBtn = { 650.0f, 380.0f, 160.0f, 45.0f, "SCOREBOARD" };
+    Button scoreboardBtn = { SCOREBOARD_BTN_X, SCOREBOARD_BTN_Y, SCOREBOARD_BTN_W, SCOREBOARD_BTN_H, "SCOREBOARD" };
     DrawButton(scoreboardBtn, mesh, font);
     if (IsButtonClicked(scoreboardBtn))
         showScoreboard = !showScoreboard;
 
     if (showScoreboard) {
-        float popX = 650.0f;  // world space center X
-        float popY = 150.0f;  // world space center Y
+        float popX = SCOREBOARD_POP_X;
+        float popY = SCOREBOARD_POP_Y;
 
-        // Background box
         AEGfxSetTransparency(0.85f);
         AEGfxSetColorToMultiply(0.0f, 0.0f, 0.0f, 1.0f);
         AEGfxSetColorToAdd(0, 0, 0, 0);
-        DrawSprite(mesh, popX, popY, 200.0f, 320.0f, 0.0f);
+        DrawSprite(mesh, popX, popY, SCOREBOARD_POP_W, SCOREBOARD_POP_H, 0.0f);
         AEGfxSetTransparency(1.0f);
 
         float popCenterNX = popX / (SCREEN_WIDTH / 2.0f);
 
-        // Title
         const char* topStr = "TOP SCORES:";
         AEGfxGetPrintSize(font, topStr, 0.9f, &tw, &th);
-        //AEGfxPrint(paramets) // font, string, x, y, scale, r, g, b, a
         AEGfxPrint(font, const_cast<char*>(topStr), popCenterNX - tw / 2, (popY + 100.0f) / (SCREEN_HEIGHT / 2.0f), 0.9f, 1, 0.8f, 0, 1);
-        for (int i = 0; i < 3; i++) {
+
+        for (int i = 0; i < SCOREBOARD_ENTRY_COUNT; i++) {
             char entry[64];
             sprintf_s(entry, "%d. %s  %d", i + 1, highScores[i].name, highScores[i].score);
             AEGfxGetPrintSize(font, entry, 0.8f, &tw, &th);
             AEGfxPrint(font, entry, popCenterNX - tw / 2,
-                (popY + 50.0f - i * 60.0f) / (SCREEN_HEIGHT / 2.0f),
+                (popY + 50.0f - i * SCOREBOARD_ENTRY_STEP_Y) / (SCREEN_HEIGHT / 2.0f),
                 0.8f, 1, 1, 1, 1);
         }
     }
 
-        if (confirmAction == CONFIRM_QUIT) {
-            Button yesBtn = { -110.0f, -55.0f, 140.0f, 45.0f, "YES" };
-            Button noBtn = { 110.0f, -55.0f, 140.0f, 45.0f, "NO" };
+    if (confirmAction == CONFIRM_QUIT) {
+        Button yesBtn = { CONFIRM_BTN_YES_X, CONFIRM_BTN_Y, CONFIRM_BTN_W, CONFIRM_BTN_H, "YES" };
+        Button noBtn = { CONFIRM_BTN_NO_X,  CONFIRM_BTN_Y, CONFIRM_BTN_W, CONFIRM_BTN_H, "NO" };
 
-            DrawConfirmWindow(mesh, font,
-                "QUIT GAME?",
-                "Exit application completely?",
-                yesBtn, noBtn);
+        DrawConfirmWindow(mesh, font,
+            "QUIT GAME?",
+            "Exit application completely?",
+            yesBtn, noBtn);
 
-            if (IsButtonClicked(yesBtn)) {
-                confirmAction = CONFIRM_NONE;
-                return STATE_QUIT;
-            }
-
-            if (IsButtonClicked(noBtn) || AEInputCheckTriggered(AEVK_ESCAPE)) {
-                confirmAction = CONFIRM_NONE;
-            }
+        if (IsButtonClicked(yesBtn)) {
+            confirmAction = CONFIRM_NONE;
+            return STATE_QUIT;
         }
+        if (IsButtonClicked(noBtn) || AEInputCheckTriggered(AEVK_ESCAPE)) {
+            confirmAction = CONFIRM_NONE;
+        }
+    }
 
     return STATE_MENU;
 }
@@ -354,67 +325,45 @@ GameState UpdateAndRenderMenu(AEGfxVertexList* mesh, s8 font, float dt) {
 GameState UpdateAndRenderPause(AEGfxVertexList* mesh, s8 font, float dt, GameState previous) {
     (void)dt;
 
-    // Tracks destructive actions that require confirmation
     static ConfirmAction confirmAction = CONFIRM_NONE;
 
-    // Translucent dark overlay
     AEGfxSetRenderMode(AE_GFX_RM_COLOR);
     AEGfxSetBlendMode(AE_GFX_BM_BLEND);
-    AEGfxSetTransparency(0.6f);
+    AEGfxSetTransparency(PAUSE_OVERLAY_ALPHA);
     AEGfxSetColorToMultiply(0.0f, 0.0f, 0.0f, 1.0f);
     AEGfxSetColorToAdd(0.0f, 0.0f, 0.0f, 0.0f);
     DrawSprite(mesh, 0.0f, 0.0f, 1600.0f, 900.0f, 0.0f);
 
-    // Reset transparency
     AEGfxSetTransparency(1.0f);
 
-    // "PAUSED" text
     float tx, ty;
-    float titleScale = 2.0f;
     float titleWidth, titleHeight;
-    AEGfxGetPrintSize(font, "PAUSED", titleScale, &titleWidth, &titleHeight);
+    AEGfxGetPrintSize(font, "PAUSED", PAUSE_TITLE_SCALE, &titleWidth, &titleHeight);
 
     tx = -titleWidth / 2;
-    ty = 0.65f;
+    ty = PAUSE_TITLE_Y;
+    AEGfxPrint(font, const_cast<char*>("PAUSED"), tx, ty, PAUSE_TITLE_SCALE, 1.0f, 1.0f, 1.0f, 1.0f);
 
-    
-    AEGfxPrint(font, const_cast<char*>("PAUSED"), tx, ty, titleScale, 1.0f, 1.0f, 1.0f, 1.0f);
-
-    // Buttons
     Button resumeBtn = { 0.0f,  100.0f, 200.0f, 50.0f, "RESUME" };
     Button menuBtn = { 0.0f,    0.0f, 200.0f, 50.0f, "MENU" };
     Button quitBtn = { 0.0f, -100.0f, 200.0f, 50.0f, "QUIT" };
-
 
     DrawButton(resumeBtn, mesh, font);
     DrawButton(menuBtn, mesh, font);
     DrawButton(quitBtn, mesh, font);
     DrawControlsHint(fontID);
 
-    // Only allow instant resume when no confirmation popup is active
     if (confirmAction == CONFIRM_NONE) {
-        // Using P key to resume from Paused screen
-        if (AEInputCheckTriggered(AEVK_P) || AEInputCheckTriggered(AEVK_ESCAPE)) {
+        if (AEInputCheckTriggered(AEVK_P) || AEInputCheckTriggered(AEVK_ESCAPE))
             return previous;
-        }
-
-        // Button interactions
-        if (IsButtonClicked(resumeBtn)) {
-            return previous;
-        }
-
-        if (IsButtonClicked(menuBtn)) {
-            confirmAction = CONFIRM_MENU;
-        }
-
-        if (IsButtonClicked(quitBtn)) {
-            confirmAction = CONFIRM_QUIT;
-        }
+        if (IsButtonClicked(resumeBtn)) return previous;
+        if (IsButtonClicked(menuBtn))   confirmAction = CONFIRM_MENU;
+        if (IsButtonClicked(quitBtn))   confirmAction = CONFIRM_QUIT;
     }
 
     if (confirmAction != CONFIRM_NONE) {
-        Button yesBtn = { -110.0f, -55.0f, 140.0f, 45.0f, "YES" };
-        Button noBtn = { 110.0f, -55.0f, 140.0f, 45.0f, "NO" };
+        Button yesBtn = { CONFIRM_BTN_YES_X, CONFIRM_BTN_Y, CONFIRM_BTN_W, CONFIRM_BTN_H, "YES" };
+        Button noBtn = { CONFIRM_BTN_NO_X,  CONFIRM_BTN_Y, CONFIRM_BTN_W, CONFIRM_BTN_H, "NO" };
 
         if (confirmAction == CONFIRM_MENU) {
             DrawConfirmWindow(mesh, font,
@@ -428,10 +377,8 @@ GameState UpdateAndRenderPause(AEGfxVertexList* mesh, s8 font, float dt, GameSta
                 AEAudioStopGroup(EditorBGMGroup);
                 return STATE_MENU;
             }
-
-            if (IsButtonClicked(noBtn) || AEInputCheckTriggered(AEVK_ESCAPE)) {
+            if (IsButtonClicked(noBtn) || AEInputCheckTriggered(AEVK_ESCAPE))
                 confirmAction = CONFIRM_NONE;
-            }
         }
 
         if (confirmAction == CONFIRM_QUIT) {
@@ -444,10 +391,8 @@ GameState UpdateAndRenderPause(AEGfxVertexList* mesh, s8 font, float dt, GameSta
                 confirmAction = CONFIRM_NONE;
                 return STATE_QUIT;
             }
-
-            if (IsButtonClicked(noBtn) || AEInputCheckTriggered(AEVK_ESCAPE)) {
+            if (IsButtonClicked(noBtn) || AEInputCheckTriggered(AEVK_ESCAPE))
                 confirmAction = CONFIRM_NONE;
-            }
         }
     }
 
@@ -502,14 +447,17 @@ GameState UpdateAndRenderControls(AEGfxVertexList* mesh, s8 font, float dt) {
     AEGfxPrint(font, "- Shoot", xDesc, y, 1.0f, 1, 1, 1, 1);
 
     // Reload
-    GetNormalizedTextPosition(-620.0f, -60.0f, &xKey, &y);
+    GetNormalizedTextPosition(-330.0f, -60.0f, &xKey, &y);
     AEGfxPrint(font, "R", xKey, y, 1.0f, 1, 1, 1, 1);
     AEGfxPrint(font, "- Reload", xDesc, y, 1.0f, 1, 1, 1, 1);
 
     // Switch weapons
     GetNormalizedTextPosition(-620.0f, -100.0f, &xKey, &y);
     AEGfxPrint(font, "1 / 2 / 3 or MouseScroll", xKey, y, 1.0f, 1, 1, 1, 1);
-    AEGfxPrint(font, "- Switch Weapons", xDesc, y, 1.0f, 1, 1, 1, 1);
+
+    float xDescWide, unusedWide;
+    GetNormalizedTextPosition(-330.0f, 0.0f, &xDescWide, &unusedWide);
+    AEGfxPrint(font, "- Switch Weapons", xDescWide, y, 1.0f, 1, 1, 1, 1);
 
     // Objective
     GetNormalizedTextPosition(120.0f, 240.0f, &textX, &textY);
@@ -595,42 +543,38 @@ GameState UpdateAndRenderNavigation(AEGfxVertexList* mesh, s8 font, float dt) {
 
 GameState UpdateAndRenderWinScreen(AEGfxVertexList* mesh, s8 font, float dt, Player& player, GameState previous) {
     (void)dt;
-    AEGfxSetBackgroundColor(0.05f, 0.05f, 0.1f);
+    AEGfxSetBackgroundColor(WIN_BG_R, WIN_BG_G, WIN_BG_B);
     AEGfxSetRenderMode(AE_GFX_RM_COLOR);
     AEGfxSetBlendMode(AE_GFX_BM_BLEND);
     AEGfxSetTransparency(1.0f);
 
     float tw, th;
 
-    // Title
-    AEGfxGetPrintSize(font, "YOU WIN!", 2.5f, &tw, &th);
-    AEGfxPrint(font, const_cast<char*>("YOU WIN!"), -tw / 2, 0.75f, 2.5f, 0.0f, 1.0f, 0.0f, 1.0f);
+    AEGfxGetPrintSize(font, "YOU WIN!", ENDSCREEN_TITLE_SCALE, &tw, &th);
+    AEGfxPrint(font, const_cast<char*>("YOU WIN!"), -tw / 2, ENDSCREEN_TITLE_Y, ENDSCREEN_TITLE_SCALE, 0.0f, 1.0f, 0.0f, 1.0f);
 
-    // Stats
     char scoreStr[64], gruntsStr[64], flagStr[64];
     sprintf_s(scoreStr, "SCORE: %d", player.score);
     sprintf_s(gruntsStr, "VIRUSES KILLED: %d", player.gruntsKilled);
     sprintf_s(flagStr, "FLAGS CAPTURED: %d", player.flagCaptures);
 
-    AEGfxGetPrintSize(font, scoreStr, 1.2f, &tw, &th);
-    AEGfxPrint(font, scoreStr, -tw / 2, 0.35f, 1.2f, 1, 1, 1, 1);
-    AEGfxGetPrintSize(font, gruntsStr, 1.2f, &tw, &th);
-    AEGfxPrint(font, gruntsStr, -tw / 2, 0.15f, 1.2f, 1, 1, 1, 1);
-    AEGfxGetPrintSize(font, flagStr, 1.2f, &tw, &th);
-    AEGfxPrint(font, flagStr, -tw / 2, -0.05f, 1.2f, 1, 1, 1, 1);
+    AEGfxGetPrintSize(font, scoreStr, ENDSCREEN_STATS_SCALE, &tw, &th);
+    AEGfxPrint(font, scoreStr, -tw / 2, ENDSCREEN_STAT_SCORE_Y, ENDSCREEN_STATS_SCALE, 1, 1, 1, 1);
+    AEGfxGetPrintSize(font, gruntsStr, ENDSCREEN_STATS_SCALE, &tw, &th);
+    AEGfxPrint(font, gruntsStr, -tw / 2, ENDSCREEN_STAT_GRUNTS_Y, ENDSCREEN_STATS_SCALE, 1, 1, 1, 1);
+    AEGfxGetPrintSize(font, flagStr, ENDSCREEN_STATS_SCALE, &tw, &th);
+    AEGfxPrint(font, flagStr, -tw / 2, ENDSCREEN_STAT_FLAGS_Y, ENDSCREEN_STATS_SCALE, 1, 1, 1, 1);
 
     bool fromMainGame = (previous == STATE_GAME);
 
     if (fromMainGame) {
         if (IsTopThree(player.score) && !scoreSaved) {
-            // Name entry prompt
             const char* promptStr = "TOP 3 SCORE! ENTER YOUR NAME:";
-            AEGfxGetPrintSize(font, promptStr, 1.0f, &tw, &th);
-            AEGfxPrint(font, const_cast<char*>(promptStr), -tw / 2, -0.22f, 1.0f, 1, 0.8f, 0, 1);
+            AEGfxGetPrintSize(font, promptStr, WIN_PROMPT_SCALE, &tw, &th);
+            AEGfxPrint(font, const_cast<char*>(promptStr), -tw / 2, WIN_PROMPT_Y, WIN_PROMPT_SCALE, 1, 0.8f, 0, 1);
 
-            // Keyboard input
             for (u8 k = AEVK_A; k <= AEVK_Z; k++) {
-                if (AEInputCheckTriggered(k) && nameInputLen < 12) {
+                if (AEInputCheckTriggered(k) && nameInputLen < WIN_NAME_INPUT_MAX) {
                     nameInputBuffer[nameInputLen++] = 'A' + (k - AEVK_A);
                     nameInputBuffer[nameInputLen] = '\0';
                 }
@@ -640,11 +584,11 @@ GameState UpdateAndRenderWinScreen(AEGfxVertexList* mesh, s8 font, float dt, Pla
 
             char displayName[64];
             sprintf_s(displayName, "> %s_", nameInputBuffer);
-            AEGfxGetPrintSize(font, displayName, 1.2f, &tw, &th);
-            AEGfxPrint(font, displayName, -tw / 2, -0.36f, 1.2f, 0, 1, 1, 1);
+            AEGfxGetPrintSize(font, displayName, WIN_NAME_DISPLAY_SCALE, &tw, &th);
+            AEGfxPrint(font, displayName, -tw / 2, WIN_NAME_DISPLAY_Y, WIN_NAME_DISPLAY_SCALE, 0, 1, 1, 1);
 
             if (nameInputLen > 0) {
-                Button saveBtn = { 0.0f, -290.0f, 200.0f, 50.0f, "SAVE SCORE" };
+                Button saveBtn = { WIN_SAVE_BTN_X, WIN_SAVE_BTN_Y, ENDSCREEN_BTN_W, ENDSCREEN_BTN_H, "SAVE SCORE" };
                 DrawButton(saveBtn, mesh, font);
                 if (IsButtonClicked(saveBtn)) {
                     InsertHighScore(nameInputBuffer, player.score);
@@ -655,24 +599,22 @@ GameState UpdateAndRenderWinScreen(AEGfxVertexList* mesh, s8 font, float dt, Pla
             }
         }
         else {
-            // Leaderboard
             const char* topStr = "TOP SCORES:";
-            AEGfxGetPrintSize(font, topStr, 1.0f, &tw, &th);
-            AEGfxPrint(font, const_cast<char*>(topStr), -tw / 2, -0.22f, 1.0f, 1, 0.8f, 0, 1);
+            AEGfxGetPrintSize(font, topStr, WIN_TOPSCORE_SCALE, &tw, &th);
+            AEGfxPrint(font, const_cast<char*>(topStr), -tw / 2, WIN_TOPSCORE_Y, WIN_TOPSCORE_SCALE, 1, 0.8f, 0, 1);
 
-            for (int i = 0; i < 3; i++) {
+            for (int i = 0; i < SCOREBOARD_ENTRY_COUNT; i++) {
                 char entry[64];
                 sprintf_s(entry, "%d. %s  %d", i + 1, highScores[i].name, highScores[i].score);
-                AEGfxGetPrintSize(font, entry, 0.9f, &tw, &th);
-                AEGfxPrint(font, entry, -tw / 2, -0.34f - i * 0.12f, 0.9f, 1, 1, 1, 1);
+                AEGfxGetPrintSize(font, entry, WIN_ENTRY_SCALE, &tw, &th);
+                AEGfxPrint(font, entry, -tw / 2, WIN_ENTRY_START_Y - i * WIN_ENTRY_STEP_Y, WIN_ENTRY_SCALE, 1, 1, 1, 1);
             }
         }
     }
 
-    // Nav buttons — lower if scoreboard shown
-    float btnY = fromMainGame ? -390.0f : -250.0f;
-    Button menuBtn = { -150.0f, btnY, 200.0f, 50.0f, "MAIN MENU" };
-    Button creditsBtn = { 150.0f, btnY, 200.0f, 50.0f, "CREDITS" };
+    float btnY = fromMainGame ? WIN_NAV_BTN_Y_MAIN : WIN_NAV_BTN_Y_DEFAULT;
+    Button menuBtn = { WIN_NAV_BTN_LEFT_X,  btnY, ENDSCREEN_BTN_W, ENDSCREEN_BTN_H, "MAIN MENU" };
+    Button creditsBtn = { WIN_NAV_BTN_RIGHT_X, btnY, ENDSCREEN_BTN_W, ENDSCREEN_BTN_H, "CREDITS" };
     DrawButton(menuBtn, mesh, font);
     DrawButton(creditsBtn, mesh, font);
 
@@ -697,77 +639,65 @@ GameState UpdateAndRenderLoseScreen(AEGfxVertexList* mesh, s8 font, float dt,
     Player& player, GameState previous) {
     (void)dt;
 
-    AEGfxSetBackgroundColor(0.1f, 0.05f, 0.05f);
+    AEGfxSetBackgroundColor(LOSE_BG_R, LOSE_BG_G, LOSE_BG_B);
     AEGfxSetRenderMode(AE_GFX_RM_COLOR);
     AEGfxSetBlendMode(AE_GFX_BM_BLEND);
     AEGfxSetTransparency(1.0f);
 
     float tw, th;
 
-    // Title
-    AEGfxGetPrintSize(font, "YOU DIED!", 2.5f, &tw, &th);
-    AEGfxPrint(font, const_cast<char*>("YOU DIED!"), -tw / 2, 0.75f, 2.5f, 1.0f, 0.0f, 0.0f, 1.0f);
+    AEGfxGetPrintSize(font, "YOU DIED!", ENDSCREEN_TITLE_SCALE, &tw, &th);
+    AEGfxPrint(font, const_cast<char*>("YOU DIED!"), -tw / 2, ENDSCREEN_TITLE_Y, ENDSCREEN_TITLE_SCALE, 1.0f, 0.0f, 0.0f, 1.0f);
 
-    // Stats
     char scoreStr[64], gruntsStr[64], flagStr[64];
     sprintf_s(scoreStr, "SCORE: %d", player.score);
     sprintf_s(gruntsStr, "VIRUSES KILLED: %d", player.gruntsKilled);
     sprintf_s(flagStr, "FLAGS CAPTURED: %d", player.flagCaptures);
 
-    AEGfxGetPrintSize(font, scoreStr, 1.2f, &tw, &th);
-    AEGfxPrint(font, scoreStr, -tw / 2, 0.35f, 1.2f, 1.0f, 1.0f, 1.0f, 1.0f);
+    AEGfxGetPrintSize(font, scoreStr, ENDSCREEN_STATS_SCALE, &tw, &th);
+    AEGfxPrint(font, scoreStr, -tw / 2, ENDSCREEN_STAT_SCORE_Y, ENDSCREEN_STATS_SCALE, 1.0f, 1.0f, 1.0f, 1.0f);
+    AEGfxGetPrintSize(font, gruntsStr, ENDSCREEN_STATS_SCALE, &tw, &th);
+    AEGfxPrint(font, gruntsStr, -tw / 2, ENDSCREEN_STAT_GRUNTS_Y, ENDSCREEN_STATS_SCALE, 1.0f, 1.0f, 1.0f, 1.0f);
+    AEGfxGetPrintSize(font, flagStr, ENDSCREEN_STATS_SCALE, &tw, &th);
+    AEGfxPrint(font, flagStr, -tw / 2, ENDSCREEN_STAT_FLAGS_Y, ENDSCREEN_STATS_SCALE, 1.0f, 1.0f, 1.0f, 1.0f);
 
-    AEGfxGetPrintSize(font, gruntsStr, 1.2f, &tw, &th);
-    AEGfxPrint(font, gruntsStr, -tw / 2, 0.15f, 1.2f, 1.0f, 1.0f, 1.0f, 1.0f);
-
-    AEGfxGetPrintSize(font, flagStr, 1.2f, &tw, &th);
-    AEGfxPrint(font, flagStr, -tw / 2, -0.05f, 1.2f, 1.0f, 1.0f, 1.0f, 1.0f);
-
-    // Buttons
-    Button retryBtn = { 0.0f, -150.0f, 200.0f, 50.0f, "RETRY" };
-    Button menuBtn = { 0.0f, -250.0f, 200.0f, 50.0f, "MAIN MENU" };
+    Button retryBtn = { LOSE_RETRY_BTN_X, LOSE_RETRY_BTN_Y, ENDSCREEN_BTN_W, ENDSCREEN_BTN_H, "RETRY" };
+    Button menuBtn = { LOSE_MENU_BTN_X,  LOSE_MENU_BTN_Y,  ENDSCREEN_BTN_W, ENDSCREEN_BTN_H, "MAIN MENU" };
 
     DrawButton(retryBtn, mesh, font);
     DrawButton(menuBtn, mesh, font);
 
     if (IsButtonClicked(retryBtn)) {
         LoadPlayer(player);
-
-		AEAudioStopGroup(LoseBGMGroup);
-        
+        AEAudioStopGroup(LoseBGMGroup);
         AEAudioPlay(GameBGM1, GameBGMGroup, 1.0f, 1.0f, -1);
-
         return previous;
     }
     if (IsButtonClicked(menuBtn)) {
         AEAudioStopGroup(LoseBGMGroup);
-
         AEAudioStopGroup(GameBGMGroup);
-
         return STATE_MENU;
     }
 
     return STATE_LOSE;
 }
 
+
 GameState UpdateAndRenderCredits(AEGfxVertexList* mesh, s8 font, float dt) {
     (void)dt;
 
     static int creditsPage = 0;
-    const int totalPages = 4;
 
-    AEGfxSetBackgroundColor(0.05f, 0.05f, 0.1f);
+    AEGfxSetBackgroundColor(WIN_BG_R, WIN_BG_G, WIN_BG_B);
     AEGfxSetRenderMode(AE_GFX_RM_COLOR);
     AEGfxSetBlendMode(AE_GFX_BM_BLEND);
     AEGfxSetTransparency(1.0f);
 
     float tw, th;
 
-    // Title
-    AEGfxGetPrintSize(font, "Credits", 2.2f, &tw, &th);
-    AEGfxPrint(font, const_cast<char*>("Credits"), -tw / 2.0f, 0.78f, 2.2f, 1.0f, 0.92f, 0.92f, 1.0f);
+    AEGfxGetPrintSize(font, "Credits", CREDITS_TITLE_SCALE, &tw, &th);
+    AEGfxPrint(font, const_cast<char*>("Credits"), -tw / 2.0f, CREDITS_TITLE_Y, CREDITS_TITLE_SCALE, 1.0f, 0.92f, 0.92f, 1.0f);
 
-    // Page content
     switch (creditsPage) {
     case 0:
     {
@@ -775,34 +705,31 @@ GameState UpdateAndRenderCredits(AEGfxVertexList* mesh, s8 font, float dt) {
         const char* line2 = "All content (C) 2026 DigiPen Institute of Technology Singapore";
         const char* line3 = "All Rights Reserved.";
 
-        AEGfxGetPrintSize(font, line1, 1.1f, &tw, &th);
-        AEGfxPrint(font, const_cast<char*>(line1), -tw / 2.0f, 0.12f, 1.1f, 1.0f, 1.0f, 1.0f, 1.0f);
-
-        AEGfxGetPrintSize(font, line2, 1.05f, &tw, &th);
-        AEGfxPrint(font, const_cast<char*>(line2), -tw / 2.0f, 0.00f, 1.05f, 1.0f, 1.0f, 1.0f, 1.0f);
-
-        AEGfxGetPrintSize(font, line3, 1.05f, &tw, &th);
-        AEGfxPrint(font, const_cast<char*>(line3), -tw / 2.0f, -0.08f, 1.05f, 1.0f, 1.0f, 1.0f, 1.0f);
+        AEGfxGetPrintSize(font, line1, CREDITS_BODY_SCALE, &tw, &th);
+        AEGfxPrint(font, const_cast<char*>(line1), -tw / 2.0f, CREDITS_P0_LINE1_Y, CREDITS_BODY_SCALE, 1.0f, 1.0f, 1.0f, 1.0f);
+        AEGfxGetPrintSize(font, line2, CREDITS_BODY_SCALE_MED, &tw, &th);
+        AEGfxPrint(font, const_cast<char*>(line2), -tw / 2.0f, CREDITS_P0_LINE2_Y, CREDITS_BODY_SCALE_MED, 1.0f, 1.0f, 1.0f, 1.0f);
+        AEGfxGetPrintSize(font, line3, CREDITS_BODY_SCALE_MED, &tw, &th);
+        AEGfxPrint(font, const_cast<char*>(line3), -tw / 2.0f, CREDITS_P0_LINE3_Y, CREDITS_BODY_SCALE_MED, 1.0f, 1.0f, 1.0f, 1.0f);
     }
     break;
 
     case 1:
     {
         const char* header = "TEAM MEMBERS";
-        const char* names[] = {
+        const char* names[CREDITS_P1_NAME_COUNT] = {
             "Yeo Kah Boon Joshua",
             "Ye Min Thwin",
             "Zhang Yida",
             "Pang Jun Yuan"
         };
 
-        AEGfxGetPrintSize(font, header, 1.3f, &tw, &th);
-        AEGfxPrint(font, const_cast<char*>(header), -tw / 2.0f, 0.32f, 1.3f, 0.0f, 1.0f, 0.8f, 1.0f);
+        AEGfxGetPrintSize(font, header, CREDITS_HEADER_SCALE, &tw, &th);
+        AEGfxPrint(font, const_cast<char*>(header), -tw / 2.0f, CREDITS_P1_HEADER_Y, CREDITS_HEADER_SCALE, 0.0f, 1.0f, 0.8f, 1.0f);
 
-        float startY = 0.18f;
-        for (int i = 0; i < 4; ++i) {
-            AEGfxGetPrintSize(font, names[i], 1.1f, &tw, &th);
-            AEGfxPrint(font, const_cast<char*>(names[i]), -tw / 2.0f, startY - i * 0.13f, 1.1f, 1.0f, 1.0f, 1.0f, 1.0f);
+        for (int i = 0; i < CREDITS_P1_NAME_COUNT; ++i) {
+            AEGfxGetPrintSize(font, names[i], CREDITS_BODY_SCALE, &tw, &th);
+            AEGfxPrint(font, const_cast<char*>(names[i]), -tw / 2.0f, CREDITS_P1_NAMES_START_Y - i * CREDITS_P1_NAMES_STEP_Y, CREDITS_BODY_SCALE, 1.0f, 1.0f, 1.0f, 1.0f);
         }
     }
     break;
@@ -813,28 +740,27 @@ GameState UpdateAndRenderCredits(AEGfxVertexList* mesh, s8 font, float dt) {
         const char* presidentHeader = "PRESIDENT";
         const char* presidentName = "Claude Comair";
         const char* instructorHeader = "INSTRUCTORS";
-        const char* instructors[] = {
+        const char* instructors[CREDITS_P2_INSTRUCTOR_COUNT] = {
             "Gerald Wong Han Feng",
             "Dr. Soroor Malekmohammadai Faradounbeh",
             "Tommy Tan Chee Wei"
         };
 
-        AEGfxGetPrintSize(font, header, 1.3f, &tw, &th);
-        AEGfxPrint(font, const_cast<char*>(header), -tw / 2.0f, 0.36f, 1.3f, 0.0f, 1.0f, 0.8f, 1.0f);
+        AEGfxGetPrintSize(font, header, CREDITS_HEADER_SCALE, &tw, &th);
+        AEGfxPrint(font, const_cast<char*>(header), -tw / 2.0f, CREDITS_P2_HEADER_Y, CREDITS_HEADER_SCALE, 0.0f, 1.0f, 0.8f, 1.0f);
 
-        AEGfxGetPrintSize(font, presidentHeader, 1.05f, &tw, &th);
-        AEGfxPrint(font, const_cast<char*>(presidentHeader), -tw / 2.0f, 0.22f, 1.05f, 1.0f, 0.9f, 0.3f, 1.0f);
+        AEGfxGetPrintSize(font, presidentHeader, CREDITS_BODY_SCALE_MED, &tw, &th);
+        AEGfxPrint(font, const_cast<char*>(presidentHeader), -tw / 2.0f, CREDITS_P2_PRESIDENT_HDR_Y, CREDITS_BODY_SCALE_MED, 1.0f, 0.9f, 0.3f, 1.0f);
 
-        AEGfxGetPrintSize(font, presidentName, 1.05f, &tw, &th);
-        AEGfxPrint(font, const_cast<char*>(presidentName), -tw / 2.0f, 0.14f, 1.05f, 1.0f, 1.0f, 1.0f, 1.0f);
+        AEGfxGetPrintSize(font, presidentName, CREDITS_BODY_SCALE_MED, &tw, &th);
+        AEGfxPrint(font, const_cast<char*>(presidentName), -tw / 2.0f, CREDITS_P2_PRESIDENT_NAME_Y, CREDITS_BODY_SCALE_MED, 1.0f, 1.0f, 1.0f, 1.0f);
 
-        AEGfxGetPrintSize(font, instructorHeader, 1.05f, &tw, &th);
-        AEGfxPrint(font, const_cast<char*>(instructorHeader), -tw / 2.0f, 0.01f, 1.05f, 1.0f, 0.9f, 0.3f, 1.0f);
+        AEGfxGetPrintSize(font, instructorHeader, CREDITS_BODY_SCALE_MED, &tw, &th);
+        AEGfxPrint(font, const_cast<char*>(instructorHeader), -tw / 2.0f, CREDITS_P2_INSTRUCTOR_HDR_Y, CREDITS_BODY_SCALE_MED, 1.0f, 0.9f, 0.3f, 1.0f);
 
-        float startY = -0.07f;
-        for (int i = 0; i < 3; ++i) {
-            AEGfxGetPrintSize(font, instructors[i], 1.0f, &tw, &th);
-            AEGfxPrint(font, const_cast<char*>(instructors[i]), -tw / 2.0f, startY - i * 0.12f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f);
+        for (int i = 0; i < CREDITS_P2_INSTRUCTOR_COUNT; ++i) {
+            AEGfxGetPrintSize(font, instructors[i], CREDITS_BODY_SCALE_SM, &tw, &th);
+            AEGfxPrint(font, const_cast<char*>(instructors[i]), -tw / 2.0f, CREDITS_P2_INSTRUCTOR_START_Y - i * CREDITS_P2_INSTRUCTOR_STEP_Y, CREDITS_BODY_SCALE_SM, 1.0f, 1.0f, 1.0f, 1.0f);
         }
     }
     break;
@@ -842,46 +768,41 @@ GameState UpdateAndRenderCredits(AEGfxVertexList* mesh, s8 font, float dt) {
     case 3:
     {
         const char* header = "SPECIAL THANKS ;)";
-        const char* thanks[] = {
+        const char* thanks[CREDITS_P3_THANKS_COUNT] = {
             "Our instructors",
             "Our classmates",
             "Our playtesters"
         };
 
-        AEGfxGetPrintSize(font, header, 1.3f, &tw, &th);
-        AEGfxPrint(font, const_cast<char*>(header), -tw / 2.0f, 0.28f, 1.3f, 0.0f, 1.0f, 0.8f, 1.0f);
+        AEGfxGetPrintSize(font, header, CREDITS_HEADER_SCALE, &tw, &th);
+        AEGfxPrint(font, const_cast<char*>(header), -tw / 2.0f, CREDITS_P3_HEADER_Y, CREDITS_HEADER_SCALE, 0.0f, 1.0f, 0.8f, 1.0f);
 
-        float startY = 0.14f;
-        for (int i = 0; i < 3; ++i) {
-            AEGfxGetPrintSize(font, thanks[i], 1.1f, &tw, &th);
-            AEGfxPrint(font, const_cast<char*>(thanks[i]), -tw / 2.0f, startY - i * 0.13f, 1.1f, 1.0f, 1.0f, 1.0f, 1.0f);
+        for (int i = 0; i < CREDITS_P3_THANKS_COUNT; ++i) {
+            AEGfxGetPrintSize(font, thanks[i], CREDITS_BODY_SCALE, &tw, &th);
+            AEGfxPrint(font, const_cast<char*>(thanks[i]), -tw / 2.0f, CREDITS_P3_THANKS_START_Y - i * CREDITS_P3_THANKS_STEP_Y, CREDITS_BODY_SCALE, 1.0f, 1.0f, 1.0f, 1.0f);
         }
     }
     break;
     }
 
-    // Page indicator
     char pageText[32];
-    sprintf_s(pageText, "Page %d / %d", creditsPage + 1, totalPages);
-    AEGfxGetPrintSize(font, pageText, 1.1f, &tw, &th);
-    AEGfxPrint(font, pageText, -tw / 2.0f, -0.62f, 1.1f, 1.0f, 0.92f, 0.92f, 1.0f);
+    sprintf_s(pageText, "Page %d / %d", creditsPage + 1, CREDITS_TOTAL_PAGES);
+    AEGfxGetPrintSize(font, pageText, CREDITS_PAGE_IND_SCALE, &tw, &th);
+    AEGfxPrint(font, pageText, -tw / 2.0f, CREDITS_PAGE_IND_Y, CREDITS_PAGE_IND_SCALE, 1.0f, 0.92f, 0.92f, 1.0f);
 
-    // Buttons
-    Button prevBtn = { -520.0f, -360.0f, 180.0f, 60.0f, "<<" };
-    Button backBtn = { 0.0f, -360.0f, 260.0f, 60.0f, "Back" };
-    Button nextBtn = { 520.0f, -360.0f, 180.0f, 60.0f, ">>" };
+    Button prevBtn = { CREDITS_PREV_BTN_X, CREDITS_NAV_BTN_Y, CREDITS_PREV_NEXT_BTN_W, CREDITS_NAV_BTN_H, "<<" };
+    Button backBtn = { CREDITS_BACK_BTN_X, CREDITS_NAV_BTN_Y, CREDITS_BACK_BTN_W,      CREDITS_NAV_BTN_H, "Back" };
+    Button nextBtn = { CREDITS_NEXT_BTN_X, CREDITS_NAV_BTN_Y, CREDITS_PREV_NEXT_BTN_W, CREDITS_NAV_BTN_H, ">>" };
 
     DrawButton(prevBtn, mesh, font);
     DrawButton(backBtn, mesh, font);
     DrawButton(nextBtn, mesh, font);
 
-    if ((IsButtonClicked(prevBtn) || AEInputCheckTriggered(AEVK_LEFT)) && creditsPage > 0) {
+    if ((IsButtonClicked(prevBtn) || AEInputCheckTriggered(AEVK_LEFT)) && creditsPage > 0)
         creditsPage--;
-    }
 
-    if ((IsButtonClicked(nextBtn) || AEInputCheckTriggered(AEVK_RIGHT)) && creditsPage < totalPages - 1) {
+    if ((IsButtonClicked(nextBtn) || AEInputCheckTriggered(AEVK_RIGHT)) && creditsPage < CREDITS_TOTAL_PAGES - 1)
         creditsPage++;
-    }
 
     if (IsButtonClicked(backBtn) || AEInputCheckTriggered(AEVK_ESCAPE)) {
         creditsPage = 0;
@@ -991,7 +912,6 @@ void GameStateLoadCustom(int& gGameRunning, std::vector<std::vector<int>>& gameM
     Spawn_Flag(gameMap);
     floodfill(gameMap, 0, 0);
 }
-
 void GameStateLoadEditor(int& gGameRunning, std::vector<std::vector<int>>& gameMap) {
     static bool loaded = false;
     if (loaded) return;
@@ -1005,7 +925,7 @@ void GameStateLoadEditor(int& gGameRunning, std::vector<std::vector<int>>& gameM
     }
     loaded = true;
 }
-
+// Loads the top 3 high scores from a file into the highScores array
 void LoadHighScores() {
     FILE* f;
     fopen_s(&f, "Assets/highscores.txt", "r");
@@ -1020,7 +940,7 @@ void LoadHighScores() {
     }
     fclose(f);
 }
-
+// Saves the current top 3 high scores to a file
 void SaveHighScores() {
     
     FILE* f;
@@ -1030,11 +950,12 @@ void SaveHighScores() {
         fprintf(f, "%s %d\n", highScores[i].name, highScores[i].score);
     fclose(f);
 }
-
+// Checks if a score is higher than the current 3rd place score
 bool IsTopThree(int score) {
     return score > highScores[2].score;
 }
 
+// Inserts a new high score if it's in the top 3, shifting lower scores down
 void InsertHighScore(const char* name, int score) {
     // Insert and sort descending
     for (int i = 0; i < 3; i++) {

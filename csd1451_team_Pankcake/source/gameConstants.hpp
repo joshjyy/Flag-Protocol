@@ -175,3 +175,153 @@ const float SETTINGS_BACK_BTN_H = 50.0f;
 const float SETTINGS_DEFAULT_MASTER = 1.0f;
 const float SETTINGS_DEFAULT_MUSIC = 1.0f;
 const float SETTINGS_DEFAULT_SFX = 1.0f;
+
+
+
+
+
+//Screens Constants
+
+// Splash screen
+const float SPLASH_FADE_IN_TIME = 0.5f;
+const float SPLASH_VISIBLE_TIME = 2.0f;
+const float SPLASH_FADE_OUT_TIME = 0.5f;
+const float SPLASH_LOGO_W = 900.0f;
+const float SPLASH_LOGO_H = 260.0f;
+
+// Menu screen background blocks
+const int   MENU_BG_BLOCK_COUNT = 15;
+const float MENU_BLOCK_MIN_SIZE = 18.0f;
+const int   MENU_BLOCK_SIZE_RAND = 45;
+const float MENU_BLOCK_MIN_SPEED = 450.0f;
+const int   MENU_BLOCK_SPEED_RAND = 200;
+const float MENU_BLOCK_START_X_OFFSET = 120.0f;
+
+// Menu title pulse
+const float MENU_PULSE_BASE = 2.5f;
+const float MENU_PULSE_AMP = 0.2f;
+const float MENU_PULSE_FREQ = 4.0f;
+
+// Scoreboard popup
+const float SCOREBOARD_BTN_X = 650.0f;
+const float SCOREBOARD_BTN_Y = 380.0f;
+const float SCOREBOARD_BTN_W = 160.0f;
+const float SCOREBOARD_BTN_H = 45.0f;
+const float SCOREBOARD_POP_X = 650.0f;
+const float SCOREBOARD_POP_Y = 150.0f;
+const float SCOREBOARD_POP_W = 200.0f;
+const float SCOREBOARD_POP_H = 320.0f;
+const int   SCOREBOARD_ENTRY_COUNT = 3;
+const float SCOREBOARD_ENTRY_STEP_Y = 60.0f;
+
+// Confirm window
+const float CONFIRM_OVERLAY_ALPHA = 0.88f;
+const float CONFIRM_SHADOW_ALPHA = 0.55f;
+const float CONFIRM_SHADOW_OFFSET = 8.0f;
+const float CONFIRM_SHADOW_W = 500.0f;
+const float CONFIRM_SHADOW_H = 210.0f;
+const float CONFIRM_PANEL_ALPHA = 0.96f;
+const float CONFIRM_PANEL_W = 560.0f;
+const float CONFIRM_PANEL_H = 250.0f;
+const float CONFIRM_HEADER_Y = 78.0f;
+const float CONFIRM_HEADER_W = 560.0f;
+const float CONFIRM_HEADER_H = 34.0f;
+const float CONFIRM_TITLE_SCALE = 1.3f;
+const float CONFIRM_DESC_SCALE = 0.82f;
+const float CONFIRM_DESC_RENDER_SCALE = 0.98f;
+const float CONFIRM_BTN_YES_X = -110.0f;
+const float CONFIRM_BTN_NO_X = 110.0f;
+const float CONFIRM_BTN_Y = -55.0f;
+const float CONFIRM_BTN_W = 140.0f;
+const float CONFIRM_BTN_H = 45.0f;
+
+// Pause screen
+const float PAUSE_OVERLAY_ALPHA = 0.6f;
+const float PAUSE_TITLE_SCALE = 2.0f;
+const float PAUSE_TITLE_Y = 0.65f;
+
+
+
+// Win/Lose shared end screen
+const float ENDSCREEN_TITLE_SCALE = 2.5f;
+const float ENDSCREEN_TITLE_Y = 0.75f;
+const float ENDSCREEN_STATS_SCALE = 1.2f;
+const float ENDSCREEN_STAT_SCORE_Y = 0.35f;
+const float ENDSCREEN_STAT_GRUNTS_Y = 0.15f;
+const float ENDSCREEN_STAT_FLAGS_Y = -0.05f;
+const float ENDSCREEN_BTN_W = 200.0f;
+const float ENDSCREEN_BTN_H = 50.0f;
+
+// Win screen
+const float WIN_BG_R = 0.05f;
+const float WIN_BG_G = 0.05f;
+const float WIN_BG_B = 0.1f;
+const int   WIN_NAME_INPUT_MAX = 12;
+const float WIN_PROMPT_SCALE = 1.0f;
+const float WIN_PROMPT_Y = -0.22f;
+const float WIN_NAME_DISPLAY_SCALE = 1.2f;
+const float WIN_NAME_DISPLAY_Y = -0.36f;
+const float WIN_SAVE_BTN_X = 0.0f;
+const float WIN_SAVE_BTN_Y = -290.0f;
+const float WIN_TOPSCORE_SCALE = 1.0f;
+const float WIN_TOPSCORE_Y = -0.22f;
+const float WIN_ENTRY_SCALE = 0.9f;
+const float WIN_ENTRY_START_Y = -0.34f;
+const float WIN_ENTRY_STEP_Y = 0.12f;
+const float WIN_NAV_BTN_Y_MAIN = -390.0f;
+const float WIN_NAV_BTN_Y_DEFAULT = -250.0f;
+const float WIN_NAV_BTN_LEFT_X = -150.0f;
+const float WIN_NAV_BTN_RIGHT_X = 150.0f;
+
+// Lose screen
+const float LOSE_BG_R = 0.1f;
+const float LOSE_BG_G = 0.05f;
+const float LOSE_BG_B = 0.05f;
+const float LOSE_RETRY_BTN_X = 0.0f;
+const float LOSE_RETRY_BTN_Y = -150.0f;
+const float LOSE_MENU_BTN_X = 0.0f;
+const float LOSE_MENU_BTN_Y = -250.0f;
+
+// Credits screen
+const int   CREDITS_TOTAL_PAGES = 4;
+const float CREDITS_TITLE_SCALE = 2.2f;
+const float CREDITS_TITLE_Y = 0.78f;
+const float CREDITS_HEADER_SCALE = 1.3f;
+const float CREDITS_BODY_SCALE = 1.1f;
+const float CREDITS_BODY_SCALE_MED = 1.05f;
+const float CREDITS_BODY_SCALE_SM = 1.0f;
+const float CREDITS_PAGE_IND_SCALE = 1.1f;
+const float CREDITS_PAGE_IND_Y = -0.62f;
+const float CREDITS_PREV_BTN_X = -520.0f;
+const float CREDITS_BACK_BTN_X = 0.0f;
+const float CREDITS_NEXT_BTN_X = 520.0f;
+const float CREDITS_NAV_BTN_Y = -360.0f;
+const float CREDITS_PREV_NEXT_BTN_W = 180.0f;
+const float CREDITS_BACK_BTN_W = 260.0f;
+const float CREDITS_NAV_BTN_H = 60.0f;
+
+// Credits page 0
+const float CREDITS_P0_LINE1_Y = 0.12f;
+const float CREDITS_P0_LINE2_Y = 0.00f;
+const float CREDITS_P0_LINE3_Y = -0.08f;
+
+// Credits page 1
+const float CREDITS_P1_HEADER_Y = 0.32f;
+const float CREDITS_P1_NAMES_START_Y = 0.18f;
+const float CREDITS_P1_NAMES_STEP_Y = 0.13f;
+const int   CREDITS_P1_NAME_COUNT = 4;
+
+// Credits page 2
+const float CREDITS_P2_HEADER_Y = 0.36f;
+const float CREDITS_P2_PRESIDENT_HDR_Y = 0.22f;
+const float CREDITS_P2_PRESIDENT_NAME_Y = 0.14f;
+const float CREDITS_P2_INSTRUCTOR_HDR_Y = 0.01f;
+const float CREDITS_P2_INSTRUCTOR_START_Y = -0.07f;
+const float CREDITS_P2_INSTRUCTOR_STEP_Y = 0.12f;
+const int   CREDITS_P2_INSTRUCTOR_COUNT = 3;
+
+// Credits page 3
+const float CREDITS_P3_HEADER_Y = 0.28f;
+const float CREDITS_P3_THANKS_START_Y = 0.14f;
+const float CREDITS_P3_THANKS_STEP_Y = 0.13f;
+const int   CREDITS_P3_THANKS_COUNT = 3;
