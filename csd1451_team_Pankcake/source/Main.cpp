@@ -95,17 +95,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	//Init Event Manager
 	gameEvents = InitEventManager();
 
-	//Spawning of Grunts
-	//grunts.push_back(SpawnGrunt(300.0f, 200.0f));
-	//grunts.push_back(SpawnGrunt(-300.0f, -200.0f));
-	//grunts.push_back(SpawnGrunt(0.0f, 300.0f));
-
 	//Init Player
 	Player player = InitPlayer();
 	//Init spawner
 	InitGruntSpawner();
 	// Initialize engine (1600x900 window, 60 FPS)
-	AESysInit(hInstance, nCmdShow, 1600, 900, 1, 60, false, NULL);
+	AESysInit(hInstance, nCmdShow, 1600, 900, 0, 60, false, NULL);
 	AESysSetWindowTitle("Game Test!");
 	AESysReset();
 
@@ -156,7 +151,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	GameState currentState = STATE_DIGIPENLOGO;
 	static GameState previousState = STATE_MENU;
 	ShowCursor(true);
-	
+
 	while (gGameRunning)
 	{
 		AESysFrameStart();
