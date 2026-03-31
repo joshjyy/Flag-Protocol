@@ -472,7 +472,7 @@ GameState UpdateAndRenderControls(AEGfxVertexList* mesh, s8 font, float dt) {
     AEGfxPrint(font, "- Shoot", xDesc, y, 1.0f, 1, 1, 1, 1);
 
     // Reload
-    GetNormalizedTextPosition(-330.0f, -60.0f, &xKey, &y);
+    GetNormalizedTextPosition(-620.0f, -60.0f, &xKey, &y);
     AEGfxPrint(font, "R", xKey, y, 1.0f, 1, 1, 1, 1);
     AEGfxPrint(font, "- Reload", xDesc, y, 1.0f, 1, 1, 1, 1);
 

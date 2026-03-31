@@ -101,7 +101,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	InitGruntSpawner();
 	// Initialize engine (1600x900 window, 60 FPS)
 	AESysInit(hInstance, nCmdShow, 1600, 900, 0, 60, false, NULL);
-	AESysSetWindowTitle("Game Test!");
+	AESysSetWindowTitle("Flag Protocol");
 	AESysReset();
 
 	//load font
