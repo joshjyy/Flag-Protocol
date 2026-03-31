@@ -21,9 +21,8 @@
 #include "gameConstants.hpp"
 
 debug DebugMode;
-
 void DebugDrawAABB(float worldX, float worldY, float halfW, float halfH, CameraPos camera, DebugDrawType type) {
-    if (!DebugMode.g_debug_collision) return;
+     if (!DebugMode.g_debug_collision) return; // ← comment out
 
     float screenX = worldX - camera.x;
     float screenY = worldY - camera.y;
@@ -42,7 +41,7 @@ void DebugDrawAABB(float worldX, float worldY, float halfW, float halfH, CameraP
     switch (type) {
     case DebugDrawType::PLAYER: AEGfxSetColorToMultiply(0.0f, 1.0f, 0.0f, 1.0f); break;
     case DebugDrawType::BULLET: AEGfxSetColorToMultiply(1.0f, 1.0f, 0.0f, 1.0f); break;
-    case DebugDrawType::ENEMY: AEGfxSetColorToMultiply(1.0f, 1.0f, 1.0f, 1.0f); break;
+    case DebugDrawType::ENEMY:  AEGfxSetColorToMultiply(1.0f, 1.0f, 1.0f, 1.0f); break;
     }
 
     AEGfxSetRenderMode(AE_GFX_RM_COLOR);
@@ -54,5 +53,4 @@ void DebugDrawAABB(float worldX, float worldY, float halfW, float halfH, CameraP
     DrawSprite(meshes.debug_quad, cx, B, w, thick, 0.0f);
     DrawSprite(meshes.debug_quad, L, cy, thick, h, 0.0f);
     DrawSprite(meshes.debug_quad, R, cy, thick, h, 0.0f);
-
 }

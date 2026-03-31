@@ -160,7 +160,7 @@ void UpdateAndRenderTutorial(
     std::vector<Grunt>& grunts,
     EventManager& events)
 {
-    (void)events;  // Unused in this mode
+    (void)events;
 
     WeaponStats weapon = GetCurrentWeapon(player);
 
@@ -172,7 +172,7 @@ void UpdateAndRenderTutorial(
     else
         ShootingCheck(player, playerBullets, weapon, camera);
     ReloadBullets(weapon, dt);
-        
+
     UpdateBullets(playerBullets, dt, *gameMap);
 
     // Update enemies
@@ -185,20 +185,17 @@ void UpdateAndRenderTutorial(
     UpdateDamageNumbers(dt);
     CheckEnemyBulletPlayerCollision(enemyBullets, player);
 
-
     // Render
-    DrawPlayer(player, meshes.circle,meshes.arrow, camera, dt, *gameMap);
-    if (AEInputCheckTriggered(AEVK_F2)) DebugMode.g_debug_collision = !DebugMode.g_debug_collision;
+    DrawPlayer(player, meshes.circle, meshes.arrow, camera, dt, *gameMap);
 
-DebugDrawAABB(player.x, player.y, PLAYER_COLLISION_RADIUS, PLAYER_COLLISION_RADIUS, camera, DebugDrawType::PLAYER);
+    // DEBUG - always draw, no toggle
+    DebugDrawAABB(player.x, player.y, PLAYER_COLLISION_RADIUS, PLAYER_COLLISION_RADIUS, camera, DebugDrawType::PLAYER);
 
-for (const Bullet& b : playerBullets)
-    DebugDrawAABB(b.x, b.y, BULLET_RADIUS, BULLET_RADIUS, camera, DebugDrawType::BULLET);
+    for (const Bullet& b : playerBullets)
+        DebugDrawAABB(b.x, b.y, BULLET_RADIUS, BULLET_RADIUS, camera, DebugDrawType::BULLET);
 
-for (const Bullet& b : enemyBullets)
-    DebugDrawAABB(b.x, b.y, BULLET_RADIUS, BULLET_RADIUS, camera, DebugDrawType::BULLET);
-
-
+    for (const Bullet& b : enemyBullets)
+        DebugDrawAABB(b.x, b.y, BULLET_RADIUS, BULLET_RADIUS, camera, DebugDrawType::BULLET);
 
     RenderGrunts(grunts, meshes.circle, camera);
     RenderBullets(player, playerBullets, meshes.circle, camera);
