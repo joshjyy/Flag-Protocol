@@ -18,6 +18,7 @@
     <ClCompile Include="..\source\editor.cpp" />
     <ClCompile Include="..\source\enemies.cpp" />
     <ClCompile Include="..\source\events.cpp" />
+    <ClCompile Include="..\source\gameConstants.cpp" />
     <ClCompile Include="..\source\gameMode.cpp" />
     <ClCompile Include="..\source\Main.cpp" />
     <ClCompile Include="..\source\map.cpp" />

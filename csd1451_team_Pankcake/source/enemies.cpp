@@ -325,7 +325,7 @@ void DrawWaveTimer(s8 font, AEGfxVertexList* mesh)
 
     char timerStr[32];
     sprintf_s(timerStr, "NEXT WAVE: %.1fs", timeUntilNext);
-
+    // Dark background panel
     AEGfxSetRenderMode(AE_GFX_RM_COLOR);
     AEGfxSetBlendMode(AE_GFX_BM_BLEND);
     AEGfxSetTransparency(WAVE_TIMER_PANEL_ALPHA);
@@ -334,6 +334,7 @@ void DrawWaveTimer(s8 font, AEGfxVertexList* mesh)
     DrawSprite(mesh, WAVE_TIMER_POS_X, WAVE_TIMER_POS_Y, WAVE_TIMER_PANEL_W, WAVE_TIMER_PANEL_H, 0.0f);
     AEGfxSetTransparency(1.0f);
 
+	// Timer text with colour based on time remaining
     float r, g, b;
     if (timeUntilNext > WAVE_TIMER_YELLOW_THRESHOLD) { r = 0.0f; g = 1.0f; b = 0.0f; }
     else if (timeUntilNext > WAVE_TIMER_RED_THRESHOLD) { r = 1.0f; g = 1.0f; b = 0.0f; }
