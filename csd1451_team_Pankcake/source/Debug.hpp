@@ -16,5 +16,6 @@ struct debug {
 };
 
 extern debug DebugMode;
+extern bool showDebug;
 enum class DebugDrawType { PLAYER, BULLET, ENEMY };
 void DebugDrawAABB(float worldX, float worldY, float halfW, float halfH, CameraPos camera, DebugDrawType type);

@@ -32,7 +32,7 @@
 #include "debris.hpp"
 #include "sound.hpp"
 #include "settings.hpp"
-
+#include "Debug.hpp"
 //Legend if needed later
 /*
 SIGNED (can be negative)
@@ -267,20 +267,21 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 			ForceShowCursor(false);
 
+			if (AEInputCheckTriggered(AEVK_F2)) DebugMode.g_debug_collision = !DebugMode.g_debug_collision;
+
 			Update_CameraPosition(camera, player.x, player.y, dt);
 			Load_Map(*gameMap, camera, false);
 
 			Tutorial_RenderHints(fontID);
-			Tutorial_RenderDebug(fontID, player);
-				
+			// Tutorial_RenderDebug(fontID, player);
+
 			Range_Hacks(player);
 			UpdateAndRenderTutorial(player, dt, gameMap, camera, playerBullets, enemyBullets, grunts, gameEvents);
 
 			if (AEInputCheckTriggered(AEVK_P) || AEInputCheckTriggered(AEVK_ESCAPE)) {
 				currentState = STATE_PAUSE;
 				ForceShowCursor(true);
-
-				//printf("Pause triggered!\n");
+				DebugMode.g_debug_collision = false;
 			}
 		}
 

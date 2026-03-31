@@ -118,7 +118,8 @@ void RenderGrunts(std::vector<Grunt>& grunts, void* mesh, CameraPos& camera) {
 
         AEGfxSetColorToMultiply(1.0f, 0.0f, 0.0f, 1.0f); // enemy red tint
         DrawSprite((AEGfxVertexList*)mesh, screenX, screenY, GRUNT_RADIUS, GRUNT_RADIUS, 0.0f);
-        DebugDrawAABB(grunt.movingX, grunt.movingY, GRUNT_RADIUS / 2, GRUNT_RADIUS / 2, camera, DebugDrawType::ENEMY);
+        if (DebugMode.g_debug_collision)
+            DebugDrawAABB(grunt.movingX, grunt.movingY, GRUNT_RADIUS / 2, GRUNT_RADIUS / 2, camera, DebugDrawType::ENEMY);
     }
 }
 
