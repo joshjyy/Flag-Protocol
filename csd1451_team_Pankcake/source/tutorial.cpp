@@ -205,5 +205,6 @@ for (const Bullet& b : enemyBullets)
     RenderBullets(enemyBullets, meshes.circle, camera);
     DrawPlayerUI(player, weapon, meshes.square, meshes.circle, camera);
     DrawCrosshair(meshes.square);
+    DrawWaveTimer(fontID, meshes.square);
     RenderDamageNumbers(camera);
 }

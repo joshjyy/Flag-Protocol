@@ -99,6 +99,8 @@ void UpdateAndRenderGameplay(
     DrawCrosshair(meshes.square);
     RenderDamageNumbers(camera);
 
+    DrawWaveTimer(fontID, meshes.square);
+
     CheckWinCondition(events, player);
     RemoveDeadGrunts(grunts);
 

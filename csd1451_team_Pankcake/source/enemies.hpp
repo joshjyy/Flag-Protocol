@@ -100,4 +100,4 @@ void RemoveDeadGrunts(std::vector<Grunt>& grunts);
 void CheckBulletGruntCollisions(std::vector<Bullet>& playerBullets, std::vector<Grunt>& grunts, Player& player);
 void FreeGrunts(std::vector<Grunt>& grunts);
 void InitGruntParticles(Grunt* grunt, void* mesh);
-
+void DrawWaveTimer(s8 font, AEGfxVertexList* mesh);

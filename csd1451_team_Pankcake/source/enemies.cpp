@@ -290,3 +290,41 @@ void FreeGrunts(std::vector<Grunt>& grunts) {
         ParticleEmitterFree(&grunt.deathEmitter);
     grunts.clear();
 }
+
+void DrawWaveTimer(s8 font, AEGfxVertexList* mesh)
+{
+    float timeUntilNext = gruntSpawner.waveInterval - gruntSpawner.waveTimer;
+    if (timeUntilNext < 0.0f) timeUntilNext = 0.0f;
+
+    char timerStr[32];
+    sprintf_s(timerStr, "NEXT WAVE: %.1fs", timeUntilNext);
+
+    // Position – top-centre of screen in world space
+    const float POS_X = 0.0f;
+    const float POS_Y = 390.0f;
+    const float SCALE = 0.9f;
+    const float PANEL_W = 195.0f;
+    const float PANEL_H = 32.0f;
+
+    // Dark background panel
+    AEGfxSetRenderMode(AE_GFX_RM_COLOR);
+    AEGfxSetBlendMode(AE_GFX_BM_BLEND);
+    AEGfxSetTransparency(0.6f);
+    AEGfxSetColorToMultiply(0.0f, 0.0f, 0.0f, 1.0f);
+    AEGfxSetColorToAdd(0.0f, 0.0f, 0.0f, 0.0f);
+    DrawSprite(mesh, POS_X, POS_Y, PANEL_W, PANEL_H, 0.0f);
+    AEGfxSetTransparency(1.0f);
+
+    // Colour: green > 5s, yellow 3-5s, red < 3s
+    float r, g, b;
+    if (timeUntilNext > 5.0f) { r = 0.0f; g = 1.0f; b = 0.0f; }
+    else if (timeUntilNext > 3.0f) { r = 1.0f; g = 1.0f; b = 0.0f; }
+    else { r = 1.0f; g = 0.2f; b = 0.2f; }
+
+    float tw, th;
+    AEGfxGetPrintSize(font, timerStr, SCALE, &tw, &th);
+    float nx = POS_X / 800.0f - tw / 2.0f;
+    float ny = POS_Y / 450.0f - th / 2.0f;
+
+    AEGfxPrint(font, timerStr, nx, ny, SCALE, r, g, b, 1.0f);
+}
