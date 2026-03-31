@@ -101,7 +101,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	//Init spawner
 	InitGruntSpawner();
 	// Initialize engine (1600x900 window, 60 FPS)
-	AESysInit(hInstance, nCmdShow, 1600, 900, 0, 60, false, NULL);
+	AESysInit(hInstance, nCmdShow, 1600, 900, 1	, 60, false, NULL);
 	AESysSetWindowTitle("Flag Protocol");
 	AESysReset();
 

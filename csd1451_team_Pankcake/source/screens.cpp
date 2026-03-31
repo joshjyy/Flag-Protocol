@@ -938,9 +938,6 @@ void GameStateLoadCustom(int& gGameRunning, std::vector<std::vector<int>>& gameM
     floodfill(gameMap, 0, 0);
 }
 void GameStateLoadEditor(int& gGameRunning, std::vector<std::vector<int>>& gameMap) {
-    static bool loaded = false;
-    if (loaded) return;
-
     if (!Load_Game_Level("Assets/My_Custom_Map.txt", gameMap)) {
         //printf("Failed to load editor map! Exiting...\n");
         gGameRunning = 0;
@@ -948,7 +945,6 @@ void GameStateLoadEditor(int& gGameRunning, std::vector<std::vector<int>>& gameM
     else {
         //printf("Editor map loaded successfully!\n");
     }
-    loaded = true;
 }
 // Loads the top 3 high scores from a file into the highScores array
 void LoadHighScores() {
