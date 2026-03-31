@@ -115,25 +115,19 @@ void PrintBlock(int choice, float d, float screenX, float screenY, AEGfxVertexLi
 }
 
 void Spawn_Flag(std::vector<std::vector<int>>& arr) {
-	struct Tile { int row, col; };
+	std::vector<std::pair<int, int>> flagSpawns;
 
-	int count = 0;
 	for (int i = 0; i < MAP_HEIGHT; i++)
 		for (int j = 0; j < MAP_WIDTH; j++)
-			if (arr[i][j] == FLAG_SPAWN) count++;
+			if (arr[i][j] == FLAG_SPAWN)
+				flagSpawns.push_back({ i, j });
 
-	Tile* found = new Tile[count];
-	int flagloc = 0;
-	for (int i = 0; i < MAP_HEIGHT; i++)
-		for (int j = 0; j < MAP_WIDTH; j++)
-			if (arr[i][j] == FLAG_SPAWN) { found[flagloc].row = i; found[flagloc].col = j; flagloc++; }
+	if (flagSpawns.empty()) return; 
+	std::uniform_int_distribution<int> dist(0, (int)flagSpawns.size() - 1);
+	int index = dist(gen); 
 
-	srand((unsigned int)time(0));
-	int index = rand() % count;
-	arr[found[index].row][found[index].col] = FLAG;
-	delete[] found;
+	arr[flagSpawns[index].first][flagSpawns[index].second] = FLAG;
 }
-
 CameraPos moving_cursor(CameraPos camera) {
 	static int prevMouseX = 0, prevMouseY = 0;
 

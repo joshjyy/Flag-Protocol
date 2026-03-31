@@ -175,16 +175,16 @@ void HandleEditorInput(EditorState& editor,
                     gameMap[gridY][gridX] = editor.currentTileType;
                 }
 
-            printf("flag_count: %d\n", editor.flag_count);
-            printf("enemy_spawner_count: %d\n", editor.enemy_spawner_count);
-            printf("player_spawn_count: %d\n", editor.player_spawn_count);
+            //printf("flag_count: %d\n", editor.flag_count);
+            //printf("enemy_spawner_count: %d\n", editor.enemy_spawner_count);
+            //printf("player_spawn_count: %d\n", editor.player_spawn_count);
         }
 
         if (AEInputCheckCurr(AEVK_RBUTTON)) {
             gameMap[gridY][gridX] = 0;
-            printf("flag_count: %d\n", editor.flag_count);
-            printf("enemy_spawner_count: %d\n", editor.enemy_spawner_count);
-            printf("player_spawn_count: %d\n", editor.player_spawn_count);
+            //printf("flag_count: %d\n", editor.flag_count);
+            //printf("enemy_spawner_count: %d\n", editor.enemy_spawner_count);
+            //printf("player_spawn_count: %d\n", editor.player_spawn_count);
 
         }
     }
