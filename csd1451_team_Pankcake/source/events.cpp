@@ -49,17 +49,7 @@ void CheckWinCondition(EventManager& events, Player& player) {
     }
 
 
-  //  if (events.winTriggered) {
-		//events.winTriggered = false; // Reset for potential future use
-  //      float textX, textY;
-  //      GetNormalizedTextPosition(-100.0f, -150.0f, &textX, &textY);
-  //      AEGfxPrint(fontID, "YOU WIN!", textX, textY, 3.0f, 0.0f, 1.0f, 0.0f, 1.0f);
 
-  //      char scoreText[64];
-  //      sprintf_s(scoreText, 64, "Grunts Killed: %d", player.gruntsKilled);
-  //      GetNormalizedTextPosition(-75.0f, -200.0f, &textX, &textY);
-  //      AEGfxPrint(fontID, scoreText, textX, textY, 1.5f, 1.0f, 1.0f, 1.0f, 1.0f);
-  //  }
 }
 
 // ---------------------------------------------------------------------------
@@ -83,7 +73,7 @@ bool Cutscene_Update(CutsceneData& cut, float dt)
 
     case CUT_HOLD:
         cut.alpha = 0.0f;
-        if (cut.timer >= CUT_HOLD_DUR || AEInputCheckTriggered(AEVK_RETURN)) {
+        if (cut.timer >= CUT_HOLD_DUR || AEInputCheckTriggered(AEVK_LBUTTON)) {
             cut.phase = CUT_FADEOUT;
             cut.timer = 0.0f;
         }
@@ -116,7 +106,7 @@ void Cutscene_Draw(const CutsceneData& cut, s8 font, AEGfxVertexList* squareMesh
         "Locate FLAG NODES scattered across the system and retrieve them.",
         "Deliver 10 FLAG NODES to the PURPLE ZONES to purge the corruption.",
         "Kill enemies to restore integrity and resupply ammunition.",
-        "[ ENTER to begin ]"
+        "[ Left-Click to begin ]"
     };
     float colours[][3] = {
         { 0.0f, 1.0f, 0.4f },    // title
