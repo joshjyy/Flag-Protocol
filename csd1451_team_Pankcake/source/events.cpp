@@ -49,17 +49,7 @@ void CheckWinCondition(EventManager& events, Player& player) {
     }
 
 
-  //  if (events.winTriggered) {
-		//events.winTriggered = false; // Reset for potential future use
-  //      float textX, textY;
-  //      GetNormalizedTextPosition(-100.0f, -150.0f, &textX, &textY);
-  //      AEGfxPrint(fontID, "YOU WIN!", textX, textY, 3.0f, 0.0f, 1.0f, 0.0f, 1.0f);
 
-  //      char scoreText[64];
-  //      sprintf_s(scoreText, 64, "Grunts Killed: %d", player.gruntsKilled);
-  //      GetNormalizedTextPosition(-75.0f, -200.0f, &textX, &textY);
-  //      AEGfxPrint(fontID, scoreText, textX, textY, 1.5f, 1.0f, 1.0f, 1.0f, 1.0f);
-  //  }
 }
 
 // ---------------------------------------------------------------------------
@@ -83,7 +73,7 @@ bool Cutscene_Update(CutsceneData& cut, float dt)
 
     case CUT_HOLD:
         cut.alpha = 0.0f;
-        if (cut.timer >= CUT_HOLD_DUR || AEInputCheckTriggered(AEVK_RETURN)) {
+        if (cut.timer >= CUT_HOLD_DUR || AEInputCheckTriggered(AEVK_LBUTTON)) {
             cut.phase = CUT_FADEOUT;
             cut.timer = 0.0f;
         }
@@ -116,7 +106,7 @@ void Cutscene_Draw(const CutsceneData& cut, s8 font, AEGfxVertexList* squareMesh
         "Locate FLAG NODES scattered across the system and retrieve them.",
         "Deliver 10 FLAG NODES to the PURPLE ZONES to purge the corruption.",
         "Kill enemies to restore integrity and resupply ammunition.",
-        "[ ENTER to begin ]"
+        "[ Left-Click to begin ]"
     };
     float colours[][3] = {
         { 0.0f, 1.0f, 0.4f },    // title
@@ -144,17 +134,14 @@ void Cutscene_Draw(const CutsceneData& cut, s8 font, AEGfxVertexList* squareMesh
         int dotCount = (int)(cut.alpha * CUT_DOT_COUNT);
         for (int i = 0; i < dotCount; i++)
         {
+			// Random position and brightness for each dot
             float rx = (float)(rand() % SCREEN_WIDTH) - (SCREEN_WIDTH / 2.0f);
             float ry = (float)(rand() % SCREEN_HEIGHT) - (SCREEN_HEIGHT / 2.0f);
+			// Random brightness between 0.0 and 1.0
             float brightness = (float)(rand() % 100) / 100.0f;
             AEGfxSetTransparency(cut.alpha);
             AEGfxSetColorToMultiply(0.0f, brightness, 0.0f, cut.alpha);
-            AEMtx33 s, t, transform;
-            AEMtx33Scale(&s, CUT_DOT_SIZE, CUT_DOT_SIZE);
-            AEMtx33Trans(&t, rx, ry);
-            AEMtx33Concat(&transform, &t, &s);
-            AEGfxSetTransform(transform.m);
-            AEGfxMeshDraw(squareMesh, AE_GFX_MDM_TRIANGLES);
+            DrawSprite(squareMesh, rx, ry, CUT_DOT_SIZE, CUT_DOT_SIZE, 0.0f);
         }
         AEGfxSetTransparency(1.0f);
     }
