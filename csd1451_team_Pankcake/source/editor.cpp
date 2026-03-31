@@ -22,18 +22,7 @@ Popup popup;
 std::vector<std::vector<int>> g_initialEditorMap;
 
 EditorState InitEditor(void) {
-    EditorState editor;
-    editor.currentTileType = 1;
-    editor.mouseX = 0;
-    editor.mouseY = 0;
-    editor.editorPaintReady = false;
-    editor.camera.x = 0.0f;
-    editor.camera.y = 0.0f;
-    editor.flag_count = 0;
-    editor.enemy_spawner_count = 0;
-    editor.player_spawn_count = 0;
-    editor.goal_count = 0;
-    return editor;
+    return EditorState{};
 }
 
 void UpdateAndRenderEditor(EditorState& editor,

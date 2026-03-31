@@ -21,15 +21,15 @@
 #include "popup.hpp"
 extern Popup popup;
 struct EditorState {
-    int currentTileType;    
-    s32 mouseX;
-    s32 mouseY;            
-    bool editorPaintReady;  
-    int flag_count;
-    int enemy_spawner_count;
-    int player_spawn_count;
-    int goal_count;
-    CameraPos camera;        
+    int currentTileType = 1;
+    s32 mouseX = 0;
+    s32 mouseY = 0;
+    bool editorPaintReady = false;
+    int flag_count = 0;
+    int enemy_spawner_count = 0;
+    int player_spawn_count = 0;
+    int goal_count = 0;
+    CameraPos camera = { 0.0f, 0.0f };
 };
 
 EditorState InitEditor(void);
