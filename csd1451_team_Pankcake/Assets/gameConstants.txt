@@ -242,7 +242,7 @@ LOSE_MENU_BTN_X                 = 0.0
 LOSE_MENU_BTN_Y                 = -250.0
 
 # Credits
-CREDITS_TOTAL_PAGES             = 4
+CREDITS_TOTAL_PAGES             = 2
 CREDITS_TITLE_SCALE             = 2.2
 CREDITS_TITLE_Y                 = 0.78
 CREDITS_HEADER_SCALE            = 1.3

@@ -22,7 +22,18 @@ Popup popup;
 std::vector<std::vector<int>> g_initialEditorMap;
 
 EditorState InitEditor(void) {
-    return EditorState{};
+    EditorState editor;
+    editor.currentTileType = 1;
+    editor.mouseX = 0;
+    editor.mouseY = 0;
+    editor.editorPaintReady = false;
+    editor.camera.x = 0.0f;
+    editor.camera.y = 0.0f;
+    editor.flag_count = 0;
+    editor.enemy_spawner_count = 0;
+    editor.player_spawn_count = 0;
+    editor.goal_count = 0;
+    return editor;
 }
 
 void UpdateAndRenderEditor(EditorState& editor,
@@ -130,8 +141,8 @@ void HandleEditorInput(EditorState& editor,
     AEInputGetCursorPosition(&editor.mouseX, &editor.mouseY);
 
     // Convert to grid coordinates
-    int gridX = (int)((editor.mouseX + editor.camera.x - 25) / TILE_SIZE);
-    int gridY = (int)((editor.mouseY - editor.camera.y - 25) / TILE_SIZE);
+    int gridX = (int)((editor.mouseX + editor.camera.x - MAP_TILE_OFFSET) / TILE_SIZE);
+    int gridY = (int)((editor.mouseY - editor.camera.y - MAP_TILE_OFFSET) / TILE_SIZE);
 
     // Initialize paint readiness
     if (!editor.editorPaintReady) {
@@ -221,16 +232,17 @@ void DrawEditorHover(const EditorState& editor,
     std::vector<std::vector<int>>& gameMap,
     AEGfxVertexList* squareMesh) {
 
-    int gridX = (int)((editor.mouseX + editor.camera.x - 25) / TILE_SIZE);
-    int gridY = (int)((editor.mouseY - editor.camera.y - 25) / TILE_SIZE);
+    int gridX = (int)((editor.mouseX + editor.camera.x - MAP_TILE_OFFSET) / TILE_SIZE);
+    int gridY = (int)((editor.mouseY - editor.camera.y - MAP_TILE_OFFSET) / TILE_SIZE);
 
-    float x = (gridX * TILE_SIZE) - 800.0f + 25.0f;
-    float y = 450.0f - (gridY * TILE_SIZE) - 25.0f;
+    float x = (gridX * TILE_SIZE) - (SCREEN_WIDTH * 0.5f) + MAP_TILE_OFFSET;
+    float y = (SCREEN_HEIGHT * 0.5f) - (gridY * TILE_SIZE) - MAP_TILE_OFFSET;
+
     float screenX = x - editor.camera.x;
     float screenY = y - editor.camera.y;
 
-    float mouseScreenX = editor.mouseX - 800.0f;
-    float mouseScreenY = 450.0f - editor.mouseY;
+    float mouseScreenX = editor.mouseX - (SCREEN_WIDTH * 0.5f);
+    float mouseScreenY = (SCREEN_HEIGHT * 0.5f) - editor.mouseY;
 
     AEGfxSetRenderMode(AE_GFX_RM_COLOR);
     AEGfxSetTransparency(0.5f);

@@ -30,6 +30,9 @@
 
 static AEGfxTexture* gDigiPenLogo = nullptr;
 
+static float gCreditsIntroTimer = 0.0f;
+static float gCreditsScrollY = -650.0f;
+
 bool IsButtonClicked(const Button& btn) {
     if (!AEInputCheckTriggered(AEVK_LBUTTON)) return false;
 
@@ -37,8 +40,8 @@ bool IsButtonClicked(const Button& btn) {
     AEInputGetCursorPosition(&mx, &my);
 
     // Convert cursor from top-left origin to centered coordinate system
-    float cx = (float)mx - 800.0f;
-    float cy = 450.0f - (float)my;
+    float cx = (float)mx - (SCREEN_WIDTH * 0.5f);
+    float cy = (SCREEN_HEIGHT * 0.5f) - (float)my;
 
     // Reuse AreBoxesIntersecting from utils - cursor is a 1x1 box
     return AreBoxesIntersecting(cx, cy, 1.0f, 1.0f,
@@ -49,8 +52,8 @@ bool IsButtonHovered(const Button& btn) {
     s32 mx, my;
     AEInputGetCursorPosition(&mx, &my);
 
-    float cx = (float)mx - 800.0f;
-    float cy = 450.0f - (float)my;
+    float cx = (float)mx - (SCREEN_WIDTH * 0.5f);
+    float cy = (SCREEN_HEIGHT * 0.5f) - (float)my;
 
     return AreBoxesIntersecting(cx, cy, 1.0f, 1.0f,
         btn.x, btn.y, btn.w, btn.h) == 1;
@@ -80,8 +83,8 @@ void DrawButton(const Button& btn, AEGfxVertexList* mesh, s8 font) {
     float textWidth, textHeight;
     AEGfxGetPrintSize(font, btn.label, textScale, &textWidth, &textHeight);
 
-    float nx = btn.x / 800.0f;
-    float ny = btn.y / 450.0f;
+    float nx = btn.x / (SCREEN_WIDTH * 0.5f);
+    float ny = btn.y / (SCREEN_HEIGHT * 0.5f);
 
     nx -= textWidth / 2;
     ny -= textHeight / 2;
@@ -120,7 +123,7 @@ static void DrawConfirmWindow(
     AEGfxSetTransparency(CONFIRM_OVERLAY_ALPHA);
     AEGfxSetColorToMultiply(0.0f, 0.0f, 0.0f, 1.0f);
     AEGfxSetColorToAdd(0.0f, 0.0f, 0.0f, 0.0f);
-    DrawSprite(mesh, 0.0f, 0.0f, 1600.0f, 900.0f, 0.0f);
+    DrawSprite(mesh, 0.0f, 0.0f, (float)SCREEN_WIDTH, (float)SCREEN_HEIGHT, 0.0f);
 
     AEGfxSetTransparency(CONFIRM_SHADOW_ALPHA);
     AEGfxSetColorToMultiply(0.0f, 0.0f, 0.0f, 1.0f);
@@ -208,8 +211,8 @@ GameState UpdateAndRenderMenu(AEGfxVertexList* mesh, s8 font, float dt) {
     if (!initialized) {
         for (int i = 0; i < MENU_BG_BLOCK_COUNT; ++i) {
             blocks[i].size = MENU_BLOCK_MIN_SIZE + (rand() % MENU_BLOCK_SIZE_RAND);
-            blocks[i].x = -900.0f - (rand() % 500) - i * MENU_BLOCK_START_X_OFFSET;
-            blocks[i].y = (rand() % 900) - 450.0f;
+            blocks[i].x = -(SCREEN_WIDTH * 0.5f) - (rand() % 500) - i * MENU_BLOCK_START_X_OFFSET;
+            blocks[i].y = (rand() % SCREEN_HEIGHT) - (SCREEN_HEIGHT * 0.5f);
             blocks[i].speedX = MENU_BLOCK_MIN_SPEED + (rand() % MENU_BLOCK_SPEED_RAND);
         }
         initialized = true;
@@ -225,10 +228,10 @@ GameState UpdateAndRenderMenu(AEGfxVertexList* mesh, s8 font, float dt) {
     for (int i = 0; i < MENU_BG_BLOCK_COUNT; ++i) {
         blocks[i].x += blocks[i].speedX * dt;
 
-        if (blocks[i].x - blocks[i].size > 900.0f) {
+        if (blocks[i].x - blocks[i].size > (SCREEN_WIDTH * 0.5f)) {
             blocks[i].size = MENU_BLOCK_MIN_SIZE + (rand() % MENU_BLOCK_SIZE_RAND);
-            blocks[i].x = -900.0f - (rand() % 500);
-            blocks[i].y = (rand() % 900) - 450.0f;
+            blocks[i].x = -(SCREEN_WIDTH * 0.5f) - (rand() % 500);
+            blocks[i].y = (rand() % SCREEN_HEIGHT) - (SCREEN_HEIGHT * 0.5f);
             blocks[i].speedX = MENU_BLOCK_MIN_SPEED + (rand() % MENU_BLOCK_SPEED_RAND);
         }
 
@@ -347,6 +350,7 @@ GameState UpdateAndRenderMenu(AEGfxVertexList* mesh, s8 font, float dt) {
     return STATE_MENU;
 }
 
+// Pause screen
 GameState UpdateAndRenderPause(AEGfxVertexList* mesh, s8 font, float dt, GameState previous) {
     (void)dt;
 
@@ -357,7 +361,7 @@ GameState UpdateAndRenderPause(AEGfxVertexList* mesh, s8 font, float dt, GameSta
     AEGfxSetTransparency(PAUSE_OVERLAY_ALPHA);
     AEGfxSetColorToMultiply(0.0f, 0.0f, 0.0f, 1.0f);
     AEGfxSetColorToAdd(0.0f, 0.0f, 0.0f, 0.0f);
-    DrawSprite(mesh, 0.0f, 0.0f, 1600.0f, 900.0f, 0.0f);
+    DrawSprite(mesh, 0.0f, 0.0f, (float)SCREEN_WIDTH, (float)SCREEN_HEIGHT, 0.0f);
 
     AEGfxSetTransparency(1.0f);
 
@@ -559,8 +563,8 @@ GameState UpdateAndRenderNavigation(AEGfxVertexList* mesh, s8 font, float dt) {
 
     // Button interactions
     if (IsButtonClicked(playBtn)) return STATE_CUTSCENE;
-    if (IsButtonClicked(trainingBtn)) return STATE_TUTORIAL; //Placeholder
-    if (IsButtonClicked(customBtn)) return STATE_CUSTOM; // Placeholder
+    if (IsButtonClicked(trainingBtn)) return STATE_TUTORIAL; 
+    if (IsButtonClicked(customBtn)) return STATE_CUSTOM; 
     if (IsButtonClicked(backBtn)) return STATE_MENU;
 
     return STATE_NAVIGATION;
@@ -707,10 +711,7 @@ GameState UpdateAndRenderLoseScreen(AEGfxVertexList* mesh, s8 font, float dt,
     return STATE_LOSE;
 }
 
-
 GameState UpdateAndRenderCredits(AEGfxVertexList* mesh, s8 font, float dt) {
-    (void)dt;
-
     static int creditsPage = 0;
 
     AEGfxSetBackgroundColor(WIN_BG_R, WIN_BG_G, WIN_BG_B);
@@ -720,96 +721,81 @@ GameState UpdateAndRenderCredits(AEGfxVertexList* mesh, s8 font, float dt) {
 
     float tw, th;
 
+    // Title
     AEGfxGetPrintSize(font, "Credits", CREDITS_TITLE_SCALE, &tw, &th);
-    AEGfxPrint(font, const_cast<char*>("Credits"), -tw / 2.0f, CREDITS_TITLE_Y, CREDITS_TITLE_SCALE, 1.0f, 0.92f, 0.92f, 1.0f);
+    AEGfxPrint(font, const_cast<char*>("Credits"), -tw / 2.0f, CREDITS_TITLE_Y,
+        CREDITS_TITLE_SCALE, 1.0f, 0.92f, 0.92f, 1.0f);
 
     switch (creditsPage) {
     case 0:
     {
-        const char* line1 = "WWW.DIGIPEN.EDU";
-        const char* line2 = "All content (C) 2026 DigiPen Institute of Technology Singapore";
-        const char* line3 = "All Rights Reserved.";
+        gCreditsIntroTimer += dt;
 
-        AEGfxGetPrintSize(font, line1, CREDITS_BODY_SCALE, &tw, &th);
-        AEGfxPrint(font, const_cast<char*>(line1), -tw / 2.0f, CREDITS_P0_LINE1_Y, CREDITS_BODY_SCALE, 1.0f, 1.0f, 1.0f, 1.0f);
-        AEGfxGetPrintSize(font, line2, CREDITS_BODY_SCALE_MED, &tw, &th);
-        AEGfxPrint(font, const_cast<char*>(line2), -tw / 2.0f, CREDITS_P0_LINE2_Y, CREDITS_BODY_SCALE_MED, 1.0f, 1.0f, 1.0f, 1.0f);
-        AEGfxGetPrintSize(font, line3, CREDITS_BODY_SCALE_MED, &tw, &th);
-        AEGfxPrint(font, const_cast<char*>(line3), -tw / 2.0f, CREDITS_P0_LINE3_Y, CREDITS_BODY_SCALE_MED, 1.0f, 1.0f, 1.0f, 1.0f);
+        AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
+        AEGfxSetBlendMode(AE_GFX_BM_BLEND);
+        AEGfxSetTransparency(1.0f);
+        AEGfxSetColorToMultiply(1.0f, 1.0f, 1.0f, 1.0f);
+        AEGfxSetColorToAdd(0.0f, 0.0f, 0.0f, 0.0f);
+
+        if (gDigiPenLogo) {
+            AEGfxTextureSet(gDigiPenLogo, 0.0f, 0.0f);
+            DrawSprite(mesh, 0.0f, 40.0f, SPLASH_LOGO_W, SPLASH_LOGO_H, 0.0f);
+        }
+
+        AEGfxSetRenderMode(AE_GFX_RM_COLOR);
+
+        // Auto move to scrolling page after 2 seconds
+        if (gCreditsIntroTimer >= SPLASH_VISIBLE_TIME) {
+            creditsPage = 1;
+            gCreditsIntroTimer = 0.0f;
+            gCreditsScrollY = -650.0f;
+        }
     }
     break;
 
     case 1:
     {
-        const char* header = "TEAM MEMBERS";
-        const char* names[CREDITS_P1_NAME_COUNT] = {
-            "Yeo Kah Boon Joshua",
-            "Ye Min Thwin",
-            "Zhang Yida",
-            "Pang Jun Yuan"
-        };
+        gCreditsScrollY += dt * 90.0f;
 
-        AEGfxGetPrintSize(font, header, CREDITS_HEADER_SCALE, &tw, &th);
-        AEGfxPrint(font, const_cast<char*>(header), -tw / 2.0f, CREDITS_P1_HEADER_Y, CREDITS_HEADER_SCALE, 0.0f, 1.0f, 0.8f, 1.0f);
+        auto PrintScroll = [&](const char* text, float y, float scale,
+            float r, float g, float b, float a)
+            {
+                AEGfxGetPrintSize(font, text, scale, &tw, &th);
+                AEGfxPrint(font, const_cast<char*>(text), -tw / 2.0f, y / (SCREEN_HEIGHT * 0.5f), scale, r, g, b, a);
+            };
 
-        for (int i = 0; i < CREDITS_P1_NAME_COUNT; ++i) {
-            AEGfxGetPrintSize(font, names[i], CREDITS_BODY_SCALE, &tw, &th);
-            AEGfxPrint(font, const_cast<char*>(names[i]), -tw / 2.0f, CREDITS_P1_NAMES_START_Y - i * CREDITS_P1_NAMES_STEP_Y, CREDITS_BODY_SCALE, 1.0f, 1.0f, 1.0f, 1.0f);
-        }
-    }
-    break;
+        float baseY = gCreditsScrollY;
 
-    case 2:
-    {
-        const char* header = "FACULTY & INSTRUCTORS";
-        const char* presidentHeader = "PRESIDENT";
-        const char* presidentName = "Claude Comair";
-        const char* instructorHeader = "INSTRUCTORS";
-        const char* instructors[CREDITS_P2_INSTRUCTOR_COUNT] = {
-            "Gerald Wong Han Feng",
-            "Dr. Soroor Malekmohammadai Faradounbeh",
-            "Tommy Tan Chee Wei"
-        };
+        // Start lowers without clashing with title
+        PrintScroll("TEAM MEMBERS", baseY + 520.0f, 1.2f, 0.0f, 1.0f, 0.8f, 1.0f);
+        PrintScroll("Yeo Kah Boon Joshua", baseY + 450.0f, 1.0f, 1, 1, 1, 1);
+        PrintScroll("Ye Min Thwin", baseY + 400.0f, 1.0f, 1, 1, 1, 1);
+        PrintScroll("Zhang Yida", baseY + 350.0f, 1.0f, 1, 1, 1, 1);
+        PrintScroll("Pang Jun Yuan", baseY + 300.0f, 1.0f, 1, 1, 1, 1);
 
-        AEGfxGetPrintSize(font, header, CREDITS_HEADER_SCALE, &tw, &th);
-        AEGfxPrint(font, const_cast<char*>(header), -tw / 2.0f, CREDITS_P2_HEADER_Y, CREDITS_HEADER_SCALE, 0.0f, 1.0f, 0.8f, 1.0f);
+        PrintScroll("FACULTY & INSTRUCTORS", baseY + 170.0f, 1.2f, 0.0f, 1.0f, 0.8f, 1.0f);
+        PrintScroll("PRESIDENT", baseY + 95.0f, 1.0f, 1.0f, 0.9f, 0.3f, 1.0f);
+        PrintScroll("Claude Comair", baseY + 45.0f, 1.0f, 1, 1, 1, 1);
 
-        AEGfxGetPrintSize(font, presidentHeader, CREDITS_BODY_SCALE_MED, &tw, &th);
-        AEGfxPrint(font, const_cast<char*>(presidentHeader), -tw / 2.0f, CREDITS_P2_PRESIDENT_HDR_Y, CREDITS_BODY_SCALE_MED, 1.0f, 0.9f, 0.3f, 1.0f);
+        PrintScroll("INSTRUCTORS", baseY - 45.0f, 1.0f, 1.0f, 0.9f, 0.3f, 1.0f);
+        PrintScroll("Gerald Wong Han Feng", baseY - 100.0f, 1.0f, 1, 1, 1, 1);
+        PrintScroll("Dr. Soroor Malekmohammadai Faradounbeh", baseY - 150.0f, 0.95f, 1, 1, 1, 1);
+        PrintScroll("Tommy Tan Chee Wei", baseY - 200.0f, 1.0f, 1, 1, 1, 1);
 
-        AEGfxGetPrintSize(font, presidentName, CREDITS_BODY_SCALE_MED, &tw, &th);
-        AEGfxPrint(font, const_cast<char*>(presidentName), -tw / 2.0f, CREDITS_P2_PRESIDENT_NAME_Y, CREDITS_BODY_SCALE_MED, 1.0f, 1.0f, 1.0f, 1.0f);
+        PrintScroll("SPECIAL THANKS ;)", baseY - 330.0f, 1.2f, 0.0f, 1.0f, 0.8f, 1.0f);
+        PrintScroll("Our instructors", baseY - 400.0f, 1.0f, 1, 1, 1, 1);
+        PrintScroll("Our classmates", baseY - 450.0f, 1.0f, 1, 1, 1, 1);
+        PrintScroll("Our playtesters", baseY - 500.0f, 1.0f, 1, 1, 1, 1);
 
-        AEGfxGetPrintSize(font, instructorHeader, CREDITS_BODY_SCALE_MED, &tw, &th);
-        AEGfxPrint(font, const_cast<char*>(instructorHeader), -tw / 2.0f, CREDITS_P2_INSTRUCTOR_HDR_Y, CREDITS_BODY_SCALE_MED, 1.0f, 0.9f, 0.3f, 1.0f);
-
-        for (int i = 0; i < CREDITS_P2_INSTRUCTOR_COUNT; ++i) {
-            AEGfxGetPrintSize(font, instructors[i], CREDITS_BODY_SCALE_SM, &tw, &th);
-            AEGfxPrint(font, const_cast<char*>(instructors[i]), -tw / 2.0f, CREDITS_P2_INSTRUCTOR_START_Y - i * CREDITS_P2_INSTRUCTOR_STEP_Y, CREDITS_BODY_SCALE_SM, 1.0f, 1.0f, 1.0f, 1.0f);
-        }
-    }
-    break;
-
-    case 3:
-    {
-        const char* header = "SPECIAL THANKS ;)";
-        const char* thanks[CREDITS_P3_THANKS_COUNT] = {
-            "Our instructors",
-            "Our classmates",
-            "Our playtesters"
-        };
-
-        AEGfxGetPrintSize(font, header, CREDITS_HEADER_SCALE, &tw, &th);
-        AEGfxPrint(font, const_cast<char*>(header), -tw / 2.0f, CREDITS_P3_HEADER_Y, CREDITS_HEADER_SCALE, 0.0f, 1.0f, 0.8f, 1.0f);
-
-        for (int i = 0; i < CREDITS_P3_THANKS_COUNT; ++i) {
-            AEGfxGetPrintSize(font, thanks[i], CREDITS_BODY_SCALE, &tw, &th);
-            AEGfxPrint(font, const_cast<char*>(thanks[i]), -tw / 2.0f, CREDITS_P3_THANKS_START_Y - i * CREDITS_P3_THANKS_STEP_Y, CREDITS_BODY_SCALE, 1.0f, 1.0f, 1.0f, 1.0f);
+        // Reset scroll when it reaches the last line
+        if (baseY > 975.0f) {
+            gCreditsScrollY = -650.0f;
         }
     }
     break;
     }
 
+    // Page indicator
     char pageText[32];
     sprintf_s(pageText, "Page %d / %d", creditsPage + 1, CREDITS_TOTAL_PAGES);
     AEGfxGetPrintSize(font, pageText, CREDITS_PAGE_IND_SCALE, &tw, &th);
@@ -823,14 +809,22 @@ GameState UpdateAndRenderCredits(AEGfxVertexList* mesh, s8 font, float dt) {
     DrawButton(backBtn, mesh, font);
     DrawButton(nextBtn, mesh, font);
 
-    if ((IsButtonClicked(prevBtn) || AEInputCheckTriggered(AEVK_LEFT)) && creditsPage > 0)
+    if ((IsButtonClicked(prevBtn) || AEInputCheckTriggered(AEVK_LEFT)) && creditsPage > 0) {
         creditsPage--;
+        gCreditsIntroTimer = 0.0f;
+        gCreditsScrollY = -650.0f;
+    }
 
-    if ((IsButtonClicked(nextBtn) || AEInputCheckTriggered(AEVK_RIGHT)) && creditsPage < CREDITS_TOTAL_PAGES - 1)
+    if ((IsButtonClicked(nextBtn) || AEInputCheckTriggered(AEVK_RIGHT)) && creditsPage < 1) {
         creditsPage++;
+        gCreditsIntroTimer = 0.0f;
+        gCreditsScrollY = -650.0f;
+    }
 
     if (IsButtonClicked(backBtn) || AEInputCheckTriggered(AEVK_ESCAPE)) {
         creditsPage = 0;
+        gCreditsIntroTimer = 0.0f;
+        gCreditsScrollY = -650.0f;
         return STATE_MENU;
     }
 
@@ -853,13 +847,12 @@ void CurrGamestate(GameState state, int& gGameRunning, std::vector<std::vector<i
     else if (state == STATE_GAME) {
         GameStateLoad(gGameRunning, gameMap);
         ShowCursor(false);
-        if(previousState == STATE_CUTSCENE) {
+        if (previousState == STATE_CUTSCENE) {
             AEAudioStopGroup(StaticBGMGroup);
-            
         }
-        
+
         if (previousState != STATE_PAUSE) {
-			ShowCursor(false);
+            ShowCursor(false);
             LoadPlayer(player);
 
             AEAudioPlay(GameBGM1, GameBGMGroup, 1.0f, 1.0f, -1);
@@ -872,8 +865,6 @@ void CurrGamestate(GameState state, int& gGameRunning, std::vector<std::vector<i
         if (previousState != STATE_PAUSE) {
             LoadPlayer(player);
             AEAudioPlay(GameBGM1, GameBGMGroup, 1.0f, 1.0f, -1);
-
-        
         }
 
     }
@@ -887,12 +878,14 @@ void CurrGamestate(GameState state, int& gGameRunning, std::vector<std::vector<i
             AEAudioPlay(GameBGM1, GameBGMGroup, 1.0f, 1.0f, -1);
         }
 
-
     }
     else if (state == STATE_EDITOR) {
         GameStateLoadEditor(gGameRunning, gameMap);
         ShowCursor(true);
 
+    }
+    else if (state == STATE_CREDITS) {
+        ShowCursor(true);
     }
     else if (state == STATE_CUTSCENE) {
         AEAudioPlay(StaticSound, StaticBGMGroup, 0.2f, 1.0f, -1);
@@ -938,6 +931,9 @@ void GameStateLoadCustom(int& gGameRunning, std::vector<std::vector<int>>& gameM
     floodfill(gameMap, 0, 0);
 }
 void GameStateLoadEditor(int& gGameRunning, std::vector<std::vector<int>>& gameMap) {
+    static bool loaded = false;
+    if (loaded) return;
+
     if (!Load_Game_Level("Assets/My_Custom_Map.txt", gameMap)) {
         //printf("Failed to load editor map! Exiting...\n");
         gGameRunning = 0;
@@ -945,6 +941,7 @@ void GameStateLoadEditor(int& gGameRunning, std::vector<std::vector<int>>& gameM
     else {
         //printf("Editor map loaded successfully!\n");
     }
+    loaded = true;
 }
 // Loads the top 3 high scores from a file into the highScores array
 void LoadHighScores() {
