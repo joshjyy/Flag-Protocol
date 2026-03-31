@@ -220,7 +220,7 @@ void floodfill(std::vector<std::vector<int>>& arr, int x, int y) {
 
 	for (int i = 0; i < MAP_HEIGHT; i++)
 		for (int j = 0; j < MAP_WIDTH; j++)
-			newMap[i + 1][j + 1] = arr[i][j];
+			newMap[(size_t)i + 1][(size_t)j + 1] = arr[i][j];
 
 	stack.push({ x, y });
 
