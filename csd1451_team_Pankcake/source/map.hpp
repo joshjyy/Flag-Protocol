@@ -52,3 +52,4 @@ void floodfill(std::vector<std::vector<int>>& arr, int x, int y);
 bool HasHole();
 void Update_CameraPosition(CameraPos& camera, float targetX, float targetY, float dt);
 void FindPlayerSpawn(std::vector<std::vector<int>>& arr, float& outX, float& outY);
+void hover(std::vector<std::vector<int>>& arr, float cameraX, float cameraY, AEGfxVertexList* mesh, int current_tile);
