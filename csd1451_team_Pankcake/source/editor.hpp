@@ -51,7 +51,7 @@ void DrawEditorHover(const EditorState& editor,
     std::vector<std::vector<int>>& gameMap,
     AEGfxVertexList* squareMesh);
 
-void SaveCustomMap(std::vector<std::vector<int>>& gameMap);
+void SaveCustomMap(std::vector<std::vector<int>>& gameMap, EditorState& editor);
 void LoadCustomMap(std::vector<std::vector<int>>& gameMap);
 void SaveInitialEditorMap(std::vector<std::vector<int>>& gameMap);
 void ResetToInitialEditorMap(std::vector<std::vector<int>>& gameMap);
