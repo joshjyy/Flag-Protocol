@@ -134,17 +134,14 @@ void Cutscene_Draw(const CutsceneData& cut, s8 font, AEGfxVertexList* squareMesh
         int dotCount = (int)(cut.alpha * CUT_DOT_COUNT);
         for (int i = 0; i < dotCount; i++)
         {
+			// Random position and brightness for each dot
             float rx = (float)(rand() % SCREEN_WIDTH) - (SCREEN_WIDTH / 2.0f);
             float ry = (float)(rand() % SCREEN_HEIGHT) - (SCREEN_HEIGHT / 2.0f);
+			// Random brightness between 0.0 and 1.0
             float brightness = (float)(rand() % 100) / 100.0f;
             AEGfxSetTransparency(cut.alpha);
             AEGfxSetColorToMultiply(0.0f, brightness, 0.0f, cut.alpha);
-            AEMtx33 s, t, transform;
-            AEMtx33Scale(&s, CUT_DOT_SIZE, CUT_DOT_SIZE);
-            AEMtx33Trans(&t, rx, ry);
-            AEMtx33Concat(&transform, &t, &s);
-            AEGfxSetTransform(transform.m);
-            AEGfxMeshDraw(squareMesh, AE_GFX_MDM_TRIANGLES);
+            DrawSprite(squareMesh, rx, ry, CUT_DOT_SIZE, CUT_DOT_SIZE, 0.0f);
         }
         AEGfxSetTransparency(1.0f);
     }
