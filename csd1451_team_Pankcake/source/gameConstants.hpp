@@ -138,6 +138,17 @@ const int   GRUNT_SPAWN_ATTEMPTS = 10;     // max random position attempts befor
 const float GRUNT_SPAWN_RADIUS_TILES = 3.0f;   // spawn search radius in tiles
 const float GRUNT_CULL_TIME = 30.0f;  // seconds before an unengaged patrolling grunt is culled
 
+//Enemy wave constants
+constexpr float WAVE_TIMER_POS_X = 0.0f;
+constexpr float WAVE_TIMER_POS_Y = 390.0f;
+constexpr float WAVE_TIMER_SCALE = 0.9f;
+constexpr float WAVE_TIMER_PANEL_W = 195.0f;
+constexpr float WAVE_TIMER_PANEL_H = 32.0f;
+constexpr float WAVE_TIMER_PANEL_ALPHA = 0.6f;
+constexpr float WAVE_TIMER_YELLOW_THRESHOLD = 5.0f;
+constexpr float WAVE_TIMER_RED_THRESHOLD = 3.0f;
+constexpr float WAVE_TIMER_RED_G_VALUE = 0.2f;
+
 // Tutorial hint UI
 const float TUTORIAL_HINT_START_Y = 390.0f;
 const float TUTORIAL_HINT_STEP_Y = 30.0f;
