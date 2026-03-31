@@ -573,21 +573,27 @@ void LoadGameConstants(const char* filename)
     iMap["CREDITS_TOTAL_PAGES"] = &CREDITS_TOTAL_PAGES;
     iMap["CIRCLE_MESH_SEGMENTS"] = &CIRCLE_MESH_SEGMENTS;
 
+	// Attempt to open file
     std::ifstream file(filename);
-    if (!file.is_open()) { printf("Constants file not found, using defaults.\n"); return; }
+    if (!file.is_open()) { return; }
 
+	// Read key-value pairs from file
     std::string key, eq, value;
+	// Format: key = value, with optional comments starting with #
     while (file >> key) {
         if (key[0] == '#') { std::getline(file, value); continue; }
+		// Expect an equals sign and a value after the key
         if (!(file >> eq >> value)) break;
+		// Skip if not in expected format
         if (eq != "=") continue;
 
+		// Check if key matches a float constant
         auto fit = fMap.find(key);
         if (fit != fMap.end()) { *fit->second = std::stof(value); continue; }
 
+		// Check if key matches an int constant
         auto iit = iMap.find(key);
         if (iit != iMap.end()) { *iit->second = std::stoi(value); }
     }
 
-    printf("Constants loaded from %s\n", filename);
 }
