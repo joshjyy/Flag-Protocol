@@ -61,16 +61,16 @@ void SaveCustomMap(std::vector<std::vector<int>>& gameMap, EditorState& editor) 
     char errorMsg[128] = "";
 
     if (editor.flag_count < 5)
-        strcat_s(errorMsg, "Need 5 flags!\n ");
+        strcat_s(errorMsg, "Need at least 5 flags!\n ");
 
     if (editor.enemy_spawner_count < 2)
-        strcat_s(errorMsg, "Need 2 spawners!\n ");
+        strcat_s(errorMsg, "Need at least 2 spawners!\n ");
 
     if (editor.player_spawn_count < 1)
-        strcat_s(errorMsg, "Need 1 player spawn!\n");
+        strcat_s(errorMsg, "Need at least 1 player spawn!\n");
 
     if (editor.goal_count < 1)
-        strcat_s(errorMsg, "Need 1 Goal!\n");
+        strcat_s(errorMsg, "Need at least 1 Goal!\n");
 
     if (strlen(errorMsg) > 0) {
         Popup_Show(popup, errorMsg, 3.0f, 1.0f, 0.0f, 0.0f);
