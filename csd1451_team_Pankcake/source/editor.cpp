@@ -1,6 +1,7 @@
 /*!************************************************************************
   \file editor.cpp
-  \author
+  \author Zhang Yida 
+
 
 
 
@@ -155,10 +156,14 @@ void HandleEditorInput(EditorState& editor,
                 if (editor.currentTileType == FLAG_SPAWN) {
                     if (editor.flag_count < 10)
                         gameMap[gridY][gridX] = editor.currentTileType;
+                    else 
+                        Popup_Show(popup, "Maximum of 10 Flags Spawn reached", 3.0f, 1.0f, 0.0f, 0.0f);
                 }
                 else if (editor.currentTileType == ENEMY_SPAWN) {
                     if (editor.enemy_spawner_count < 10)
                         gameMap[gridY][gridX] = editor.currentTileType;
+                    else 
+                        Popup_Show(popup, "Maximum of 10 Enemy Spawn reaced", 3.0f, 1.0f, 0.0f, 0.0f);
                 }
                 else {
                     gameMap[gridY][gridX] = editor.currentTileType;
