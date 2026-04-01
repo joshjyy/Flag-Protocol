@@ -519,18 +519,15 @@ GameState UpdateAndRenderControls(AEGfxVertexList* mesh, s8 font, float dt) {
     // P / ESC
     GetNormalizedTextPosition(120.0f, -150.0f, &xKeyR, &yR);
     AEGfxPrint(font, "P / ESC", xKeyR, yR, 1.0f, 1, 1, 1, 1);
-    AEGfxPrint(font, "- Pause", xDescR, yR, 1.0f, 1, 1, 1, 1);
+    AEGfxPrint(font, "- Pause/Return", xDescR, yR, 1.0f, 1, 1, 1, 1);
 
-    // Q
-    GetNormalizedTextPosition(120.0f, -190.0f, &xKeyR, &yR);
-    AEGfxPrint(font, "Q", xKeyR, yR, 1.0f, 1, 1, 1, 1);
-    AEGfxPrint(font, "- Return / Quit", xDescR, yR, 1.0f, 1, 1, 1, 1);
+
 
     // Back button at bottom
     Button backBtn = { 0.0f, -320.0f, 220.0f, 55.0f, "BACK" };
     DrawButton(backBtn, mesh, font);
 
-    if (IsButtonClicked(backBtn) || AEInputCheckTriggered(AEVK_Q) || AEInputCheckTriggered(AEVK_ESCAPE)) {
+    if (IsButtonClicked(backBtn) || AEInputCheckTriggered(AEVK_ESCAPE)) {
         return STATE_MENU;
     }
 

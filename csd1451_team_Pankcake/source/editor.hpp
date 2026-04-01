@@ -2,7 +2,7 @@
   \file editor.hpp
   \author
 
-
+  Pang Jun Yuan
 
 
 

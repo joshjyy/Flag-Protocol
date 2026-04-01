@@ -1,3 +1,17 @@
+/*!************************************************************************
+  \file debris.cpp
+  \author
+  Zhang Yida
+
+
+
+
+
+  \brief
+  This source file contains definitons for the background particles.
+
+**************************************************************************/
+
 #include "debris.hpp"
 #include "AEEngine.h"
 #include <random>

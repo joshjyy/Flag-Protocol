@@ -3,7 +3,7 @@
   \file main.cpp
   \author
   Yeo Kah Boon Joshua (Player / Particle System)
-
+  Pang Jun Yuan ( Editor, Logo, Pause screen, Pre-game navigation )
 
 
 

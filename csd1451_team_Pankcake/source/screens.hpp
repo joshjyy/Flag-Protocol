@@ -2,7 +2,7 @@
   \file screens.hpp
   \author 
   Yeo Kah Boon Joshua ( High Score Management, Win/Lose Screens, Navigation Screen )
-
+  Pang Jun Yuan ( Editor, Logo, Pause screen, Pre-game navigation )
 
 
 

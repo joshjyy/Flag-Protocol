@@ -2,7 +2,7 @@
 /*!************************************************************************
   \file Debug.cpp
   \author
-
+  Zhang Yida
 
 
 
@@ -22,11 +22,12 @@
 
 debug DebugMode;
 void DebugDrawAABB(float worldX, float worldY, float halfW, float halfH, CameraPos camera, DebugDrawType type) {
-     if (!DebugMode.g_debug_collision) return; // ← comment out
-
+     if (!DebugMode.g_debug_collision) return; 
+	 // Convert world coordinates to screen coordinates by applying camera offset
     float screenX = worldX - camera.x;
     float screenY = worldY - camera.y;
 
+	// Calculate the corners of the AABB with a small epsilon to prevent z-fighting
     float L = screenX - (halfW - DEBUG_EPSILON);
     float R = screenX + (halfW - DEBUG_EPSILON);
     float T = screenY + (halfH - DEBUG_EPSILON);
@@ -38,6 +39,7 @@ void DebugDrawAABB(float worldX, float worldY, float halfW, float halfH, CameraP
     float cx = (L + R) / 2.0f;
     float cy = (T + B) / 2.0f;
 
+	// Set color based on type
     switch (type) {
     case DebugDrawType::PLAYER: AEGfxSetColorToMultiply(0.0f, 1.0f, 0.0f, 1.0f); break;
     case DebugDrawType::BULLET: AEGfxSetColorToMultiply(1.0f, 1.0f, 0.0f, 1.0f); break;
@@ -49,6 +51,7 @@ void DebugDrawAABB(float worldX, float worldY, float halfW, float halfH, CameraP
     AEGfxSetBlendMode(AE_GFX_BM_BLEND);
     AEGfxSetTransparency(1.0f);
 
+	//Draw top and bottom edges
     DrawSprite(meshes.debug_quad, cx, T, w, thick, 0.0f);
     DrawSprite(meshes.debug_quad, cx, B, w, thick, 0.0f);
     DrawSprite(meshes.debug_quad, L, cy, thick, h, 0.0f);
