@@ -67,8 +67,8 @@ void Save_Game_Level(const char* filename, std::vector<std::vector<int>>& arr) {
 void Load_Map(std::vector<std::vector<int>>& arr, CameraPos& camera, bool editorMode) {
 	for (int i = 0; i < MAP_HEIGHT; i++) {
 		for (int j = 0; j < MAP_WIDTH; j++) {
-			if (arr[i][j] == EMPTY || arr[i][j] == FLAG_SPAWN) continue;
-			if (!editorMode && (arr[i][j] == PLAYER_SPAWN || arr[i][j] == ENEMY_SPAWN)) continue;
+			if (arr[i][j] == EMPTY ) continue;
+			if (!editorMode && (arr[i][j] == PLAYER_SPAWN || arr[i][j] == ENEMY_SPAWN || arr[i][j] == FLAG_SPAWN)) continue;
 
 			float x = (j * TILE_SIZE) - (SCREEN_WIDTH * 0.5f) + MAP_TILE_OFFSET;
 			float y = (SCREEN_HEIGHT * 0.5f) - (i * TILE_SIZE) - MAP_TILE_OFFSET;
@@ -85,6 +85,7 @@ void PrintBlock(int choice, float d, float screenX, float screenY, AEGfxVertexLi
 	else if (choice == GOAL) { r = 0.5f; g = 0.0f; b = 1.0f; }
 	else if (choice == ENEMY_SPAWN) { r = 1.0f; g = 0.0f; b = 0.0f; }
 	else if (choice == FLAG) { r = 0.0f; g = 1.0f; b = 1.0f; }
+	else if (choice == FLAG_SPAWN) { r = 0.0f; g = 1.0f; b = 1.0f; }
 	else if (choice == PLAYER_SPAWN) { r = 1.0f; g = 1.0f; b = 0.0f; }
 
 	AEGfxSetRenderMode(AE_GFX_RM_COLOR);

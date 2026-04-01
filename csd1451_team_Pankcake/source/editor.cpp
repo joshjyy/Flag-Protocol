@@ -119,7 +119,7 @@ void HandleEditorInput(EditorState& editor,
     editor.goal_count = 0;
     for (int y = 0; y < MAP_HEIGHT; y++) {
         for (int x = 0; x < MAP_WIDTH; x++) {
-            if (gameMap[y][x] == FLAG) editor.flag_count++; 
+            if (gameMap[y][x] == FLAG_SPAWN) editor.flag_count++; 
             if (gameMap[y][x] == ENEMY_SPAWN) editor.enemy_spawner_count++;
             if (gameMap[y][x] == PLAYER_SPAWN) editor.player_spawn_count++;
             if (gameMap[y][x] == GOAL) editor.goal_count++;
@@ -152,7 +152,7 @@ void HandleEditorInput(EditorState& editor,
                 if (editor.currentTileType == GOAL)
                     ClearTileType(gameMap, GOAL);
 
-                if (editor.currentTileType == FLAG) {
+                if (editor.currentTileType == FLAG_SPAWN) {
                     if (editor.flag_count < 10)
                         gameMap[gridY][gridX] = editor.currentTileType;
                 }
@@ -183,13 +183,13 @@ void HandleEditorInput(EditorState& editor,
     if (AEInputCheckTriggered(AEVK_1)) editor.currentTileType = 1;  // Green blocks
     if (AEInputCheckTriggered(AEVK_2)) editor.currentTileType = 2;  // Purple goal
     if (AEInputCheckTriggered(AEVK_3)) editor.currentTileType = 3;  // Red blocks
-    if (AEInputCheckTriggered(AEVK_4)) editor.currentTileType = 4;  // Lime flag
+    if (AEInputCheckTriggered(AEVK_4)) editor.currentTileType = FLAG_SPAWN;  // Lime flag
     if (AEInputCheckTriggered(AEVK_5)) editor.currentTileType = PLAYER_SPAWN;
 
 
     // Save custom map (S key)
     if (AEInputCheckTriggered(AEVK_S)) {
-        printf("flags: %d spawners: %d\n", editor.flag_count, editor.enemy_spawner_count);
+        
         SaveCustomMap(gameMap, editor);
     }
 
@@ -288,7 +288,7 @@ void RenderEditorUI(const EditorState& editor,
         {"3: Red Blocks", -400.0f, 1.0f, 0.0f, 0.0f},
         {"4: Lime Flag", -700.0f, 0.0f, 1.0f, 1.0f},
         {"5: Player Spawn", -550.0f, 1.0f, 1.0f, 0.0f},
-        {"0/RMB: Eraser", -400.0f, 1.0f, 1.0f, 1.0f}
+        {"0: Eraser", -400.0f, 1.0f, 1.0f, 1.0f}
     };
 
     // First row (1-3)
@@ -301,7 +301,7 @@ void RenderEditorUI(const EditorState& editor,
     uiY -= 30.0f;
 
     // Second row (4 and Eraser)
-    for (int i = 3; i < 6; i++) {
+    for (int i = 3; i < 5; i++) {
         GetNormalizedTextPosition(tiles[i].x, uiY, &textX, &textY);
         AEGfxPrint(fontID, tiles[i].label, textX, textY, 1.0f,
             tiles[i].r, tiles[i].g, tiles[i].b, 1.0f);
