@@ -288,7 +288,7 @@ void RenderEditorUI(const EditorState& editor,
         {"3: Red Blocks", -400.0f, 1.0f, 0.0f, 0.0f},
         {"4: Lime Flag", -700.0f, 0.0f, 1.0f, 1.0f},
         {"5: Player Spawn", -550.0f, 1.0f, 1.0f, 0.0f},
-        {"0: Eraser", -400.0f, 1.0f, 1.0f, 1.0f}
+        {"0/RMB: Eraser", -400.0f, 1.0f, 1.0f, 1.0f}
     };
 
     // First row (1-3)
@@ -301,7 +301,7 @@ void RenderEditorUI(const EditorState& editor,
     uiY -= 30.0f;
 
     // Second row (4 and Eraser)
-    for (int i = 3; i < 5; i++) {
+    for (int i = 3; i < 6; i++) {
         GetNormalizedTextPosition(tiles[i].x, uiY, &textX, &textY);
         AEGfxPrint(fontID, tiles[i].label, textX, textY, 1.0f,
             tiles[i].r, tiles[i].g, tiles[i].b, 1.0f);
