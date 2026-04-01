@@ -301,7 +301,7 @@ void RenderEditorUI(const EditorState& editor,
     uiY -= 30.0f;
 
     // Second row (4 and Eraser)
-    for (int i = 3; i < 5; i++) {
+    for (int i = 3; i < 6; i++) {
         GetNormalizedTextPosition(tiles[i].x, uiY, &textX, &textY);
         AEGfxPrint(fontID, tiles[i].label, textX, textY, 1.0f,
             tiles[i].r, tiles[i].g, tiles[i].b, 1.0f);
