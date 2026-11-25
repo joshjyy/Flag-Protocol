@@ -1,5 +1,4 @@
-# Pankcake
-
+Flag Protocol
 A top-down capture-the-flag shooter written in C++. You grab flags that spawn in different parts of the map and fight off waves of AI enemies while you do it. A built-in level editor lets you draw your own maps and play them.
 
 Led a team of total four at DigiPen Institute of Technology Singapore as an academic project.
