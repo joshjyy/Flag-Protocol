@@ -20,7 +20,8 @@ Led a team of total four at DigiPen Institute of Technology Singapore as an acad
 - **Menus:** main menu, pause menu, settings with volume control, a controls page, a confirmation screen before you quit or restart, and credits.
 
 
-The full controls are also listed in the in-game Controls screen and the pause menu.
+
+https://github.com/user-attachments/assets/f89e3ce7-23f6-4ad0-8e3e-9f6e0a58f4d8
 
 ## Download and play
 
